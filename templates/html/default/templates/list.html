@@ -1,0 +1,12 @@
+{% extends 'mainframe.html' %}
+
+{% block content %}
+    <h1>{{ tag_settings[list_type].plural }}</h1>
+    <ul>
+    {% for element in list.elements %}
+        <li>
+            <a href="{{ element.doc_element_path }}">{{ element.namepath }}</a>
+        </li>
+    {% endfor %}
+    </ul>
+{% endblock content %}
