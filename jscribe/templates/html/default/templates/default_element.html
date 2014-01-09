@@ -1,9 +1,9 @@
 <h1>{{ element.type }} {{ element.name }}
 {%- if tag_settings[element.type].callable -%}(
-    {%- for param in element.attributes.params %}
+    {%- for param in element.attributes.params -%}
         {{ param.name }}{%- if param.default != None %}={{ param.default }}{%- endif %}
         {%- if param.is_sequenced %}...{%- endif %}
-        {%- if not loop.last %}, {%- endif %}
+        {%- if not loop.last %}, {% endif %}
     {%- endfor -%}
 ){%- endif %}
 </h1>

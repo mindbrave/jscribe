@@ -1,0 +1,966 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+    </head>
+    <body>
+        <header>
+            <img src=""/>
+            <h1></h1>
+        </header>
+        <div id="main">
+            <div id="lists-container">
+                <h2>Lists</h2>
+                
+                    
+                
+                    
+                    <h3><a href=".././docs/list_module.html" title="modules">modules</a></h3>
+                    <ul>
+                        
+                        <li>
+                            <a href=".././docs/jscribe2.html" title="jscribe2">jscribe2</a>
+                        </li>
+                        
+                        <li>
+                            <a href=".././docs/core_docgenerator.html" title="docgenerator">core.docgenerator</a>
+                        </li>
+                        
+                        <li>
+                            <a href=".././docs/core_htmldocgenerator.html" title="htmldocgenerator">core.htmldocgenerator</a>
+                        </li>
+                        
+                        <li>
+                            <a href=".././docs/core_docstringparser.html" title="docstringparser">core.docstringparser</a>
+                        </li>
+                        
+                    </ul>
+                    
+                
+                    
+                    <h3><a href=".././docs/list_package.html" title="packages">packages</a></h3>
+                    <ul>
+                        
+                        <li>
+                            <a href=".././docs/core.html" title="core">core</a>
+                        </li>
+                        
+                    </ul>
+                    
+                
+            </div>
+            <div id="content">
+            
+    <table class="sourcetable"><tr><td class="linenos"><div class="linenodiv"><pre>  1
+  2
+  3
+  4
+  5
+  6
+  7
+  8
+  9
+ 10
+ 11
+ 12
+ 13
+ 14
+ 15
+ 16
+ 17
+ 18
+ 19
+ 20
+ 21
+ 22
+ 23
+ 24
+ 25
+ 26
+ 27
+ 28
+ 29
+ 30
+ 31
+ 32
+ 33
+ 34
+ 35
+ 36
+ 37
+ 38
+ 39
+ 40
+ 41
+ 42
+ 43
+ 44
+ 45
+ 46
+ 47
+ 48
+ 49
+ 50
+ 51
+ 52
+ 53
+ 54
+ 55
+ 56
+ 57
+ 58
+ 59
+ 60
+ 61
+ 62
+ 63
+ 64
+ 65
+ 66
+ 67
+ 68
+ 69
+ 70
+ 71
+ 72
+ 73
+ 74
+ 75
+ 76
+ 77
+ 78
+ 79
+ 80
+ 81
+ 82
+ 83
+ 84
+ 85
+ 86
+ 87
+ 88
+ 89
+ 90
+ 91
+ 92
+ 93
+ 94
+ 95
+ 96
+ 97
+ 98
+ 99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291
+292
+293
+294
+295
+296
+297
+298
+299
+300
+301
+302
+303
+304
+305
+306
+307
+308
+309
+310
+311
+312
+313
+314
+315
+316
+317
+318
+319
+320
+321
+322
+323
+324
+325
+326
+327
+328
+329
+330
+331
+332
+333
+334
+335
+336
+337
+338
+339
+340
+341
+342
+343
+344
+345
+346
+347
+348
+349
+350
+351
+352
+353
+354
+355
+356
+357
+358
+359
+360
+361
+362
+363
+364
+365
+366
+367
+368
+369
+370
+371
+372
+373
+374
+375
+376
+377
+378
+379
+380
+381
+382
+383
+384
+385
+386
+387
+388
+389
+390
+391
+392
+393
+394
+395
+396
+397
+398
+399
+400
+401
+402
+403
+404
+405
+406
+407
+408
+409
+410
+411
+412
+413
+414
+415
+416
+417
+418
+419
+420
+421
+422
+423
+424
+425
+426
+427
+428
+429
+430
+431
+432
+433
+434
+435
+436
+437
+438
+439
+440
+441
+442
+443
+444
+445
+446
+447
+448
+449
+450
+451
+452</pre></div></td><td class="code"><div class="source"><pre><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#!/usr/bin/env python</span>
+
+<span class="sd">&quot;&quot;&quot;* Doc string parser module file.</span>
+<span class="sd">@module core.docstringparser</span>
+<span class="sd">@author Rafał Łużyński</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">codecs</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+
+<span class="kn">from</span> <span class="nn">jscribe.utils.file</span> <span class="kn">import</span> <span class="n">get_source_file_coding</span>
+
+
+<span class="k">class</span> <span class="nc">DocStringParser</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;* This class generates doc data from source files.</span>
+<span class="sd">    @class .DocStringParser</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">class</span> <span class="nc">TagValueException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">class</span> <span class="nc">InvalidDocStringException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">class</span> <span class="nc">InvalidTagException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">class</span> <span class="nc">InvalidElementPathException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">class</span> <span class="nc">TagSettingsException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">tag_settings</span><span class="p">,</span> <span class="n">doc_string_regex</span><span class="p">,</span> <span class="n">tag_regex</span><span class="p">,</span> <span class="n">line_prefix</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span>
+            <span class="n">ignore_invalid_tags</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">new_line_sign</span><span class="o">=</span><span class="s">&#39;&lt;br/&gt;&#39;</span>
+        <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;* Initialization.</span>
+<span class="sd">        @method ..__init__</span>
+<span class="sd">        @param self</span>
+<span class="sd">        @param tag_settings {dict} - Dictionary with tag settings.</span>
+<span class="sd">        @param doc_string_regex {regex} - Regex that matches doc strings.</span>
+<span class="sd">        @param tag_regex {regex} - Regex that matches tags in doc strings.</span>
+<span class="sd">        @param line_prefix=&#39;&#39; {str} - Prefix that will be escaped from every line in doc string.</span>
+<span class="sd">        Whitespaces at the line begining are always ommited.</span>
+<span class="sd">        @param ignore_invalid_tags=False {boolean} - If True then invalid tag name won&#39;t raise</span>
+<span class="sd">        error.</span>
+<span class="sd">        @param new_line_sign=&#39;&amp;lt;br/&amp;gt;&#39; {str} - New line characters in descriptions will be replaced</span>
+<span class="sd">        with value of this parameter.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">PROPERTY_TAGS</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">&#39;return&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_return_from_tag_string</span><span class="p">,</span>
+            <span class="s">&#39;param&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_param_from_tag_string</span><span class="p">,</span>
+            <span class="s">&#39;author&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_author_from_tag_string</span><span class="p">,</span>
+            <span class="s">&#39;valtype&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_valtype_from_tag_string</span><span class="p">,</span>
+            <span class="s">&#39;default&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_default_from_tag_string</span><span class="p">,</span>
+            <span class="s">&#39;inherits&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_inherits_from_tag_string</span><span class="p">,</span>
+            <span class="s">&#39;access&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_access_from_tag_string</span><span class="p">,</span>
+            <span class="s">&#39;version&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_version_from_tag_string</span><span class="p">,</span>
+            <span class="s">&#39;license&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_license_from_tag_string</span><span class="p">,</span>
+            <span class="s">&#39;example&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_example_from_tag_string</span><span class="p">,</span>
+            <span class="s">&#39;private&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">ts</span><span class="p">:</span> <span class="p">(</span><span class="s">&#39;access&#39;</span><span class="p">,</span> <span class="s">&#39;private&#39;</span><span class="p">),</span>
+        <span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_doc_string_regex</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_doc_string_regex_obj</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">doc_string_regex</span> <span class="o">=</span> <span class="n">doc_string_regex</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tag_regex</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tag_regex_obj</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tag_regex</span> <span class="o">=</span> <span class="n">tag_regex</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">line_prefix</span> <span class="o">=</span> <span class="n">line_prefix</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">new_line_sign</span> <span class="o">=</span> <span class="n">new_line_sign</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ignore_invalid_tags</span> <span class="o">=</span> <span class="n">ignore_invalid_tags</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tag_alias_map</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tag_settings</span> <span class="o">=</span> <span class="n">tag_settings</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_tag_alias_map</span><span class="p">(</span><span class="n">tag_settings</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">({</span><span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="n">OrderedDict</span><span class="p">({})})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_temp_data</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">({})</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">doc_string_regex</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_doc_string_regex</span>
+
+    <span class="nd">@doc_string_regex.setter</span>
+    <span class="k">def</span> <span class="nf">doc_string_regex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc_string_regex</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_doc_string_regex</span> <span class="o">=</span> <span class="n">doc_string_regex</span>
+        <span class="c"># only whitespaces before opening tag</span>
+        <span class="n">no_whitespace_regex</span> <span class="o">=</span> <span class="s">r&#39;^\s*?&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_doc_string_open_regex_obj</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">no_whitespace_regex</span> <span class="o">+</span> <span class="n">doc_string_regex</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_doc_string_close_regex_obj</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">doc_string_regex</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">tag_regex</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tag_regex</span>
+
+    <span class="nd">@tag_regex.setter</span>
+    <span class="k">def</span> <span class="nf">tag_regex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag_regex</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tag_regex</span> <span class="o">=</span> <span class="n">tag_regex</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tag_regex_obj</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">tag_regex</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_create_tag_alias_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag_settings</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">tag</span><span class="p">,</span> <span class="n">settings</span> <span class="ow">in</span> <span class="n">tag_settings</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="n">aliases</span> <span class="o">=</span> <span class="n">get_tag_type_property</span><span class="p">(</span><span class="n">tag_settings</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="s">&#39;alias&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">aliases</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">for</span> <span class="n">alias</span> <span class="ow">in</span> <span class="n">aliases</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_tag_alias_map</span><span class="p">[</span><span class="n">alias</span><span class="p">]</span> <span class="o">=</span> <span class="n">tag</span>
+
+    <span class="k">def</span> <span class="nf">parse_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="c"># get coding of source file</span>
+        <span class="n">source_coding</span> <span class="o">=</span> <span class="n">get_source_file_coding</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">doc_strings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_doc_strings</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">source_coding</span><span class="p">)</span>
+        <span class="n">previous_elements_paths</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">doc_string</span> <span class="ow">in</span> <span class="n">doc_strings</span><span class="p">:</span>
+            <span class="n">doc_string_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_doc_string</span><span class="p">(</span><span class="n">doc_string</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">doc_string_data</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="c"># that doc string is not a proper doc string</span>
+                <span class="k">continue</span>
+            <span class="n">doc_string_data</span><span class="p">[</span><span class="s">&#39;filepath&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">path</span>
+            <span class="n">previous_elements_paths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_temp_data</span><span class="p">(</span><span class="n">doc_string_data</span><span class="p">,</span> <span class="n">previous_elements_paths</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_assemble_data</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_assemble_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">path</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_temp_data</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="n">path_parts</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">)</span>
+            <span class="n">current_element</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
+            <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">path_parts</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">current_element</span><span class="p">[</span><span class="s">&#39;properties&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">part</span><span class="p">)</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">current_element</span><span class="p">[</span><span class="s">&#39;properties&#39;</span><span class="p">][</span><span class="n">part</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                        <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="n">OrderedDict</span><span class="p">({}),</span>
+                        <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+                        <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+                        <span class="s">&#39;startline&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+                        <span class="s">&#39;endline&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+                        <span class="s">&#39;filepath&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+                    <span class="p">}</span>
+                <span class="n">current_element</span> <span class="o">=</span> <span class="n">current_element</span><span class="p">[</span><span class="s">&#39;properties&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">part</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+                <span class="n">current_element</span><span class="p">[</span><span class="n">prop</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">prop</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_add_temp_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc_string_data</span><span class="p">,</span> <span class="n">previous_elements_paths</span><span class="p">):</span>
+        <span class="n">name_parts</span> <span class="o">=</span> <span class="n">doc_string_data</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">)</span>
+        <span class="n">element_true_name</span> <span class="o">=</span> <span class="n">name_parts</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">element_true_name</span> <span class="o">==</span> <span class="s">&#39;&#39;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="bp">self</span><span class="o">.</span><span class="n">InvalidElementPathException</span><span class="p">(</span><span class="s">&#39;Invalid element path: {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">doc_string_data</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
+            <span class="p">))</span>
+        <span class="n">current_element_path</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+        <span class="n">level</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">name_parts</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">name_parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;&#39;</span><span class="p">:</span>
+            <span class="c"># relative to previously defined elements</span>
+            <span class="k">for</span> <span class="n">level</span><span class="p">,</span> <span class="n">part</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">name_parts</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">part</span> <span class="o">==</span> <span class="s">&#39;&#39;</span><span class="p">:</span>
+                    <span class="c"># relative</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">current_element_path</span> <span class="o">=</span> <span class="n">previous_elements_paths</span><span class="p">[</span><span class="n">level</span><span class="p">]</span>
+                    <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="bp">self</span><span class="o">.</span><span class="n">InvalidElementPathException</span><span class="p">(</span><span class="s">&#39;No parent element, path: {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="n">doc_string_data</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
+                        <span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c"># from here is the element path</span>
+                    <span class="c">## check if rest of the path is valid</span>
+                    <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">name_parts</span><span class="p">[</span><span class="n">level</span><span class="p">:]:</span>
+                        <span class="k">if</span> <span class="n">part</span> <span class="o">==</span> <span class="s">&#39;&#39;</span><span class="p">:</span>
+                            <span class="k">raise</span> <span class="bp">self</span><span class="o">.</span><span class="n">InvalidElementPathException</span><span class="p">(</span>
+                                <span class="s">&#39;Invalid element path: {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">doc_string_data</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">])</span>
+                            <span class="p">)</span>
+                        <span class="n">current_element_path</span> <span class="o">=</span> <span class="s">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">current_element_path</span><span class="p">,</span> <span class="n">part</span><span class="p">])</span>
+                    <span class="k">break</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">name_parts</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">name_parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s">&#39;&#39;</span><span class="p">:</span>
+            <span class="c"># absolute path to element</span>
+            <span class="c">## check if path is valid</span>
+            <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">name_parts</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">part</span> <span class="o">==</span> <span class="s">&#39;&#39;</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="bp">self</span><span class="o">.</span><span class="n">InvalidElementPathException</span><span class="p">(</span><span class="s">&#39;Invalid element path: {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">doc_string_data</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span>
+                    <span class="p">))</span>
+            <span class="n">current_element_path</span> <span class="o">=</span> <span class="s">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">name_parts</span><span class="p">)</span>
+        <span class="c"># add element true name to path</span>
+        <span class="k">if</span> <span class="n">current_element_path</span> <span class="o">!=</span> <span class="s">&#39;&#39;</span><span class="p">:</span>
+            <span class="n">current_element_path</span> <span class="o">=</span> <span class="s">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">current_element_path</span><span class="p">,</span> <span class="n">element_true_name</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">current_element_path</span> <span class="o">=</span> <span class="n">element_true_name</span>
+        <span class="c"># add doc string data to temp data</span>
+        <span class="n">doc_string_data</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">element_true_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_temp_data</span><span class="p">[</span><span class="n">current_element_path</span><span class="p">]</span> <span class="o">=</span> <span class="n">doc_string_data</span>
+
+        <span class="n">previous_elements_paths</span> <span class="o">=</span> <span class="n">previous_elements_paths</span> <span class="p">[:</span><span class="n">level</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">previous_elements_paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current_element_path</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">previous_elements_paths</span>
+
+    <span class="k">def</span> <span class="nf">_parse_doc_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc_string</span><span class="p">):</span>
+        <span class="n">doc_string_data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">&#39;startline&#39;</span><span class="p">:</span> <span class="n">doc_string</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="s">&#39;endline&#39;</span><span class="p">:</span> <span class="n">doc_string</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+            <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+            <span class="s">&#39;attributes&#39;</span><span class="p">:</span> <span class="p">{},</span>
+        <span class="p">}</span>
+        <span class="c"># get description and tag strings</span>
+        <span class="n">tag_strings</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">position_end</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">position_start</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="n">position_end</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">doc_string</span><span class="p">[</span><span class="mi">2</span><span class="p">]):</span>
+            <span class="n">match_inst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tag_regex_obj</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">doc_string</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">position_end</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">match_inst</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="c"># end of doc string</span>
+                <span class="n">position_end</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">doc_string</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+                <span class="n">tag_strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">doc_string</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="n">position_start</span><span class="p">:])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c"># found tag</span>
+                <span class="n">tag_strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">doc_string</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="n">position_start</span><span class="p">:</span><span class="n">match_inst</span><span class="o">.</span><span class="n">start</span><span class="p">()])</span>
+                <span class="n">position_start</span> <span class="o">=</span> <span class="n">match_inst</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+                <span class="n">position_end</span> <span class="o">=</span> <span class="n">match_inst</span><span class="o">.</span><span class="n">end</span><span class="p">()</span>
+                <span class="c"># if tag has no value and is last in doc string</span>
+                <span class="k">if</span> <span class="n">position_end</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">doc_string</span><span class="p">[</span><span class="mi">2</span><span class="p">]):</span>
+                    <span class="n">tag_strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">doc_string</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="n">position_start</span><span class="p">:</span><span class="n">position_end</span><span class="p">])</span>
+
+        <span class="c"># if tag_strings has only one element or less, then it&#39;s not a doc string (no tags in there)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tag_strings</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+        <span class="c"># first element of tag_strings is a description of an element</span>
+        <span class="n">doc_string_data</span><span class="p">[</span><span class="s">&#39;description&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tag_strings</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&#39; &#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+            <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_line_sign</span>
+        <span class="p">)</span>
+        <span class="c"># indicates if doc string has element tag, it must have exactly one to be a valid doc string</span>
+        <span class="n">has_element_tag</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="k">for</span> <span class="n">tag_string</span> <span class="ow">in</span> <span class="n">tag_strings</span><span class="p">:</span>
+            <span class="n">match_inst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tag_regex_obj</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">tag_string</span><span class="p">)</span>
+            <span class="n">tag_name</span> <span class="o">=</span> <span class="n">match_inst</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s">&#39;tag&#39;</span><span class="p">)</span>
+            <span class="c"># check if tag type is valid</span>
+            <span class="c">## check if tag is an element tag, check also aliases</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tag_settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">tag_name</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">or</span> \
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_tag_alias_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">tag_name</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">has_element_tag</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="bp">self</span><span class="o">.</span><span class="n">InvalidDocStringException</span><span class="p">(</span>
+                        <span class="s">&#39;Two or more element tags in one doc string, docstring: {}.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="n">doc_string</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="n">has_element_tag</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tag_settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">tag_name</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">doc_string_data</span><span class="p">[</span><span class="s">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tag_name</span>
+                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tag_alias_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">tag_name</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">doc_string_data</span><span class="p">[</span><span class="s">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tag_alias_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">tag_name</span><span class="p">)</span>
+                <span class="c"># first word after tag name is an element name</span>
+                <span class="n">element_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_element_name</span><span class="p">(</span><span class="n">tag_string</span><span class="p">)</span>
+                <span class="n">doc_string_data</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">element_name</span>
+            <span class="c">## check if tag is a property tag</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">PROPERTY_TAGS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">tag_name</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="c"># get value of property from tag string</span>
+                <span class="n">tag_type</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">PROPERTY_TAGS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">tag_name</span><span class="p">)(</span>
+                    <span class="n">tag_string</span><span class="p">[</span><span class="n">match_inst</span><span class="o">.</span><span class="n">end</span><span class="p">():]</span>
+                <span class="p">)</span>
+                <span class="c"># special case if tag is param</span>
+                <span class="k">if</span> <span class="n">tag_type</span> <span class="o">==</span> <span class="s">&#39;param&#39;</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">doc_string_data</span><span class="p">[</span><span class="s">&#39;attributes&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;params&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                        <span class="n">doc_string_data</span><span class="p">[</span><span class="s">&#39;attributes&#39;</span><span class="p">][</span><span class="s">&#39;params&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="n">doc_string_data</span><span class="p">[</span><span class="s">&#39;attributes&#39;</span><span class="p">][</span><span class="s">&#39;params&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">doc_string_data</span><span class="p">[</span><span class="s">&#39;attributes&#39;</span><span class="p">][</span><span class="n">tag_type</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="c">## tag type is invalid, raise exception if ignore invalid tags setting is not True</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">ignore_invalid_tags</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="bp">self</span><span class="o">.</span><span class="n">InvalidTagException</span><span class="p">(</span>
+                    <span class="s">&#39;Invalid tag &quot;{}&quot; in doc string: &quot;{}&quot;.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tag_name</span><span class="p">,</span> <span class="n">doc_string</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+                <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">has_element_tag</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="bp">self</span><span class="o">.</span><span class="n">InvalidDocStringException</span><span class="p">(</span>
+                <span class="s">&#39;No element tag in doc string.&#39;</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">doc_string_data</span>
+
+    <span class="k">def</span> <span class="nf">_get_element_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag_string</span><span class="p">):</span>
+        <span class="n">tag_string</span> <span class="o">=</span> <span class="n">tag_string</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&#39; &#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">,</span> <span class="s">&#39; &#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39; &#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">element_name</span> <span class="o">=</span> <span class="n">tag_string</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="bp">self</span><span class="o">.</span><span class="n">TagValueException</span><span class="p">(</span><span class="s">&#39;No element name.&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">element_name</span> <span class="o">==</span> <span class="s">&#39;&#39;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="bp">self</span><span class="o">.</span><span class="n">TagValueException</span><span class="p">(</span><span class="s">&#39;No element name.&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">element_name</span>
+
+    <span class="k">def</span> <span class="nf">_get_doc_strings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">encoding</span><span class="p">):</span>
+        <span class="n">doc_strings</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">in_tag</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="n">doc_string_text</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+        <span class="k">with</span> <span class="n">codecs</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">line_number</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">(),</span> <span class="n">start</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+                <span class="n">position</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">in_tag</span><span class="p">:</span>
+                    <span class="n">match_inst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_doc_string_open_regex_obj</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">position</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">match_inst</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                        <span class="n">in_tag</span> <span class="o">=</span> <span class="bp">True</span>
+                        <span class="n">start_line</span> <span class="o">=</span> <span class="n">line_number</span>
+                        <span class="n">position</span> <span class="o">=</span> <span class="n">match_inst</span><span class="o">.</span><span class="n">end</span><span class="p">()</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">continue</span>
+                <span class="k">if</span> <span class="n">in_tag</span><span class="p">:</span>
+                    <span class="n">match_inst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_doc_string_close_regex_obj</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">position</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">match_inst</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                        <span class="n">in_tag</span> <span class="o">=</span> <span class="bp">False</span>
+                        <span class="n">end_line</span> <span class="o">=</span> <span class="n">line_number</span>
+                        <span class="n">text_line</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="n">position</span><span class="p">:</span><span class="n">match_inst</span><span class="o">.</span><span class="n">start</span><span class="p">()]</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&#39; </span><span class="se">\t</span><span class="s">&#39;</span><span class="p">)</span>
+                        <span class="n">text_line</span> <span class="o">=</span> <span class="n">text_line</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">line_prefix</span><span class="p">)</span>
+                        <span class="n">text_line</span> <span class="o">=</span> <span class="n">text_line</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&#39; </span><span class="se">\t</span><span class="s">&#39;</span><span class="p">)</span>
+                        <span class="n">doc_string_text</span> <span class="o">+=</span> <span class="n">text_line</span>
+                        <span class="n">doc_strings</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">start_line</span><span class="p">,</span> <span class="n">end_line</span><span class="p">,</span> <span class="n">doc_string_text</span><span class="p">))</span>
+                        <span class="n">doc_string_text</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">text_line</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="n">position</span><span class="p">:]</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&#39; </span><span class="se">\t</span><span class="s">&#39;</span><span class="p">)</span>
+                        <span class="n">text_line</span> <span class="o">=</span> <span class="n">text_line</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">line_prefix</span><span class="p">)</span>
+                        <span class="n">text_line</span> <span class="o">=</span> <span class="n">text_line</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&#39; </span><span class="se">\t</span><span class="s">&#39;</span><span class="p">)</span>
+                        <span class="n">doc_string_text</span> <span class="o">+=</span> <span class="n">text_line</span>
+                        <span class="k">continue</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">doc_strings</span>
+
+    <span class="k">def</span> <span class="nf">clear_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_temp_data</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">({})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">({})</span>
+
+    <span class="k">def</span> <span class="nf">data_json</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_author_from_tag_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag_string</span><span class="p">):</span>
+        <span class="n">re_inst</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s">r&#39;\s*?(?P&lt;author&gt;.*?)$&#39;</span><span class="p">,</span> <span class="n">tag_string</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">re_inst</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s">&#39;author&#39;</span><span class="p">,</span> <span class="n">re_inst</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s">&#39;author&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&#39; &#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s">&#39;author&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">get_return_from_tag_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag_string</span><span class="p">):</span>
+        <span class="n">re_inst</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
+            <span class="s">r&#39;\s*?[{](?P&lt;return_type&gt;.*?)[}]\s-?[ ]?(?P&lt;description&gt;.*?)$&#39;</span><span class="p">,</span>
+            <span class="n">tag_string</span><span class="p">,</span>
+            <span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">re_inst</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s">&#39;return&#39;</span><span class="p">,</span> <span class="p">{</span>
+                <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="n">re_inst</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s">&#39;return_type&#39;</span><span class="p">),</span>
+                <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="n">re_inst</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s">&#39;description&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_line_sign</span><span class="p">)</span>
+            <span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s">&#39;return&#39;</span><span class="p">,</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">get_param_from_tag_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag_string</span><span class="p">):</span>
+        <span class="n">re_inst</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
+            <span class="s">r&#39;\s*?(?P&lt;name&gt;\w+)&#39;</span> <span class="o">+</span>
+            <span class="s">r&#39;(?:(?:=(?P&lt;default&gt;[^.]+?))|(?:(?P&lt;seq&gt;[.]{3}))|(?:))&#39;</span> <span class="o">+</span>
+            <span class="s">r&#39;(?:\s[{](?P&lt;type&gt;.+?)[}])?&#39;</span> <span class="o">+</span>
+            <span class="s">r&#39;(?:\s-?\s?(?P&lt;desc&gt;.*?))$&#39;</span><span class="p">,</span>
+            <span class="n">tag_string</span><span class="p">,</span>
+            <span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">re_inst</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s">&#39;param&#39;</span><span class="p">,</span> <span class="p">{</span>
+                <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="n">re_inst</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s">&#39;name&#39;</span><span class="p">),</span>
+                <span class="s">&#39;default&#39;</span><span class="p">:</span> <span class="n">re_inst</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s">&#39;default&#39;</span><span class="p">),</span>
+                <span class="s">&#39;is_sequenced&#39;</span><span class="p">:</span> <span class="n">re_inst</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s">&#39;seq&#39;</span><span class="p">),</span>
+                <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="n">re_inst</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s">&#39;type&#39;</span><span class="p">),</span>
+                <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="n">re_inst</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s">&#39;desc&#39;</span><span class="p">),</span>
+            <span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="bp">self</span><span class="o">.</span><span class="n">TagValueException</span><span class="p">(</span><span class="s">&#39;Wrong data passed to param tag: &quot;{}&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tag_string</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">get_valtype_from_tag_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag_string</span><span class="p">):</span>
+        <span class="n">re_inst</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s">r&#39;\s*?[{](?P&lt;valtype&gt;.*?)[}](\s|$)&#39;</span><span class="p">,</span> <span class="n">tag_string</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">re_inst</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s">&#39;valtype&#39;</span><span class="p">,</span> <span class="n">re_inst</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s">&#39;valtype&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s">&#39;valtype&#39;</span><span class="p">,</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">get_default_from_tag_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag_string</span><span class="p">):</span>
+        <span class="n">re_inst</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s">r&#39;\s*?(?P&lt;default&gt;.*?)(\s|$)&#39;</span><span class="p">,</span> <span class="n">tag_string</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">re_inst</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s">&#39;default&#39;</span><span class="p">,</span> <span class="n">re_inst</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s">&#39;default&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s">&#39;default&#39;</span><span class="p">,</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">get_inherits_from_tag_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag_string</span><span class="p">):</span>
+        <span class="n">re_inst</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s">r&#39;\s*?[{](?P&lt;inherits&gt;.*?)[}](\s|$)&#39;</span><span class="p">,</span> <span class="n">tag_string</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">re_inst</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s">&#39;inherits&#39;</span><span class="p">,</span> <span class="n">re_inst</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s">&#39;inherits&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s">&#39;inherits&#39;</span><span class="p">,</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">get_access_from_tag_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag_string</span><span class="p">):</span>
+        <span class="n">re_inst</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s">r&#39;\s*?(?P&lt;access&gt;.*?)(\s|$)&#39;</span><span class="p">,</span> <span class="n">tag_string</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">re_inst</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s">&#39;access&#39;</span><span class="p">,</span> <span class="n">re_inst</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s">&#39;access&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s">&#39;access&#39;</span><span class="p">,</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">get_version_from_tag_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag_string</span><span class="p">):</span>
+        <span class="n">re_inst</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s">r&#39;\s*?(?P&lt;version&gt;.*?)$&#39;</span><span class="p">,</span> <span class="n">tag_string</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">re_inst</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s">&#39;version&#39;</span><span class="p">,</span> <span class="n">re_inst</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s">&#39;version&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&#39; &#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+                <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_line_sign</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s">&#39;version&#39;</span><span class="p">,</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">get_license_from_tag_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag_string</span><span class="p">):</span>
+        <span class="n">re_inst</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s">r&#39;\s*?(?P&lt;license&gt;.*?)$&#39;</span><span class="p">,</span> <span class="n">tag_string</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">re_inst</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s">&#39;license&#39;</span><span class="p">,</span> <span class="n">re_inst</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s">&#39;license&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&#39; &#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+                <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_line_sign</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s">&#39;license&#39;</span><span class="p">,</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">get_example_from_tag_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag_string</span><span class="p">):</span>
+        <span class="n">re_inst</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s">r&#39;\s*?(?P&lt;example&gt;.*?)$&#39;</span><span class="p">,</span> <span class="n">tag_string</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">re_inst</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s">&#39;example&#39;</span><span class="p">,</span> <span class="n">re_inst</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s">&#39;example&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&#39; &#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+                <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_line_sign</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s">&#39;example&#39;</span><span class="p">,</span> <span class="bp">None</span>
+
+
+<span class="k">def</span> <span class="nf">get_tag_type_property</span><span class="p">(</span><span class="n">tag_settings</span><span class="p">,</span> <span class="n">tag_type</span><span class="p">,</span> <span class="n">property_name</span><span class="p">):</span>
+    <span class="n">prop</span> <span class="o">=</span> <span class="n">tag_type</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">property_name</span><span class="p">)</span>
+    <span class="k">while</span> <span class="n">prop</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">parent_type</span> <span class="o">=</span> <span class="n">get_tag_parent_type</span><span class="p">(</span><span class="n">tag_settings</span><span class="p">,</span> <span class="n">tag_type</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">parent_type</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">DocStringParser</span><span class="o">.</span><span class="n">TagSettingsException</span><span class="p">(</span>
+                <span class="s">&#39;No {} property on tag.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">property_name</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="n">prop</span> <span class="o">=</span> <span class="n">parent_type</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">property_name</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">prop</span>
+
+
+<span class="k">def</span> <span class="nf">get_tag_parent_type</span><span class="p">(</span><span class="n">tag_settings</span><span class="p">,</span> <span class="n">tag_type</span><span class="p">):</span>
+    <span class="n">parent_type_name</span> <span class="o">=</span> <span class="n">tag_type</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;parent_type&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">parent_type_name</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">parent_type</span> <span class="o">=</span> <span class="n">tag_settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">parent_type_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">parent_type</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">DocStringParser</span><span class="o">.</span><span class="n">TagSettingsException</span><span class="p">(</span><span class="s">&#39;Parent type &quot;{}&quot; doesn</span><span class="se">\&#39;</span><span class="s">t exist&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">parent_type_name</span>
+            <span class="p">))</span>
+        <span class="k">return</span> <span class="n">parent_type</span>
+</pre></div>
+</td></tr></table>
+
+            </div>
+        </div>
+        <footer>
+            JSCRIBE
+        </footer>
+    </body>
+</html>

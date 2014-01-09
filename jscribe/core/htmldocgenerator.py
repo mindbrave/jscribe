@@ -6,11 +6,9 @@
 @author Rafał Łużyński
 """
 
-import json
-import os
 import importlib
 
-from core import settings
+from jscribe.conf import settings
 
 
 class HTMLDocumentationGenerator(object):
@@ -22,30 +20,41 @@ class HTMLDocumentationGenerator(object):
         self.doc_data = doc_data
         self.filepaths = filepaths
         self.tag_settings = tag_settings
+        self._template_settings = {}
+        self._template_generator = None
         self._load_template_settings()
 
     def _load_template_settings(self):
-        with open(os.path.join(
-                    'templates', settings.GENERATOR, settings.TEMPLATE, 'defaultsettings.json'
-                ), 'r') as f:
-            template_settings = json.load(f)
-            f.close()
-        template_settings['ELEMENT_TEMPLATES'].update(
+        # load template settings from python module in template
+        template_settings = importlib.import_module(
+            'jscribe.templates.{}.{}.settings'.format(settings.GENERATOR, settings.TEMPLATE)
+        )
+        # first update default element templates with user element templates
+        template_settings.TEMPLATE_SETTINGS['ELEMENT_TEMPLATES'].update(
             settings.TEMPLATE_SETTINGS.get('ELEMENT_TEMPLATES', {})
         )
-        settings.TEMPLATE_SETTINGS['ELEMENT_TEMPLATES'] = template_settings['ELEMENT_TEMPLATES']
-        template_settings.update(settings.TEMPLATE_SETTINGS)
-        settings.TEMPLATE_SETTINGS = template_settings
+        settings.TEMPLATE_SETTINGS['ELEMENT_TEMPLATES'] = template_settings.TEMPLATE_SETTINGS[
+            'ELEMENT_TEMPLATES'
+        ]
+        template_settings.TEMPLATE_SETTINGS.update(settings.TEMPLATE_SETTINGS)
+        self._template_settings = template_settings.TEMPLATE_SETTINGS
+        self._template_generator = template_settings.GENERATOR
 
     def generate_documentation(self):
         # import template generator
-        template_generator_class = getattr(
-            importlib.import_module(
-                'templates.{}.{}.generate'.format(settings.GENERATOR, settings.TEMPLATE)
-            ),
-            'HTMLGeneratorTemplate'
+        module = importlib.import_module(
+            self._template_generator[0]
         )
+        # get class attr from attr path, i.e. foo.bar.HTMLGenerator where foo and bar are also
+        # classes
+        current_attr = module
+        for attr in self._template_generator[1].split('.'):
+            current_attr = getattr(
+                current_attr,
+                attr
+            )
+        template_generator_class = current_attr
         template_generator = template_generator_class(
-            self.doc_data, self.tag_settings, self.filepaths
+            self._template_settings, self.doc_data, self.tag_settings, self.filepaths
         )
         template_generator.generate_documentation()

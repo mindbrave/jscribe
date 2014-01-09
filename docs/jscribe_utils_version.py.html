@@ -1,0 +1,112 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+    </head>
+    <body>
+        <header>
+            <img src=""/>
+            <h1></h1>
+        </header>
+        <div id="main">
+            <div id="lists-container">
+                <h2>Lists</h2>
+                
+                    
+                
+                    
+                    <h3><a href=".././docs/list_module.html" title="modules">modules</a></h3>
+                    <ul>
+                        
+                        <li>
+                            <a href=".././docs/jscribe2.html" title="jscribe2">jscribe2</a>
+                        </li>
+                        
+                        <li>
+                            <a href=".././docs/core_docgenerator.html" title="docgenerator">core.docgenerator</a>
+                        </li>
+                        
+                        <li>
+                            <a href=".././docs/core_htmldocgenerator.html" title="htmldocgenerator">core.htmldocgenerator</a>
+                        </li>
+                        
+                        <li>
+                            <a href=".././docs/core_docstringparser.html" title="docstringparser">core.docstringparser</a>
+                        </li>
+                        
+                    </ul>
+                    
+                
+                    
+                    <h3><a href=".././docs/list_package.html" title="packages">packages</a></h3>
+                    <ul>
+                        
+                        <li>
+                            <a href=".././docs/core.html" title="core">core</a>
+                        </li>
+                        
+                    </ul>
+                    
+                
+            </div>
+            <div id="content">
+            
+    <table class="sourcetable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25</pre></div></td><td class="code"><div class="source"><pre><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#!/usr/bin/env python</span>
+
+
+<span class="k">class</span> <span class="nc">Version</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_version_valid</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_repr</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">repr</span>
+
+    <span class="k">def</span> <span class="nf">is_version_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">version</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">version</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Version must have at least one number part&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">version</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Version parts must be an integer&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_create_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">repr</span> <span class="o">=</span> <span class="s">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">))</span>
+</pre></div>
+</td></tr></table>
+
+            </div>
+        </div>
+        <footer>
+            JSCRIBE
+        </footer>
+    </body>
+</html>

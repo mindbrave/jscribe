@@ -7,12 +7,12 @@
 """
 
 import json
+import importlib
 
-from utils.file import discover_files
-
-from core import settings
-from core.docstringparser import DocStringParser
-from core.htmldocgenerator import HTMLDocumentationGenerator
+from jscribe.utils.file import discover_files
+from jscribe.conf import settings
+from jscribe.core.docstringparser import DocStringParser
+from jscribe.core.htmldocgenerator import HTMLDocumentationGenerator
 
 
 class DocumentationGenerator(object):
@@ -24,12 +24,11 @@ class DocumentationGenerator(object):
     GENERATORS = {
         'html': HTMLDocumentationGenerator,
     }
-    def __init__(self, settings_path=None):
-        """* Initialization takes optional parameter "settings_path". Usually you should pass your
-        own settings path there.
+    def __init__(self, settings_path):
+        """* Initialization.
         @method ..__init__
         @param self
-        @param settings_path=None {str} Path to settings json file.
+        @param settings_path {str} Path to settings json file.
         """
         self.doc_data = {}
         self.tag_settings = {}
@@ -39,19 +38,27 @@ class DocumentationGenerator(object):
         @valtype {list}
         """
         self.discovered_filepaths = []
-        if settings_path is not None:
-            settings.load(settings_path)
-        self._load_tag_settings()
+        settings.load(settings_path)
+        self.load_tag_settings(settings.TAG_SETTINGS)
         self._get_doc_data()
 
-    def _load_tag_settings(self):
-        """* Load tag settings from file given in settings and save it on this instance.
-        @method .._load_tag_settings
+    def load_tag_settings(self, tag_settings_path):
+        """* Load tag settings from json file given in settings or python module and save
+        it on this instance.
+        @method ..load_tag_settings
         @private
         """
-        with open(settings.TAG_SETTINGS_PATH, 'r') as f:
-            self.tag_settings = json.load(f)
-            f.close()
+        if tag_settings_path.split('.')[-1] == 'json':
+            with open(tag_settings_path, 'r') as f:
+                self.tag_settings = json.load(f)
+                f.close()
+        else:
+            self.tag_settings = getattr(
+                importlib.import_module(
+                    tag_settings_path
+                ),
+                'TAG_SETTINGS'
+            )
 
     def _get_doc_data(self):
         self.discovered_filepaths = discover_files(
@@ -60,7 +67,7 @@ class DocumentationGenerator(object):
             ignore_regex=settings.FILE_IGNORE_REGEX
         )
         dsp = DocStringParser(
-            settings.TAG_SETTINGS_PATH, settings.DOC_STRING_REGEX, settings.TAG_REGEX,
+            self.tag_settings, settings.DOC_STRING_REGEX, settings.TAG_REGEX,
             settings.DOC_STRING_LINE_PREFIX, settings.IGNORE_INVALID_TAGS, settings.NEW_LINE_REPLACE
         )
         for filepath in self.discovered_filepaths:

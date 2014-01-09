@@ -1,0 +1,426 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+    </head>
+    <body>
+        <header>
+            <img src=""/>
+            <h1></h1>
+        </header>
+        <div id="main">
+            <div id="lists-container">
+                <h2>Lists</h2>
+                
+                    
+                
+                    
+                    <h3><a href=".././docs/list_module.html" title="modules">modules</a></h3>
+                    <ul>
+                        
+                        <li>
+                            <a href=".././docs/jscribe2.html" title="jscribe2">jscribe2</a>
+                        </li>
+                        
+                        <li>
+                            <a href=".././docs/core_docgenerator.html" title="docgenerator">core.docgenerator</a>
+                        </li>
+                        
+                        <li>
+                            <a href=".././docs/core_htmldocgenerator.html" title="htmldocgenerator">core.htmldocgenerator</a>
+                        </li>
+                        
+                        <li>
+                            <a href=".././docs/core_docstringparser.html" title="docstringparser">core.docstringparser</a>
+                        </li>
+                        
+                    </ul>
+                    
+                
+                    
+                    <h3><a href=".././docs/list_package.html" title="packages">packages</a></h3>
+                    <ul>
+                        
+                        <li>
+                            <a href=".././docs/core.html" title="core">core</a>
+                        </li>
+                        
+                    </ul>
+                    
+                
+            </div>
+            <div id="content">
+            
+    <table class="sourcetable"><tr><td class="linenos"><div class="linenodiv"><pre>  1
+  2
+  3
+  4
+  5
+  6
+  7
+  8
+  9
+ 10
+ 11
+ 12
+ 13
+ 14
+ 15
+ 16
+ 17
+ 18
+ 19
+ 20
+ 21
+ 22
+ 23
+ 24
+ 25
+ 26
+ 27
+ 28
+ 29
+ 30
+ 31
+ 32
+ 33
+ 34
+ 35
+ 36
+ 37
+ 38
+ 39
+ 40
+ 41
+ 42
+ 43
+ 44
+ 45
+ 46
+ 47
+ 48
+ 49
+ 50
+ 51
+ 52
+ 53
+ 54
+ 55
+ 56
+ 57
+ 58
+ 59
+ 60
+ 61
+ 62
+ 63
+ 64
+ 65
+ 66
+ 67
+ 68
+ 69
+ 70
+ 71
+ 72
+ 73
+ 74
+ 75
+ 76
+ 77
+ 78
+ 79
+ 80
+ 81
+ 82
+ 83
+ 84
+ 85
+ 86
+ 87
+ 88
+ 89
+ 90
+ 91
+ 92
+ 93
+ 94
+ 95
+ 96
+ 97
+ 98
+ 99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182</pre></div></td><td class="code"><div class="source"><pre><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="c">#!/usr/bin/env python</span>
+
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">codecs</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">pygments</span> <span class="kn">import</span> <span class="n">highlight</span>
+<span class="kn">from</span> <span class="nn">pygments.lexers</span> <span class="kn">import</span> <span class="n">get_lexer_by_name</span>
+<span class="kn">from</span> <span class="nn">pygments.formatters</span> <span class="kn">import</span> <span class="n">HtmlFormatter</span>
+
+<span class="kn">from</span> <span class="nn">jscribe.utils.file</span> <span class="kn">import</span> <span class="n">get_source_file_coding</span>
+<span class="kn">from</span> <span class="nn">jscribe.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">jscribe.core.jinjatemplaterenderer</span> <span class="kn">import</span> <span class="n">JinjaTemplateRenderer</span>
+<span class="kn">from</span> <span class="nn">jscribe.core.docstringparser</span> <span class="kn">import</span> <span class="n">get_tag_type_property</span>
+
+
+<span class="k">class</span> <span class="nc">HTMLDefaultGenerator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template_settings</span><span class="p">,</span> <span class="n">doc_data</span><span class="p">,</span> <span class="n">tag_settings</span><span class="p">,</span> <span class="n">discovered_filepaths</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">doc_data</span> <span class="o">=</span> <span class="n">doc_data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tag_settings</span> <span class="o">=</span> <span class="n">tag_settings</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">template_settings</span> <span class="o">=</span> <span class="n">template_settings</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">discovered_filepaths</span> <span class="o">=</span> <span class="n">discovered_filepaths</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">renderer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_renderer</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">get_template_for_element</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag_type_name</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">template_settings</span><span class="p">[</span><span class="s">&#39;ELEMENT_TEMPLATES&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">tag_type_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">template_settings</span><span class="p">[</span><span class="s">&#39;ELEMENT_TEMPLATES&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;default&#39;</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_path_to_element_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">settings</span><span class="o">.</span><span class="n">DOCUMENTATION_OUTPUT_PATH</span><span class="p">,</span>
+            <span class="s">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">element</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;namepath&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">,</span> <span class="s">&#39;_&#39;</span><span class="p">),</span> <span class="s">&#39;html&#39;</span><span class="p">])</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_path_to_sourcefile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">settings</span><span class="o">.</span><span class="n">DOCUMENTATION_OUTPUT_PATH</span><span class="p">,</span>
+            <span class="s">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">filepath</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="p">,</span> <span class="s">&#39;_&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:],</span> <span class="s">&#39;html&#39;</span><span class="p">])</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_path_to_list_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">list_type</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">settings</span><span class="o">.</span><span class="n">DOCUMENTATION_OUTPUT_PATH</span><span class="p">,</span>
+            <span class="s">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s">&#39;list_{}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">list_type</span><span class="p">),</span> <span class="s">&#39;html&#39;</span><span class="p">])</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">generate_documentation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># get documentation data for templates</span>
+        <span class="n">doc_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_template_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">doc_data</span><span class="p">)</span>
+        <span class="c"># add lists to the global context so its always available to mainframe</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">renderer</span><span class="o">.</span><span class="n">update_globals</span><span class="p">({</span><span class="s">&#39;lists&#39;</span><span class="p">:</span> <span class="n">doc_data</span><span class="p">[</span><span class="s">&#39;lists&#39;</span><span class="p">]})</span>
+        <span class="c"># create source doc files (source code with line numbers and anchors)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">generate_source_files_for_documentation</span><span class="p">()</span>
+        <span class="c"># create list files</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">generate_list_files</span><span class="p">(</span><span class="n">doc_data</span><span class="p">)</span>
+        <span class="c"># create files for every element with separate type</span>
+        <span class="k">for</span> <span class="n">prop</span><span class="p">,</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">doc_data</span><span class="p">[</span><span class="s">&#39;root_element&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;properties&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="c"># check if element is separate</span>
+            <span class="k">if</span> <span class="n">element</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;is_separate&#39;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">generate_element_file</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">create_renderer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">template_package</span> <span class="o">=</span> <span class="s">&#39;jscribe.templates.{}.{}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">GENERATOR</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">TEMPLATE</span><span class="p">)</span>
+        <span class="n">renderer</span> <span class="o">=</span> <span class="n">JinjaTemplateRenderer</span><span class="p">(</span>
+            <span class="n">template_package</span><span class="p">,</span>
+            <span class="p">{</span>
+                <span class="s">&#39;tag_settings&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">tag_settings</span><span class="p">,</span>
+                <span class="s">&#39;render_element&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">render_element</span><span class="p">,</span>
+                <span class="s">&#39;FOOTER_TEXT&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">template_settings</span><span class="p">[</span><span class="s">&#39;FOOTER_TEXT&#39;</span><span class="p">],</span>
+                <span class="s">&#39;LOGO_PATH&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">template_settings</span><span class="p">[</span><span class="s">&#39;LOGO_PATH&#39;</span><span class="p">],</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">renderer</span>
+
+    <span class="k">def</span> <span class="nf">build_template_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc_data</span><span class="p">):</span>
+        <span class="n">doc_data</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">doc_data</span><span class="p">)</span>
+        <span class="n">lists</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">namepath</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">prop</span><span class="p">,</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">doc_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;properties&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="c"># set namepath for element</span>
+            <span class="n">namepath</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;name&#39;</span><span class="p">)</span>
+            <span class="n">element</span><span class="p">[</span><span class="s">&#39;namepath&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">namepath</span>
+            <span class="c"># get element tag type settings</span>
+            <span class="n">tag_type_name</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;type&#39;</span><span class="p">)</span>
+            <span class="c"># add element to its element list</span>
+            <span class="k">if</span> <span class="n">lists</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">tag_type_name</span><span class="p">)</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">lists</span><span class="p">[</span><span class="n">tag_type_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s">&#39;path&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_path_to_list_file</span><span class="p">(</span><span class="n">tag_type_name</span><span class="p">),</span> <span class="s">&#39;elements&#39;</span><span class="p">:</span> <span class="p">[]</span>
+                <span class="p">}</span>
+            <span class="n">lists</span><span class="p">[</span><span class="n">tag_type_name</span><span class="p">][</span><span class="s">&#39;elements&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+            <span class="n">tag_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tag_settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">tag_type_name</span><span class="p">)</span>
+            <span class="c"># remove beginnig dot from filepath</span>
+            <span class="n">element</span><span class="p">[</span><span class="s">&#39;filepath&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">element</span><span class="p">[</span><span class="s">&#39;filepath&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">:]</span>
+            <span class="c"># set element path to sourcefile</span>
+            <span class="n">element</span><span class="p">[</span><span class="s">&#39;sourcepath&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_path_to_sourcefile</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;filepath&#39;</span><span class="p">))</span>
+            <span class="c"># add element doc file path</span>
+            <span class="n">output_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_path_to_element_file</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+            <span class="n">element</span><span class="p">[</span><span class="s">&#39;doc_element_path&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">output_path</span>
+            <span class="c"># check if element is separate</span>
+            <span class="n">is_separate</span> <span class="o">=</span> <span class="n">get_tag_type_property</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tag_settings</span><span class="p">,</span> <span class="n">tag_type</span><span class="p">,</span> <span class="s">&#39;separate&#39;</span><span class="p">)</span>
+            <span class="n">element</span><span class="p">[</span><span class="s">&#39;is_separate&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">is_separate</span>
+            <span class="k">if</span> <span class="n">is_separate</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_get_element_template_data</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">namepath</span><span class="p">,</span> <span class="n">lists</span><span class="p">)</span>
+        <span class="n">doc_data</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;root_element&#39;</span><span class="p">:</span> <span class="n">doc_data</span><span class="p">,</span> <span class="s">&#39;lists&#39;</span><span class="p">:</span> <span class="n">lists</span><span class="p">}</span>
+        <span class="k">return</span> <span class="n">doc_data</span>
+
+    <span class="k">def</span> <span class="nf">_get_element_template_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">namepath</span><span class="p">,</span> <span class="n">lists</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">prop</span><span class="p">,</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;properties&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="c"># set namepath for element</span>
+            <span class="n">_namepath</span> <span class="o">=</span> <span class="s">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">namepath</span><span class="p">,</span> <span class="n">element</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;name&#39;</span><span class="p">)])</span>
+            <span class="n">element</span><span class="p">[</span><span class="s">&#39;namepath&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_namepath</span>
+            <span class="c"># get element tag type settings</span>
+            <span class="n">tag_type_name</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;type&#39;</span><span class="p">)</span>
+            <span class="c"># add element to its element list</span>
+            <span class="k">if</span> <span class="n">lists</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">tag_type_name</span><span class="p">)</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">lists</span><span class="p">[</span><span class="n">tag_type_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s">&#39;path&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_path_to_list_file</span><span class="p">(</span><span class="n">tag_type_name</span><span class="p">),</span> <span class="s">&#39;elements&#39;</span><span class="p">:</span> <span class="p">[]</span>
+                <span class="p">}</span>
+            <span class="n">lists</span><span class="p">[</span><span class="n">tag_type_name</span><span class="p">][</span><span class="s">&#39;elements&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+            <span class="n">tag_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tag_settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">tag_type_name</span><span class="p">)</span>
+            <span class="c"># remove beginnig dot from filepath</span>
+            <span class="n">element</span><span class="p">[</span><span class="s">&#39;filepath&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">element</span><span class="p">[</span><span class="s">&#39;filepath&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">:]</span>
+            <span class="c"># set element path to sourcefile</span>
+            <span class="n">element</span><span class="p">[</span><span class="s">&#39;sourcepath&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_path_to_sourcefile</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;filepath&#39;</span><span class="p">))</span>
+            <span class="c"># add element doc file path</span>
+            <span class="n">output_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_path_to_element_file</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+            <span class="n">element</span><span class="p">[</span><span class="s">&#39;doc_element_path&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">output_path</span>
+            <span class="c"># check if element is separate</span>
+            <span class="n">is_separate</span> <span class="o">=</span> <span class="n">get_tag_type_property</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tag_settings</span><span class="p">,</span> <span class="n">tag_type</span><span class="p">,</span> <span class="s">&#39;separate&#39;</span><span class="p">)</span>
+            <span class="n">element</span><span class="p">[</span><span class="s">&#39;is_separate&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">is_separate</span>
+            <span class="k">if</span> <span class="n">is_separate</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_get_element_template_data</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">_namepath</span><span class="p">,</span> <span class="n">lists</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">generate_element_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element_data</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">prop</span><span class="p">,</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">element_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;properties&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">element</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;is_separate&#39;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">generate_element_file</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">render_element</span><span class="p">(</span><span class="n">element_data</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">renderer</span><span class="o">.</span><span class="n">render_to_file</span><span class="p">(</span>
+            <span class="s">&#39;element.html&#39;</span><span class="p">,</span>
+            <span class="p">{</span><span class="s">&#39;element_rendered&#39;</span><span class="p">:</span> <span class="n">result</span><span class="p">,</span> <span class="p">},</span>
+            <span class="n">element_data</span><span class="p">[</span><span class="s">&#39;doc_element_path&#39;</span><span class="p">],</span>
+            <span class="n">settings</span><span class="o">.</span><span class="n">OUTPUT_ENCODING</span>
+        <span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Created: {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">element_data</span><span class="p">[</span><span class="s">&#39;doc_element_path&#39;</span><span class="p">]))</span>
+
+    <span class="k">def</span> <span class="nf">generate_list_files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc_data</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">list_type</span><span class="p">,</span> <span class="n">_list</span> <span class="ow">in</span> <span class="n">doc_data</span><span class="p">[</span><span class="s">&#39;lists&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">renderer</span><span class="o">.</span><span class="n">render_to_file</span><span class="p">(</span>
+                <span class="s">&#39;list.html&#39;</span><span class="p">,</span>
+                <span class="p">{</span><span class="s">&#39;list&#39;</span><span class="p">:</span> <span class="n">_list</span><span class="p">,</span> <span class="s">&#39;list_type&#39;</span><span class="p">:</span> <span class="n">list_type</span><span class="p">,</span> <span class="p">},</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">get_path_to_list_file</span><span class="p">(</span><span class="n">list_type</span><span class="p">),</span>
+                <span class="n">settings</span><span class="o">.</span><span class="n">OUTPUT_ENCODING</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">generate_source_files_for_documentation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">filepath</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">discovered_filepaths</span><span class="p">:</span>
+            <span class="n">encoding</span> <span class="o">=</span> <span class="n">get_source_file_coding</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+            <span class="k">with</span> <span class="n">codecs</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">code</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="n">output_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_path_to_sourcefile</span><span class="p">(</span><span class="n">filepath</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+            <span class="n">lexer</span> <span class="o">=</span> <span class="n">get_lexer_by_name</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">LANGUAGE</span><span class="p">,</span> <span class="n">stripall</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+            <span class="n">formatter</span> <span class="o">=</span> <span class="n">HtmlFormatter</span><span class="p">(</span>
+                <span class="n">linenos</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">template_settings</span><span class="p">[</span><span class="s">&#39;SHOW_LINE_NUMBER&#39;</span><span class="p">],</span>
+                <span class="n">cssclass</span><span class="o">=</span><span class="s">&quot;source&quot;</span>
+            <span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">highlight</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="n">lexer</span><span class="p">,</span> <span class="n">formatter</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">renderer</span><span class="o">.</span><span class="n">render_to_file</span><span class="p">(</span>
+                <span class="s">&#39;sourcefile.html&#39;</span><span class="p">,</span>
+                <span class="p">{</span><span class="s">&#39;source&#39;</span><span class="p">:</span> <span class="n">result</span><span class="p">,</span> <span class="p">},</span>
+                <span class="n">output_path</span><span class="p">,</span>
+                <span class="n">settings</span><span class="o">.</span><span class="n">OUTPUT_ENCODING</span>
+            <span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Created: {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">output_path</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">render_element</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">):</span>
+        <span class="n">template</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_template_for_element</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;type&#39;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">renderer</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="p">{</span><span class="s">&#39;element&#39;</span><span class="p">:</span> <span class="n">element</span><span class="p">,</span> <span class="p">})</span>
+</pre></div>
+</td></tr></table>
+
+            </div>
+        </div>
+        <footer>
+            JSCRIBE
+        </footer>
+    </body>
+</html>

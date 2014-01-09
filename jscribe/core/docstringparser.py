@@ -7,11 +7,11 @@
 """
 
 import re
-from collections import OrderedDict
 import codecs
 import json
+from collections import OrderedDict
 
-from utils.file import get_source_file_coding
+from jscribe.utils.file import get_source_file_coding
 
 
 class DocStringParser(object):
@@ -35,13 +35,13 @@ class DocStringParser(object):
         pass
 
     def __init__(
-            self, tag_settings_path, doc_string_regex, tag_regex, line_prefix='',
+            self, tag_settings, doc_string_regex, tag_regex, line_prefix='',
             ignore_invalid_tags=False, new_line_sign='<br/>'
         ):
         """* Initialization.
         @method ..__init__
         @param self
-        @param tag_settings_path {str} - Path to tag settings json file.
+        @param tag_settings {dict} - Dictionary with tag settings.
         @param doc_string_regex {regex} - Regex that matches doc strings.
         @param tag_regex {regex} - Regex that matches tags in doc strings.
         @param line_prefix='' {str} - Prefix that will be escaped from every line in doc string.
@@ -75,9 +75,9 @@ class DocStringParser(object):
         self.line_prefix = line_prefix
         self.new_line_sign = new_line_sign
         self.ignore_invalid_tags = ignore_invalid_tags
-        self._tag_settings = None
         self._tag_alias_map = {}
-        self.load_tag_settings(tag_settings_path)
+        self._tag_settings = tag_settings
+        self._create_tag_alias_map(tag_settings)
         self.data = OrderedDict({'properties': OrderedDict({})})
         self._temp_data = OrderedDict({})
 
@@ -101,20 +101,6 @@ class DocStringParser(object):
     def tag_regex(self, tag_regex):
         self._tag_regex = tag_regex
         self._tag_regex_obj = re.compile(tag_regex)
-
-    @property
-    def tag_settings(self):
-        return self._tag_settings
-
-    @tag_settings.setter
-    def tag_settings(self, tag_settings):
-        self._tag_settings = tag_settings
-        self._create_tag_alias_map(tag_settings)
-
-    def load_tag_settings(self, path):
-        with open(path, 'r') as f:
-            self.tag_settings = json.load(f)
-            f.close()
 
     def _create_tag_alias_map(self, tag_settings):
         for tag, settings in tag_settings.iteritems():
@@ -250,7 +236,7 @@ class DocStringParser(object):
             tag_name = match_inst.group('tag')
             # check if tag type is valid
             ## check if tag is an element tag, check also aliases
-            if self.tag_settings.get(tag_name) is not None or \
+            if self._tag_settings.get(tag_name) is not None or \
                     self._tag_alias_map.get(tag_name) is not None:
                 if has_element_tag:
                     raise self.InvalidDocStringException(
@@ -259,7 +245,7 @@ class DocStringParser(object):
                         )
                     )
                 has_element_tag = True
-                if self.tag_settings.get(tag_name) is not None:
+                if self._tag_settings.get(tag_name) is not None:
                     doc_string_data['type'] = tag_name
                 elif self._tag_alias_map.get(tag_name) is not None:
                     doc_string_data['type'] = self._tag_alias_map.get(tag_name)
@@ -282,7 +268,7 @@ class DocStringParser(object):
             ## tag type is invalid, raise exception if ignore invalid tags setting is not True
             elif not self.ignore_invalid_tags:
                 raise self.InvalidTagException(
-                    'Invalid tag "{}" in doc string.'.format(tag_name)
+                    'Invalid tag "{}" in doc string: "{}".'.format(tag_name, doc_string[2])
                 )
 
         if not has_element_tag:
@@ -367,7 +353,10 @@ class DocStringParser(object):
 
     def get_param_from_tag_string(self, tag_string):
         re_inst = re.search(
-            r'\s*?(?P<name>\w+)(?:(?:=(?P<default>[^.]+?)\s)|(?:(?P<seq>[.]{3}))|(?:))(?:[{](?P<type>.+?)[}])?\s?-?[ ]?(?P<desc>.*?)$',
+            r'\s*?(?P<name>\w+)' +
+            r'(?:(?:=(?P<default>[^.]+?))|(?:(?P<seq>[.]{3}))|(?:))' +
+            r'(?:\s[{](?P<type>.+?)[}])?' +
+            r'(?:\s-?\s?(?P<desc>.*?))$',
             tag_string,
             flags=re.DOTALL
         )

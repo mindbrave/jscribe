@@ -1,8 +1,0 @@
-{
-    "SHOW_LINE_NUMBER": true,
-    "FOOTER_TEXT": "JSCRIBE",
-    "LOGO_PATH": "",
-    "ELEMENT_TEMPLATES": {
-        "default": "default_element.html"
-    }
-}
