@@ -1,5 +1,5 @@
 <h1>{{ element.type }} {{ element.name }}</h1>
-<div>Description: {{ element.description }}</div>
+<div>Description: {{ element.description_html }}</div>
 <div>File: <a href="../{{ element.sourcepath }}#line{{ element.startline }}">{{ element.filepath }}</a> Line: {{ element.startline }}</div>
 {% if element.author %}
     <div>

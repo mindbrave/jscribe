@@ -20,17 +20,27 @@
             <td>{{ param.name }}</td>
             <td>{{ param.type }}</td>
             <td>{{ param.default }}</td>
-            <td>{{ param.description }}</td>
+            <td>{{ param.description_html }}</td>
         </tr>
     {%- endfor %}
     {%- endif %}
 </table>
-<div>Description: {{ element.description }}</div>
+<div>Description: {{ element.description_html }}</div>
 <div>File: <a href="../{{ element.sourcepath }}#line{{ element.startline }}">{{ element.filepath }}</a> Line: {{ element.startline }}</div>
 {% if element.author %}
     <div>
         Author: {{ element.author }}
     </div>
+{% endif %}
+{% if element.attributes.examples %}
+<h2>Examples:</h2>
+{% for example in element.attributes.examples %}
+<div>
+    <div>Title: {{ example.title }}</div>
+    <div>Description: {{ example.description_html }}</div>
+    <div>{{ example.code_html }}</div>
+</div>
+{% endfor %}
 {% endif %}
 {% for _element in element.properties.values() %}
     {% if _element.is_separate %}

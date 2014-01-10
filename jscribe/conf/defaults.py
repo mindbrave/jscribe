@@ -7,7 +7,6 @@ DOC_STRING_REGEX = ["[/][*][*]", "[*][/]"]
 DOC_STRING_LINE_PREFIX = "*"
 TAG_REGEX = "[@](?P<tag>.*?)\\s"
 IGNORE_INVALID_TAGS = False
-NEW_LINE_REPLACE = "<br/>"
 TEMPLATE = "default"
 TEMPLATE_SETTINGS = {
         "SHOW_LINE_NUMBER": True,

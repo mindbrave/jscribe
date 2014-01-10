@@ -2,7 +2,7 @@
 #!/usr/bin/env python
 
 """* Library generates documentation from source files.
-@module jscribe2
+@module jscribe
 """
 
 import argparse

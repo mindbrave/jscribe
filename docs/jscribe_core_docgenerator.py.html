@@ -15,11 +15,15 @@
                     
                 
                     
+                
+                    
+                
+                    
                     <h3><a href=".././docs/list_module.html" title="modules">modules</a></h3>
                     <ul>
                         
                         <li>
-                            <a href=".././docs/jscribe2.html" title="jscribe2">jscribe2</a>
+                            <a href=".././docs/jscribe.html" title="jscribe">jscribe</a>
                         </li>
                         
                         <li>
@@ -135,7 +139,15 @@
 82
 83
 84
-85</pre></div></td><td class="code"><div class="source"><pre><span class="c"># -*- coding: utf-8 -*-</span>
+85
+86
+87
+88
+89
+90
+91
+92
+93</pre></div></td><td class="code"><div class="source"><pre><span class="c"># -*- coding: utf-8 -*-</span>
 <span class="c">#!/usr/bin/env python</span>
 
 <span class="sd">&quot;&quot;&quot;* DocumentationGenerator module file.</span>
@@ -153,7 +165,7 @@
 
 
 <span class="k">class</span> <span class="nc">DocumentationGenerator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;* This class is a controller class that creates documentation.</span>
+    <span class="sd">&quot;&quot;&quot;* This class is a *controller* class that creates documentation.</span>
 <span class="sd">    @class .DocumentationGenerator</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">class</span> <span class="nc">InvalidGeneratorException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
@@ -165,7 +177,15 @@
         <span class="sd">&quot;&quot;&quot;* Initialization.</span>
 <span class="sd">        @method ..__init__</span>
 <span class="sd">        @param self</span>
-<span class="sd">        @param settings_path {str} Path to settings json file.</span>
+<span class="sd">        @param settings_path {str} Path to settings **json** file.</span>
+<span class="sd">        @example Doc generation usage. {</span>
+<span class="sd">            doc_generator = DocumentationGenerator(path_to_settings)</span>
+<span class="sd">            doc_generator.generate_documentation()</span>
+<span class="sd">        } This is how you generate docs.</span>
+<span class="sd">        @example Javascript test example. #javascript {</span>
+<span class="sd">            var docs = docGenerator();</span>
+<span class="sd">            docs.run();</span>
+<span class="sd">        } javascript decsription.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">doc_data</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tag_settings</span> <span class="o">=</span> <span class="p">{}</span>
@@ -205,7 +225,7 @@
         <span class="p">)</span>
         <span class="n">dsp</span> <span class="o">=</span> <span class="n">DocStringParser</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">tag_settings</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">DOC_STRING_REGEX</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">TAG_REGEX</span><span class="p">,</span>
-            <span class="n">settings</span><span class="o">.</span><span class="n">DOC_STRING_LINE_PREFIX</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">IGNORE_INVALID_TAGS</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">NEW_LINE_REPLACE</span>
+            <span class="n">settings</span><span class="o">.</span><span class="n">DOC_STRING_LINE_PREFIX</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">IGNORE_INVALID_TAGS</span>
         <span class="p">)</span>
         <span class="k">for</span> <span class="n">filepath</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">discovered_filepaths</span><span class="p">:</span>
             <span class="n">dsp</span><span class="o">.</span><span class="n">parse_file</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>

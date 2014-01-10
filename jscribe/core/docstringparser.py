@@ -36,7 +36,7 @@ class DocStringParser(object):
 
     def __init__(
             self, tag_settings, doc_string_regex, tag_regex, line_prefix='',
-            ignore_invalid_tags=False, new_line_sign='<br/>'
+            ignore_invalid_tags=False
         ):
         """* Initialization.
         @method ..__init__
@@ -48,8 +48,6 @@ class DocStringParser(object):
         Whitespaces at the line begining are always ommited.
         @param ignore_invalid_tags=False {boolean} - If True then invalid tag name won't raise
         error.
-        @param new_line_sign='&lt;br/&gt;' {str} - New line characters in descriptions will be replaced
-        with value of this parameter.
         """
 
         self.PROPERTY_TAGS = {
@@ -73,7 +71,6 @@ class DocStringParser(object):
         self._tag_regex_obj = None
         self.tag_regex = tag_regex
         self.line_prefix = line_prefix
-        self.new_line_sign = new_line_sign
         self.ignore_invalid_tags = ignore_invalid_tags
         self._tag_alias_map = {}
         self._tag_settings = tag_settings
@@ -225,9 +222,7 @@ class DocStringParser(object):
         if len(tag_strings) < 2:
             return None
         # first element of tag_strings is a description of an element
-        doc_string_data['description'] = tag_strings.pop(0).strip('\n').strip(' ').replace(
-            '\n', self.new_line_sign
-        )
+        doc_string_data['description'] = tag_strings.pop(0).strip('\n').strip(' ')
         # indicates if doc string has element tag, it must have exactly one to be a valid doc string
         has_element_tag = False
 
@@ -263,6 +258,11 @@ class DocStringParser(object):
                     if doc_string_data['attributes'].get('params') is None:
                         doc_string_data['attributes']['params'] = []
                     doc_string_data['attributes']['params'].append(value)
+                # special case if tag is example
+                elif tag_type == 'example':
+                    if doc_string_data['attributes'].get('examples') is None:
+                        doc_string_data['attributes']['examples'] = []
+                    doc_string_data['attributes']['examples'].append(value)
                 else:
                     doc_string_data['attributes'][tag_type] = value
             ## tag type is invalid, raise exception if ignore invalid tags setting is not True
@@ -346,7 +346,7 @@ class DocStringParser(object):
         if re_inst is not None:
             return 'return', {
                 'type': re_inst.group('return_type'),
-                'description': re_inst.group('description').replace('\n', self.new_line_sign)
+                'description': re_inst.group('description')
             }
         else:
             return 'return', None
@@ -402,27 +402,30 @@ class DocStringParser(object):
     def get_version_from_tag_string(self, tag_string):
         re_inst = re.search(r'\s*?(?P<version>.*?)$', tag_string, flags=re.DOTALL)
         if re_inst is not None:
-            return 'version', re_inst.group('version').strip('\n').strip(' ').replace(
-                '\n', self.new_line_sign
-            )
+            return 'version', re_inst.group('version').strip('\n').strip(' ')
         else:
             return 'version', None
 
     def get_license_from_tag_string(self, tag_string):
         re_inst = re.search(r'\s*?(?P<license>.*?)$', tag_string, flags=re.DOTALL)
         if re_inst is not None:
-            return 'license', re_inst.group('license').strip('\n').strip(' ').replace(
-                '\n', self.new_line_sign
-            )
+            return 'license', re_inst.group('license').strip('\n').strip(' ')
         else:
             return 'license', None
 
     def get_example_from_tag_string(self, tag_string):
-        re_inst = re.search(r'\s*?(?P<example>.*?)$', tag_string, flags=re.DOTALL)
+        re_inst = re.search(
+            r'\s*?(?P<title>.+?)(?:\s[#](?P<langid>\w+?))?\s[{](?P<code>.*?)[}](?:\s(?P<desc>.*?))$',
+            tag_string,
+            flags=re.DOTALL
+        )
         if re_inst is not None:
-            return 'example', re_inst.group('example').strip('\n').strip(' ').replace(
-                '\n', self.new_line_sign
-            )
+            return 'example', {
+                'code': re_inst.group('code'),
+                'description': re_inst.group('desc').strip('\n').strip(' '),
+                'title': re_inst.group('title').strip('\n').strip(' '),
+                'langid': re_inst.group('langid'),
+            }
         else:
             return 'example', None
 

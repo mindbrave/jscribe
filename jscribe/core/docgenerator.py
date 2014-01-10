@@ -16,7 +16,7 @@ from jscribe.core.htmldocgenerator import HTMLDocumentationGenerator
 
 
 class DocumentationGenerator(object):
-    """* This class is a controller class that creates documentation.
+    """* This class is a *controller* class that creates documentation.
     @class .DocumentationGenerator
     """
     class InvalidGeneratorException(Exception):
@@ -28,7 +28,15 @@ class DocumentationGenerator(object):
         """* Initialization.
         @method ..__init__
         @param self
-        @param settings_path {str} Path to settings json file.
+        @param settings_path {str} Path to settings **json** file.
+        @example Doc generation usage. {
+            doc_generator = DocumentationGenerator(path_to_settings)
+            doc_generator.generate_documentation()
+        } This is how you generate docs.
+        @example Javascript test example. #javascript {
+            var docs = docGenerator();
+            docs.run();
+        } javascript decsription.
         """
         self.doc_data = {}
         self.tag_settings = {}
@@ -68,7 +76,7 @@ class DocumentationGenerator(object):
         )
         dsp = DocStringParser(
             self.tag_settings, settings.DOC_STRING_REGEX, settings.TAG_REGEX,
-            settings.DOC_STRING_LINE_PREFIX, settings.IGNORE_INVALID_TAGS, settings.NEW_LINE_REPLACE
+            settings.DOC_STRING_LINE_PREFIX, settings.IGNORE_INVALID_TAGS
         )
         for filepath in self.discovered_filepaths:
             dsp.parse_file(filepath)
