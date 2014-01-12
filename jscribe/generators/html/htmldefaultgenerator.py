@@ -1,12 +1,16 @@
 # -*- coding: utf-8 -*-
 #!/usr/bin/env python
 
+"""* HTMLDefaultGenerator module.
+@module generators.html.htmldefaultgenerator
+"""
+
 import copy
 import os
 import codecs
 import logging
-from docutils.core import publish_parts
 
+from markdown import markdown
 from pygments import highlight
 from pygments.lexers import get_lexer_by_name
 from pygments.formatters import HtmlFormatter
@@ -24,6 +28,10 @@ class HTMLDefaultGenerator(object):
         self.template_settings = template_settings
         self.discovered_filepaths = discovered_filepaths
         self.renderer = self.create_renderer()
+
+    def make_link(self, namepath):
+        markdown_link = u'[{0}]({1} {0})'.format(namepath, namepath.replace('.', '_'))
+        return markdown(markdown_link, output_format='html5')
 
     def get_template_for_element(self, tag_type_name):
         return self.template_settings['ELEMENT_TEMPLATES'].get(
@@ -59,9 +67,17 @@ class HTMLDefaultGenerator(object):
         self.generate_list_files(doc_data)
         # create files for every element with separate type
         for prop, element in doc_data['root_element'].get('properties').iteritems():
-            # check if element is separate
+            # check if element is defined in documentation
+            if not self._is_element_defined(element):
+                continue
+            # check if element is separate, only then create file
             if element.get('is_separate'):
                 self.generate_element_file(element)
+
+    def _is_element_defined(self, element):
+        if element.get('type') is None:
+            return False
+        return True
 
     def create_renderer(self):
         template_package = 'jscribe.templates.{}.{}'.format(settings.GENERATOR, settings.TEMPLATE)
@@ -82,67 +98,12 @@ class HTMLDefaultGenerator(object):
         namepath = ''
         for prop, element in doc_data.get('properties').iteritems():
             # set namepath for element
+            if element.get('name') is None:
+                # if element is not defined but is used in namepath somewhere
+                element['name'] = prop
             namepath = element.get('name')
             element['namepath'] = namepath
-            # get element tag type settings
-            tag_type_name = element.get('type')
-            # add element to its element list
-            if lists.get(tag_type_name) is None:
-                lists[tag_type_name] = {
-                    'path': self.get_path_to_list_file(tag_type_name), 'elements': []
-                }
-            lists[tag_type_name]['elements'].append(element)
-            tag_type = self.tag_settings.get(tag_type_name)
-            # remove beginnig dot from filepath
-            element['filepath'] = element['filepath'][1:]
-            # set element path to sourcefile
-            element['sourcepath'] = self.get_path_to_sourcefile(element.get('filepath'))
-            # add element doc file path
-            output_path = self.get_path_to_element_file(element)
-            element['doc_element_path'] = output_path
-            # convert element description form reStrucutredText to html
-            element['description_html'] = publish_parts(
-                element['description'],
-                writer_name='html',
-                settings_overrides={'input_encoding': 'unicode', 'output_encoding': 'utf-8'}
-            )['html_body']
-            # convert parameter descriptions if are set
-            if element['attributes'].get('params') is not None:
-                for param in element['attributes']['params']:
-                    param['description_html'] = publish_parts(
-                        param['description'],
-                        writer_name='html',
-                        settings_overrides={'input_encoding': 'unicode', 'output_encoding': 'utf-8'}
-                    )['html_body']
-            # convert return descriptions if are set
-            if element['attributes'].get('return') is not None:
-                element['attributes']['return']['description_html'] = publish_parts(
-                    element['attributes']['return']['description'],
-                    writer_name='html',
-                    settings_overrides={'input_encoding': 'unicode', 'output_encoding': 'utf-8'}
-                )['html_body']
-            # convert example descriptions if are set, and convert code to html with pygments
-            if element['attributes'].get('examples') is not None:
-                for example in element['attributes']['examples']:
-                    example['description_html'] = publish_parts(
-                        example['description'],
-                        writer_name='html',
-                        settings_overrides={'input_encoding': 'unicode', 'output_encoding': 'utf-8'}
-                    )['html_body']
-                    langid = settings.LANGUAGE
-                    if example.get('langid') is not None:
-                        langid = example.get('langid')
-                    example['langid'] = langid
-                    lexer = get_lexer_by_name(langid, stripall=True)
-                    formatter = HtmlFormatter(
-                        linenos=self.template_settings['SHOW_LINE_NUMBER'],
-                        cssclass="source"
-                    )
-                    result = highlight(example['code'], lexer, formatter)
-                    example['code_html'] = result
-            # check if element is separate
-            is_separate = get_tag_type_property(self.tag_settings, tag_type, 'separate')
-            element['is_separate'] = is_separate
+            element, lists = self._prepare_element_data(element, lists)
             self._get_element_template_data(element, namepath, lists)
         doc_data = {'root_element': doc_data, 'lists': lists}
         return doc_data
@@ -150,10 +111,19 @@ class HTMLDefaultGenerator(object):
     def _get_element_template_data(self, data, namepath, lists):
         for prop, element in data.get('properties').iteritems():
             # set namepath for element
+            if element.get('name') is None:
+                # if element is not defined but is used in namepath somewhere
+                element['name'] = prop
             _namepath = '.'.join([namepath, element.get('name')])
             element['namepath'] = _namepath
-            # get element tag type settings
-            tag_type_name = element.get('type')
+            element, lists = self._prepare_element_data(element, lists)
+            self._get_element_template_data(element, _namepath, lists)
+
+    def _prepare_element_data(self, element, lists):
+        # get element tag type settings
+        tag_type_name = element.get('type')
+        # if element type is None then this element is not defined anywhere
+        if tag_type_name is not None:
             # add element to its element list
             if lists.get(tag_type_name) is None:
                 lists[tag_type_name] = {
@@ -168,35 +138,31 @@ class HTMLDefaultGenerator(object):
             # add element doc file path
             output_path = self.get_path_to_element_file(element)
             element['doc_element_path'] = output_path
-            # convert element description form reStrucutredText to html
-            element['description_html'] = publish_parts(
+            # convert element description from markdown to html
+            element['description_html'] = markdown(
                 element['description'],
-                writer_name='html',
-                settings_overrides={'input_encoding': 'unicode', 'output_encoding': 'utf-8'}
-            )['html_body']
+                output_format='html5',
+            )
             # convert parameter descriptions if are set
             if element['attributes'].get('params') is not None:
                 for param in element['attributes']['params']:
-                    param['description_html'] = publish_parts(
+                    param['description_html'] = markdown(
                         param['description'],
-                        writer_name='html',
-                        settings_overrides={'input_encoding': 'unicode', 'output_encoding': 'utf-8'}
-                    )['html_body']
+                        output_format='html5',
+                    )
             # convert return descriptions if are set
             if element['attributes'].get('return') is not None:
-                element['attributes']['return']['description_html'] = publish_parts(
+                element['attributes']['return']['description_html'] = markdown(
                     element['attributes']['return']['description'],
-                    writer_name='html',
-                    settings_overrides={'input_encoding': 'unicode', 'output_encoding': 'utf-8'}
-                )['html_body']
+                    output_format='html5',
+                )
             # convert example descriptions if are set, and convert code to html with pygments
             if element['attributes'].get('examples') is not None:
                 for example in element['attributes']['examples']:
-                    example['description_html'] = publish_parts(
+                    example['description_html'] = markdown(
                         example['description'],
-                        writer_name='html',
-                        settings_overrides={'input_encoding': 'unicode', 'output_encoding': 'utf-8'}
-                    )['html_body']
+                        output_format='html5',
+                    )
                     langid = settings.LANGUAGE
                     if example.get('langid') is not None:
                         langid = example.get('langid')
@@ -208,14 +174,16 @@ class HTMLDefaultGenerator(object):
                     )
                     result = highlight(example['code'], lexer, formatter)
                     example['code_html'] = result
-                    print example
             # check if element is separate
             is_separate = get_tag_type_property(self.tag_settings, tag_type, 'separate')
             element['is_separate'] = is_separate
-            self._get_element_template_data(element, _namepath, lists)
+        return element, lists
 
     def generate_element_file(self, element_data):
         for prop, element in element_data.get('properties').iteritems():
+            # check if element is defined in documentation
+            if not self._is_element_defined(element):
+                continue
             if element.get('is_separate'):
                 self.generate_element_file(element)
         result = self.render_element(element_data)

@@ -18,5 +18,6 @@
         }
     },
     "TAG_SETTINGS": "jscribe.conf.pythontagsettings",
-    "LANGUAGE": "python"
+    "LANGUAGE": "python",
+    "ALL_SOURCE_FILES": true
 }

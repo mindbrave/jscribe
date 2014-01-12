@@ -81,6 +81,7 @@ class DocumentationGenerator(object):
         for filepath in self.discovered_filepaths:
             dsp.parse_file(filepath)
         self.doc_data = dsp.data
+        self.documentation_filepaths = dsp.documentation_filepaths
 
     def generate_documentation(self):
         # get generator
@@ -89,6 +90,6 @@ class DocumentationGenerator(object):
             raise self.InvalidGeneratorException(
                 'Invalid generator "{}". Maybe not supported yet.'.format(settings.GENERATOR)
             )
-        generator = generator_class(self.doc_data, self.tag_settings, self.discovered_filepaths)
+        generator = generator_class(self.doc_data, self.tag_settings, self.documentation_filepaths)
         generator.generate_documentation()
 

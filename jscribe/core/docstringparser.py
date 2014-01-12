@@ -12,6 +12,7 @@ import json
 from collections import OrderedDict
 
 from jscribe.utils.file import get_source_file_coding
+from jscribe.conf import settings
 
 
 class DocStringParser(object):
@@ -76,6 +77,7 @@ class DocStringParser(object):
         self._tag_settings = tag_settings
         self._create_tag_alias_map(tag_settings)
         self.data = OrderedDict({'properties': OrderedDict({})})
+        self.documentation_filepaths = []
         self._temp_data = OrderedDict({})
 
     @property
@@ -111,15 +113,19 @@ class DocStringParser(object):
         # get coding of source file
         source_coding = get_source_file_coding(path)
         doc_strings = self._get_doc_strings(path, source_coding)
-        previous_elements_paths = []
-        for doc_string in doc_strings:
-            doc_string_data = self._parse_doc_string(doc_string)
-            if doc_string_data is None:
-                # that doc string is not a proper doc string
-                continue
-            doc_string_data['filepath'] = path
-            previous_elements_paths = self._add_temp_data(doc_string_data, previous_elements_paths)
-        self._assemble_data()
+        if doc_strings:
+            self.documentation_filepaths.append(path)
+            previous_elements_paths = []
+            for doc_string in doc_strings:
+                doc_string_data = self._parse_doc_string(doc_string)
+                if doc_string_data is None:
+                    # that doc string is not a proper doc string
+                    continue
+                doc_string_data['filepath'] = path
+                previous_elements_paths = self._add_temp_data(doc_string_data, previous_elements_paths)
+            self._assemble_data()
+        if settings.ALL_SOURCE_FILES:
+            self.documentation_filepaths.append(path)
 
     def _assemble_data(self):
         for path, data in self._temp_data.iteritems():
@@ -427,7 +433,9 @@ class DocStringParser(object):
                 'langid': re_inst.group('langid'),
             }
         else:
-            return 'example', None
+            raise self.TagValueException(
+                'Wrong data passed to example tag: "{}"'.format(tag_string)
+            )
 
 
 def get_tag_type_property(tag_settings, tag_type, property_name):

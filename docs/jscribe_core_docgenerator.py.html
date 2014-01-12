@@ -23,7 +23,11 @@
                     <ul>
                         
                         <li>
-                            <a href=".././docs/jscribe.html" title="jscribe">jscribe</a>
+                            <a href=".././docs/jscribeit.html" title="jscribeit">jscribeit</a>
+                        </li>
+                        
+                        <li>
+                            <a href=".././docs/generators_html_htmldefaultgenerator.html" title="htmldefaultgenerator">generators.html.htmldefaultgenerator</a>
                         </li>
                         
                         <li>
@@ -147,7 +151,8 @@
 90
 91
 92
-93</pre></div></td><td class="code"><div class="source"><pre><span class="c"># -*- coding: utf-8 -*-</span>
+93
+94</pre></div></td><td class="code"><div class="source"><pre><span class="c"># -*- coding: utf-8 -*-</span>
 <span class="c">#!/usr/bin/env python</span>
 
 <span class="sd">&quot;&quot;&quot;* DocumentationGenerator module file.</span>
@@ -230,6 +235,7 @@
         <span class="k">for</span> <span class="n">filepath</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">discovered_filepaths</span><span class="p">:</span>
             <span class="n">dsp</span><span class="o">.</span><span class="n">parse_file</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">doc_data</span> <span class="o">=</span> <span class="n">dsp</span><span class="o">.</span><span class="n">data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">documentation_filepaths</span> <span class="o">=</span> <span class="n">dsp</span><span class="o">.</span><span class="n">documentation_filepaths</span>
 
     <span class="k">def</span> <span class="nf">generate_documentation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c"># get generator</span>
@@ -238,7 +244,7 @@
             <span class="k">raise</span> <span class="bp">self</span><span class="o">.</span><span class="n">InvalidGeneratorException</span><span class="p">(</span>
                 <span class="s">&#39;Invalid generator &quot;{}&quot;. Maybe not supported yet.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">GENERATOR</span><span class="p">)</span>
             <span class="p">)</span>
-        <span class="n">generator</span> <span class="o">=</span> <span class="n">generator_class</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">doc_data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tag_settings</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">discovered_filepaths</span><span class="p">)</span>
+        <span class="n">generator</span> <span class="o">=</span> <span class="n">generator_class</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">doc_data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tag_settings</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">documentation_filepaths</span><span class="p">)</span>
         <span class="n">generator</span><span class="o">.</span><span class="n">generate_documentation</span><span class="p">()</span>
 </pre></div>
 </td></tr></table>

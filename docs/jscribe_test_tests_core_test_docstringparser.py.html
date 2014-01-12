@@ -23,7 +23,11 @@
                     <ul>
                         
                         <li>
-                            <a href=".././docs/jscribe.html" title="jscribe">jscribe</a>
+                            <a href=".././docs/jscribeit.html" title="jscribeit">jscribeit</a>
+                        </li>
+                        
+                        <li>
+                            <a href=".././docs/generators_html_htmldefaultgenerator.html" title="htmldefaultgenerator">generators.html.htmldefaultgenerator</a>
                         </li>
                         
                         <li>
@@ -799,197 +803,7 @@
 742
 743
 744
-745
-746
-747
-748
-749
-750
-751
-752
-753
-754
-755
-756
-757
-758
-759
-760
-761
-762
-763
-764
-765
-766
-767
-768
-769
-770
-771
-772
-773
-774
-775
-776
-777
-778
-779
-780
-781
-782
-783
-784
-785
-786
-787
-788
-789
-790
-791
-792
-793
-794
-795
-796
-797
-798
-799
-800
-801
-802
-803
-804
-805
-806
-807
-808
-809
-810
-811
-812
-813
-814
-815
-816
-817
-818
-819
-820
-821
-822
-823
-824
-825
-826
-827
-828
-829
-830
-831
-832
-833
-834
-835
-836
-837
-838
-839
-840
-841
-842
-843
-844
-845
-846
-847
-848
-849
-850
-851
-852
-853
-854
-855
-856
-857
-858
-859
-860
-861
-862
-863
-864
-865
-866
-867
-868
-869
-870
-871
-872
-873
-874
-875
-876
-877
-878
-879
-880
-881
-882
-883
-884
-885
-886
-887
-888
-889
-890
-891
-892
-893
-894
-895
-896
-897
-898
-899
-900
-901
-902
-903
-904
-905
-906
-907
-908
-909
-910
-911
-912
-913
-914
-915
-916
-917
-918
-919
-920
-921
-922
-923
-924
-925
-926
-927
-928
-929
-930
-931
-932
-933
-934
-935</pre></div></td><td class="code"><div class="source"><pre><span class="c"># -*- coding: utf-8 -*-</span>
+745</pre></div></td><td class="code"><div class="source"><pre><span class="c"># -*- coding: utf-8 -*-</span>
 <span class="c">#!/usr/bin/env python</span>
 
 <span class="kn">import</span> <span class="nn">os</span>
@@ -997,7 +811,9 @@
 <span class="kn">import</span> <span class="nn">codecs</span>
 <span class="kn">import</span> <span class="nn">unittest</span>
 <span class="kn">import</span> <span class="nn">textwrap</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
 
+<span class="kn">from</span> <span class="nn">jscribe.utils.file</span> <span class="kn">import</span> <span class="n">get_source_file_coding</span>
 <span class="kn">from</span> <span class="nn">jscribe.core.docstringparser</span> <span class="kn">import</span> <span class="n">DocStringParser</span>
 
 
@@ -1115,7 +931,9 @@
                 <span class="p">},</span>
             <span class="p">},</span> <span class="n">f</span><span class="p">)</span>
             <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tag_settings</span> <span class="o">=</span> <span class="s">&#39;testtagsettings.json&#39;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;testtagsettings.json&#39;</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tag_settings</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">doc_string_regex</span> <span class="o">=</span> <span class="p">(</span><span class="s">r&#39;[/][*][*]&#39;</span><span class="p">,</span> <span class="s">r&#39;[*][/]&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tag_regex</span> <span class="o">=</span> <span class="s">r&#39;[@](?P&lt;tag&gt;.*?)\s&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">new_line_replace</span> <span class="o">=</span> <span class="s">&#39;&lt;br/&gt;&#39;</span>
@@ -1133,7 +951,7 @@
 <span class="s">                    var currentEntityId = 0;</span>
 <span class="s">                    /** Entites are a containers for components.</span>
 <span class="s">                     @object .entity</span>
-<span class="s">                     @prototype {Object}</span>
+<span class="s">                     @inherits {Object}</span>
 <span class="s">                    */</span>
 <span class="s">                    var entityPrototype = {</span>
 <span class="s">                        /** Initialize entity.</span>
@@ -1150,9 +968,8 @@
 <span class="s">                    /** Creates new entity.</span>
 <span class="s">                     @factory .EntityFactory</span>
 <span class="s">                     @return {core.EntityFactory.entity} New entity.</span>
-<span class="s">                     @example</span>
-<span class="s">                     var EntityFactory = require(&#39;core/EntityFactory&#39;);</span>
-<span class="s">                     var entity = EntityFactory();</span>
+<span class="s">                     @example example1 {var EntityFactory = require(&#39;core/EntityFactory&#39;);</span>
+<span class="s">                        var entity = EntityFactory();}</span>
 <span class="s">                    */</span>
 <span class="s">                    var EntityFactory = function() {</span>
 <span class="s">                        var newEntity = Object.create(entityPrototype);</span>
@@ -1179,10 +996,10 @@
 <span class="s">                */</span>
 <span class="s">                define(function() {</span>
 <span class="s">                    /**</span>
-<span class="s">                     Components are properties of \[[ref=core.EntityFactory.entity]].</span>
-<span class="s">                     Test url: [url=http://test.com](test url).</span>
+<span class="s">                     Components are properties of entities.</span>
+<span class="s">                     Test url: [Test](http://test.com).</span>
 <span class="s">                     @object .component</span>
-<span class="s">                     @prototype {Object}</span>
+<span class="s">                     @inherits {Object}</span>
 <span class="s">                    */</span>
 <span class="s">                    var componentPrototype = {</span>
 <span class="s">                        /**</span>
@@ -1200,9 +1017,8 @@
 <span class="s">                     Creates new component.</span>
 <span class="s">                     @factory .ComponentFactory</span>
 <span class="s">                     @return {core.ComponentFactory.component} New component.</span>
-<span class="s">                     @example</span>
-<span class="s">                     var ComponentFactory = require(&#39;core/ComponentFactory&#39;);</span>
-<span class="s">                     var component = ComponentFactory();</span>
+<span class="s">                     @example example1 {var ComponentFactory = require(&#39;core/ComponentFactory&#39;);</span>
+<span class="s">                     var component = ComponentFactory();}</span>
 <span class="s">                    */</span>
 <span class="s">                    var ComponentFactory = function() {</span>
 <span class="s">                        var newComponent = Object.create(componentPrototype);</span>
@@ -1229,9 +1045,9 @@
 <span class="s">                define(function() {</span>
 <span class="s">                    /**</span>
 <span class="s">                     * Velocity is needed for movement of entites.</span>
-<span class="s">                     * Based on [ref=core.ComponentFactory.component](component).</span>
+<span class="s">                     * Based on [Component](#core.ComponentFactory.component &quot;Component&quot;).</span>
 <span class="s">                     * @object .velocity</span>
-<span class="s">                     * @prototype {core.ComponentFactory.component}</span>
+<span class="s">                     * @inherits {core.ComponentFactory.component}</span>
 <span class="s">                    **/</span>
 <span class="s">                    return VelocityComponentFactory;</span>
 <span class="s">          //comment /** this is not a doc string because of comment @number */</span>
@@ -1332,103 +1148,124 @@
 <span class="s">            &quot;&quot;&quot;</span><span class="p">)</span>
             <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">test_doc_string_parser_one_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Test if data parsing and collecting works as expected with one file.&quot;&quot;&quot;</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="k">def</span> <span class="nf">test_doc_string_parser_file_1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test if data parsing and collecting works as expected.&quot;&quot;&quot;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">({</span>
+            <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="n">OrderedDict</span><span class="p">({</span>
                 <span class="s">&#39;core&#39;</span><span class="p">:</span> <span class="p">{</span>
-                    <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="n">OrderedDict</span><span class="p">({</span>
                         <span class="s">&#39;EntityFactory&#39;</span><span class="p">:</span> <span class="p">{</span>
                             <span class="s">&#39;filepath&#39;</span><span class="p">:</span> <span class="s">&#39;testdocfile1.js&#39;</span><span class="p">,</span>
-                            <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{</span>
+                            <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="n">OrderedDict</span><span class="p">({</span>
                                 <span class="s">&#39;EntityFactory&#39;</span><span class="p">:</span> <span class="p">{</span>
-                                    <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{</span>
+                                    <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="n">OrderedDict</span><span class="p">({</span>
                                         <span class="s">&#39;currentEntityId&#39;</span><span class="p">:</span> <span class="p">{</span>
-                                            <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{},</span>
+                                            <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="n">OrderedDict</span><span class="p">({}),</span>
                                             <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;currentEntityId&#39;</span><span class="p">,</span>
                                             <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;number&#39;</span><span class="p">,</span>
                                             <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;Keeps last created entity id.&#39;</span><span class="p">,</span>
-                                            <span class="s">&#39;access&#39;</span><span class="p">:</span> <span class="s">&#39;private&#39;</span><span class="p">,</span>
+                                            <span class="s">&#39;attributes&#39;</span><span class="p">:</span> <span class="p">{</span>
+                                                <span class="s">&#39;access&#39;</span><span class="p">:</span> <span class="s">&#39;private&#39;</span><span class="p">,</span>
+                                            <span class="p">},</span>
                                             <span class="s">&#39;startline&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
                                             <span class="s">&#39;endline&#39;</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span>
                                             <span class="s">&#39;filepath&#39;</span><span class="p">:</span> <span class="s">&#39;testdocfile1.js&#39;</span><span class="p">,</span>
                                         <span class="p">},</span>
                                         <span class="s">&#39;entityPrototype&#39;</span><span class="p">:</span> <span class="p">{</span>
                                             <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;entityPrototype&#39;</span><span class="p">,</span>
-                                            <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{},</span>
+                                            <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="n">OrderedDict</span><span class="p">({}),</span>
                                             <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;property&#39;</span><span class="p">,</span>
                                             <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span>
 <span class="s">                                                Prototype accessible from outside for inheritance.</span>
-<span class="s">                                            &quot;&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_line_replace</span><span class="p">),</span>
-                                            <span class="s">&#39;startline&#39;</span><span class="p">:</span> <span class="mi">41</span><span class="p">,</span>
-                                            <span class="s">&#39;endline&#39;</span><span class="p">:</span> <span class="mi">44</span><span class="p">,</span>
-                                            <span class="s">&#39;valtype&#39;</span><span class="p">:</span> <span class="s">&#39;prototype&#39;</span><span class="p">,</span>
+<span class="s">                                            &quot;&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">),</span>
+                                            <span class="s">&#39;startline&#39;</span><span class="p">:</span> <span class="mi">40</span><span class="p">,</span>
+                                            <span class="s">&#39;endline&#39;</span><span class="p">:</span> <span class="mi">43</span><span class="p">,</span>
+                                            <span class="s">&#39;attributes&#39;</span><span class="p">:</span> <span class="p">{</span>
+                                                <span class="s">&#39;valtype&#39;</span><span class="p">:</span> <span class="s">&#39;prototype&#39;</span><span class="p">,</span>
+                                            <span class="p">},</span>
                                             <span class="s">&#39;filepath&#39;</span><span class="p">:</span> <span class="s">&#39;testdocfile1.js&#39;</span><span class="p">,</span>
                                         <span class="p">},</span>
-                                    <span class="p">},</span>
+                                    <span class="p">}),</span>
                                     <span class="s">&#39;filepath&#39;</span><span class="p">:</span> <span class="s">&#39;testdocfile1.js&#39;</span><span class="p">,</span>
                                     <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;factory&#39;</span><span class="p">,</span>
                                     <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;EntityFactory&#39;</span><span class="p">,</span>
                                     <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;Creates new entity.&#39;</span><span class="p">,</span>
                                     <span class="s">&#39;startline&#39;</span><span class="p">:</span> <span class="mi">27</span><span class="p">,</span>
-                                    <span class="s">&#39;endline&#39;</span><span class="p">:</span> <span class="mi">33</span><span class="p">,</span>
-                                    <span class="s">&#39;return&#39;</span><span class="p">:</span> <span class="p">{</span>
-                                        <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;core.EntityFactory.entity&#39;</span><span class="p">,</span>
-                                        <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;New entity.&#39;</span><span class="p">,</span>
+                                    <span class="s">&#39;endline&#39;</span><span class="p">:</span> <span class="mi">32</span><span class="p">,</span>
+                                    <span class="s">&#39;attributes&#39;</span><span class="p">:</span> <span class="p">{</span>
+                                        <span class="s">&#39;return&#39;</span><span class="p">:</span> <span class="p">{</span>
+                                            <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;core.EntityFactory.entity&#39;</span><span class="p">,</span>
+                                            <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;New entity.&#39;</span><span class="p">,</span>
+                                        <span class="p">},</span>
+                                        <span class="s">&#39;examples&#39;</span><span class="p">:</span> <span class="p">[</span>
+                                            <span class="p">{</span>
+                                                <span class="s">&#39;code&#39;</span><span class="p">:</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s">                                                var EntityFactory = require(&#39;core/EntityFactory&#39;);</span>
+<span class="s">                                                var entity = EntityFactory();</span>
+<span class="s">                                                &quot;&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">),</span>
+                                                <span class="s">&#39;title&#39;</span><span class="p">:</span> <span class="s">&#39;example1&#39;</span><span class="p">,</span>
+                                                <span class="s">&#39;langid&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+                                                <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;&#39;</span><span class="p">,</span>
+                                            <span class="p">}</span>
+                                        <span class="p">]</span>
                                     <span class="p">},</span>
-                                    <span class="s">&#39;example&#39;</span><span class="p">:</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span><span class="se">\</span>
-<span class="s">                                        var EntityFactory = require(&#39;core/EntityFactory&#39;);</span>
-<span class="s">                                        var entity = EntityFactory();</span>
-<span class="s">                                    &quot;&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_line_replace</span><span class="p">),</span>
                                 <span class="p">},</span>
                                 <span class="s">&#39;entity&#39;</span><span class="p">:</span> <span class="p">{</span>
-                                    <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{</span>
+                                    <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="n">OrderedDict</span><span class="p">({</span>
                                         <span class="s">&#39;_init&#39;</span><span class="p">:</span> <span class="p">{</span>
-                                            <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{},</span>
+                                            <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="n">OrderedDict</span><span class="p">({}),</span>
                                             <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;method&#39;</span><span class="p">,</span>
                                             <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;Initialize entity.&#39;</span><span class="p">,</span>
                                             <span class="s">&#39;startline&#39;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span>
                                             <span class="s">&#39;endline&#39;</span><span class="p">:</span> <span class="mi">18</span><span class="p">,</span>
                                             <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;_init&#39;</span><span class="p">,</span>
                                             <span class="s">&#39;filepath&#39;</span><span class="p">:</span> <span class="s">&#39;testdocfile1.js&#39;</span><span class="p">,</span>
+                                            <span class="s">&#39;attributes&#39;</span><span class="p">:</span> <span class="p">{},</span>
                                         <span class="p">},</span>
                                         <span class="s">&#39;id&#39;</span><span class="p">:</span> <span class="p">{</span>
-                                            <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{},</span>
+                                            <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="n">OrderedDict</span><span class="p">({}),</span>
                                             <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;number&#39;</span><span class="p">,</span>
                                             <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;Id of entity.&#39;</span><span class="p">,</span>
                                             <span class="s">&#39;startline&#39;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
                                             <span class="s">&#39;endline&#39;</span><span class="p">:</span> <span class="mi">22</span><span class="p">,</span>
                                             <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;id&#39;</span><span class="p">,</span>
                                             <span class="s">&#39;filepath&#39;</span><span class="p">:</span> <span class="s">&#39;testdocfile1.js&#39;</span><span class="p">,</span>
+                                            <span class="s">&#39;attributes&#39;</span><span class="p">:</span> <span class="p">{},</span>
                                         <span class="p">}</span>
-                                    <span class="p">},</span>
+                                    <span class="p">}),</span>
                                     <span class="s">&#39;filepath&#39;</span><span class="p">:</span> <span class="s">&#39;testdocfile1.js&#39;</span><span class="p">,</span>
                                     <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;object&#39;</span><span class="p">,</span>
                                     <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;Entites are a containers for components.&#39;</span><span class="p">,</span>
                                     <span class="s">&#39;startline&#39;</span><span class="p">:</span> <span class="mi">11</span><span class="p">,</span>
                                     <span class="s">&#39;endline&#39;</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span>
                                     <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;entity&#39;</span><span class="p">,</span>
-                                    <span class="s">&#39;prototype&#39;</span><span class="p">:</span> <span class="s">&#39;Object&#39;</span><span class="p">,</span>
+                                    <span class="s">&#39;attributes&#39;</span><span class="p">:</span> <span class="p">{</span>
+                                        <span class="s">&#39;inherits&#39;</span><span class="p">:</span> <span class="s">&#39;Object&#39;</span><span class="p">,</span>
+                                    <span class="p">},</span>
                                 <span class="p">}</span>
-                            <span class="p">},</span>
+                            <span class="p">}),</span>
                             <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;File defines EntityFactory module.&#39;</span><span class="p">,</span>
-                            <span class="s">&#39;author&#39;</span><span class="p">:</span> <span class="s">&#39;Rafał Łużyński&#39;</span><span class="p">,</span>
+                            <span class="s">&#39;attributes&#39;</span><span class="p">:</span> <span class="p">{</span>
+                                <span class="s">&#39;author&#39;</span><span class="p">:</span> <span class="s">&#39;Rafał Łużyński&#39;</span><span class="p">,</span>
+                            <span class="p">},</span>
                             <span class="s">&#39;startline&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
                             <span class="s">&#39;endline&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
                             <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;EntityFactory&#39;</span><span class="p">,</span>
                             <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;file&#39;</span><span class="p">,</span>
                         <span class="p">},</span>
-                    <span class="p">},</span>
+                    <span class="p">}),</span>
                     <span class="s">&#39;filepath&#39;</span><span class="p">:</span> <span class="s">&#39;testdocfilepackage.js&#39;</span><span class="p">,</span>
-                    <span class="s">&#39;author&#39;</span><span class="p">:</span> <span class="s">&#39;Rafał Łużyński&#39;</span><span class="p">,</span>
+                    <span class="s">&#39;attributes&#39;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s">&#39;author&#39;</span><span class="p">:</span> <span class="s">&#39;Rafał Łużyński&#39;</span><span class="p">,</span>
+                    <span class="p">},</span>
                     <span class="s">&#39;startline&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
                     <span class="s">&#39;endline&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
                     <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;core&#39;</span><span class="p">,</span>
                     <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;package&#39;</span><span class="p">,</span>
                     <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;Core files package.&#39;</span><span class="p">,</span>
                 <span class="p">},</span>
-            <span class="p">}</span>
-        <span class="p">}</span>
+            <span class="p">}),</span>
+        <span class="p">})</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">maxDiff</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="n">filepaths</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;testdocfilepackage.js&#39;</span><span class="p">,</span> <span class="s">&#39;testdocfile1.js&#39;</span><span class="p">]</span>
         <span class="n">dsp</span> <span class="o">=</span> <span class="n">DocStringParser</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tag_settings</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc_string_regex</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tag_regex</span><span class="p">)</span>
@@ -1436,380 +1273,167 @@
             <span class="n">dsp</span><span class="o">.</span><span class="n">parse_file</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">dsp</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">test_doc_string_parser_two_files</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Test if data parsing and collecting works as expected with two files.&quot;&quot;&quot;</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="k">def</span> <span class="nf">test_doc_string_parser_file_2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test if data parsing and collecting works as expected.&quot;&quot;&quot;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">({</span>
+            <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="n">OrderedDict</span><span class="p">({</span>
                 <span class="s">&#39;core&#39;</span><span class="p">:</span> <span class="p">{</span>
-                    <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{</span>
-                        <span class="s">&#39;EntityFactory&#39;</span><span class="p">:</span> <span class="p">{</span>
-                            <span class="s">&#39;filepath&#39;</span><span class="p">:</span> <span class="s">&#39;testdocfile1.js&#39;</span><span class="p">,</span>
-                            <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{</span>
-                                <span class="s">&#39;EntityFactory&#39;</span><span class="p">:</span> <span class="p">{</span>
-                                    <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{</span>
-                                        <span class="s">&#39;currentEntityId&#39;</span><span class="p">:</span> <span class="p">{</span>
-                                            <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{},</span>
-                                            <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;currentEntityId&#39;</span><span class="p">,</span>
-                                            <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;number&#39;</span><span class="p">,</span>
-                                            <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;Keeps last created entity id.&#39;</span><span class="p">,</span>
-                                            <span class="s">&#39;access&#39;</span><span class="p">:</span> <span class="s">&#39;private&#39;</span><span class="p">,</span>
-                                            <span class="s">&#39;startline&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
-                                            <span class="s">&#39;endline&#39;</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span>
-                                            <span class="s">&#39;filepath&#39;</span><span class="p">:</span> <span class="s">&#39;testdocfile1.js&#39;</span><span class="p">,</span>
-                                        <span class="p">},</span>
-                                        <span class="s">&#39;entityPrototype&#39;</span><span class="p">:</span> <span class="p">{</span>
-                                            <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;entityPrototype&#39;</span><span class="p">,</span>
-                                            <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{},</span>
-                                            <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;property&#39;</span><span class="p">,</span>
-                                            <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span>
-<span class="s">                                                Prototype accessible from outside for inheritance.</span>
-<span class="s">                                            &quot;&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_line_replace</span><span class="p">),</span>
-                                            <span class="s">&#39;startline&#39;</span><span class="p">:</span> <span class="mi">41</span><span class="p">,</span>
-                                            <span class="s">&#39;endline&#39;</span><span class="p">:</span> <span class="mi">44</span><span class="p">,</span>
-                                            <span class="s">&#39;valtype&#39;</span><span class="p">:</span> <span class="s">&#39;prototype&#39;</span><span class="p">,</span>
-                                            <span class="s">&#39;filepath&#39;</span><span class="p">:</span> <span class="s">&#39;testdocfile1.js&#39;</span><span class="p">,</span>
-                                        <span class="p">},</span>
-                                    <span class="p">},</span>
-                                    <span class="s">&#39;filepath&#39;</span><span class="p">:</span> <span class="s">&#39;testdocfile1.js&#39;</span><span class="p">,</span>
-                                    <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;factory&#39;</span><span class="p">,</span>
-                                    <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;EntityFactory&#39;</span><span class="p">,</span>
-                                    <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;Creates new entity.&#39;</span><span class="p">,</span>
-                                    <span class="s">&#39;startline&#39;</span><span class="p">:</span> <span class="mi">27</span><span class="p">,</span>
-                                    <span class="s">&#39;endline&#39;</span><span class="p">:</span> <span class="mi">33</span><span class="p">,</span>
-                                    <span class="s">&#39;return&#39;</span><span class="p">:</span> <span class="p">{</span>
-                                        <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;core.EntityFactory.entity&#39;</span><span class="p">,</span>
-                                        <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;New entity.&#39;</span><span class="p">,</span>
-                                    <span class="p">},</span>
-                                    <span class="s">&#39;example&#39;</span><span class="p">:</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span><span class="se">\</span>
-<span class="s">                                        var EntityFactory = require(&#39;core/EntityFactory&#39;);</span>
-<span class="s">                                        var entity = EntityFactory();</span>
-<span class="s">                                    &quot;&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_line_replace</span><span class="p">),</span>
-                                <span class="p">},</span>
-                                <span class="s">&#39;entity&#39;</span><span class="p">:</span> <span class="p">{</span>
-                                    <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{</span>
-                                        <span class="s">&#39;_init&#39;</span><span class="p">:</span> <span class="p">{</span>
-                                            <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{},</span>
-                                            <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;method&#39;</span><span class="p">,</span>
-                                            <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;Initialize entity.&#39;</span><span class="p">,</span>
-                                            <span class="s">&#39;startline&#39;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span>
-                                            <span class="s">&#39;endline&#39;</span><span class="p">:</span> <span class="mi">18</span><span class="p">,</span>
-                                            <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;_init&#39;</span><span class="p">,</span>
-                                            <span class="s">&#39;filepath&#39;</span><span class="p">:</span> <span class="s">&#39;testdocfile1.js&#39;</span><span class="p">,</span>
-                                        <span class="p">},</span>
-                                        <span class="s">&#39;id&#39;</span><span class="p">:</span> <span class="p">{</span>
-                                            <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{},</span>
-                                            <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;number&#39;</span><span class="p">,</span>
-                                            <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;Id of entity.&#39;</span><span class="p">,</span>
-                                            <span class="s">&#39;startline&#39;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
-                                            <span class="s">&#39;endline&#39;</span><span class="p">:</span> <span class="mi">22</span><span class="p">,</span>
-                                            <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;id&#39;</span><span class="p">,</span>
-                                            <span class="s">&#39;filepath&#39;</span><span class="p">:</span> <span class="s">&#39;testdocfile1.js&#39;</span><span class="p">,</span>
-                                        <span class="p">}</span>
-                                    <span class="p">},</span>
-                                    <span class="s">&#39;filepath&#39;</span><span class="p">:</span> <span class="s">&#39;testdocfile1.js&#39;</span><span class="p">,</span>
-                                    <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;object&#39;</span><span class="p">,</span>
-                                    <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;Entites are a containers for components.&#39;</span><span class="p">,</span>
-                                    <span class="s">&#39;startline&#39;</span><span class="p">:</span> <span class="mi">11</span><span class="p">,</span>
-                                    <span class="s">&#39;endline&#39;</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span>
-                                    <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;entity&#39;</span><span class="p">,</span>
-                                    <span class="s">&#39;prototype&#39;</span><span class="p">:</span> <span class="s">&#39;Object&#39;</span><span class="p">,</span>
-                                <span class="p">}</span>
-                            <span class="p">},</span>
-                            <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;File defines EntityFactory module.&#39;</span><span class="p">,</span>
-                            <span class="s">&#39;author&#39;</span><span class="p">:</span> <span class="s">&#39;Rafał Łużyński&#39;</span><span class="p">,</span>
-                            <span class="s">&#39;startline&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-                            <span class="s">&#39;endline&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
-                            <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;EntityFactory&#39;</span><span class="p">,</span>
-                            <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;file&#39;</span><span class="p">,</span>
-                        <span class="p">},</span>
+                    <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="n">OrderedDict</span><span class="p">({</span>
                         <span class="s">&#39;ComponentFactory&#39;</span><span class="p">:</span> <span class="p">{</span>
                             <span class="s">&#39;filepath&#39;</span><span class="p">:</span> <span class="s">&#39;testdocfile2.js&#39;</span><span class="p">,</span>
-                            <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{</span>
-                                <span class="s">&#39;ComponentFactory&#39;</span><span class="p">:</span> <span class="p">{</span>
-                                    <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{</span>
-                                        <span class="s">&#39;componentPrototype&#39;</span><span class="p">:</span> <span class="p">{</span>
-                                            <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{},</span>
-                                            <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;property&#39;</span><span class="p">,</span>
-                                            <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span><span class="se">\</span>
-<span class="s">                                                Prototype accessible from outside for inheritance.</span>
-<span class="s">                                            &quot;&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_line_replace</span><span class="p">),</span>
-                                            <span class="s">&#39;startline&#39;</span><span class="p">:</span> <span class="mi">38</span><span class="p">,</span>
-                                            <span class="s">&#39;endline&#39;</span><span class="p">:</span> <span class="mi">42</span><span class="p">,</span>
-                                            <span class="s">&#39;valtype&#39;</span><span class="p">:</span> <span class="s">&#39;prototype&#39;</span><span class="p">,</span>
-                                            <span class="s">&#39;filepath&#39;</span><span class="p">:</span> <span class="s">&#39;testdocfile2.js&#39;</span><span class="p">,</span>
-                                            <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;componentPrototype&#39;</span><span class="p">,</span>
-                                        <span class="p">},</span>
-                                    <span class="p">},</span>
-                                    <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;ComponentFactory&#39;</span><span class="p">,</span>
-                                    <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;factory&#39;</span><span class="p">,</span>
-                                    <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;Creates new component.&#39;</span><span class="p">,</span>
-                                    <span class="s">&#39;filepath&#39;</span><span class="p">:</span> <span class="s">&#39;testdocfile2.js&#39;</span><span class="p">,</span>
-                                    <span class="s">&#39;startline&#39;</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span>
-                                    <span class="s">&#39;endline&#39;</span><span class="p">:</span> <span class="mi">32</span><span class="p">,</span>
-                                    <span class="s">&#39;return&#39;</span><span class="p">:</span> <span class="p">{</span>
-                                        <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;core.ComponentFactory.component&#39;</span><span class="p">,</span>
-                                        <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;New component.&#39;</span><span class="p">,</span>
-                                    <span class="p">},</span>
-                                    <span class="s">&#39;example&#39;</span><span class="p">:</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span><span class="se">\</span>
-<span class="s">                                        var ComponentFactory = require(&#39;core/ComponentFactory&#39;);</span>
-<span class="s">                                        var component = ComponentFactory();</span>
-<span class="s">                                    &quot;&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_line_replace</span><span class="p">),</span>
-                                <span class="p">},</span>
-                                <span class="s">&#39;component&#39;</span><span class="p">:</span> <span class="p">{</span>
-                                    <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{</span>
+                            <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="n">OrderedDict</span><span class="p">([</span>
+                                <span class="p">(</span><span class="s">&#39;component&#39;</span><span class="p">,</span> <span class="p">{</span>
+                                    <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="n">OrderedDict</span><span class="p">({</span>
                                         <span class="s">&#39;_init&#39;</span><span class="p">:</span> <span class="p">{</span>
-                                            <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{},</span>
+                                            <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="n">OrderedDict</span><span class="p">({}),</span>
                                             <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;method&#39;</span><span class="p">,</span>
                                             <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;Initialize component.&#39;</span><span class="p">,</span>
                                             <span class="s">&#39;startline&#39;</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span>
                                             <span class="s">&#39;endline&#39;</span><span class="p">:</span> <span class="mi">17</span><span class="p">,</span>
                                             <span class="s">&#39;filepath&#39;</span><span class="p">:</span> <span class="s">&#39;testdocfile2.js&#39;</span><span class="p">,</span>
                                             <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;_init&#39;</span><span class="p">,</span>
+                                            <span class="s">&#39;attributes&#39;</span><span class="p">:</span> <span class="p">{},</span>
                                         <span class="p">},</span>
                                         <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="p">{</span>
-                                            <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{},</span>
+                                            <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="n">OrderedDict</span><span class="p">({}),</span>
                                             <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;string&#39;</span><span class="p">,</span>
                                             <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;Name of component.&#39;</span><span class="p">,</span>
                                             <span class="s">&#39;startline&#39;</span><span class="p">:</span> <span class="mi">19</span><span class="p">,</span>
                                             <span class="s">&#39;endline&#39;</span><span class="p">:</span> <span class="mi">21</span><span class="p">,</span>
                                             <span class="s">&#39;filepath&#39;</span><span class="p">:</span> <span class="s">&#39;testdocfile2.js&#39;</span><span class="p">,</span>
                                             <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;name&#39;</span><span class="p">,</span>
+                                            <span class="s">&#39;attributes&#39;</span><span class="p">:</span> <span class="p">{},</span>
                                         <span class="p">}</span>
-                                    <span class="p">},</span>
+                                    <span class="p">}),</span>
                                     <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;component&#39;</span><span class="p">,</span>
                                     <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;object&#39;</span><span class="p">,</span>
                                     <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span><span class="se">\</span>
-<span class="s">                                        Components are properties of \[[ref=core.EntityFactory.entity]].</span>
-<span class="s">                                        Test url: [url=http://test.com](test url).</span>
-<span class="s">                                    &quot;&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_line_replace</span><span class="p">),</span>
+<span class="s">                                        Components are properties of entities.</span>
+<span class="s">                                        Test url: [Test](http://test.com).</span>
+<span class="s">                                    &quot;&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">),</span>
                                     <span class="s">&#39;startline&#39;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
                                     <span class="s">&#39;endline&#39;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
-                                    <span class="s">&#39;prototype&#39;</span><span class="p">:</span> <span class="s">&#39;Object&#39;</span><span class="p">,</span>
+                                    <span class="s">&#39;attributes&#39;</span><span class="p">:</span> <span class="p">{</span>
+                                        <span class="s">&#39;inherits&#39;</span><span class="p">:</span> <span class="s">&#39;Object&#39;</span><span class="p">,</span>
+                                    <span class="p">},</span>
                                     <span class="s">&#39;filepath&#39;</span><span class="p">:</span> <span class="s">&#39;testdocfile2.js&#39;</span><span class="p">,</span>
-                                <span class="p">}</span>
-                            <span class="p">},</span>
+                                <span class="p">}),</span>
+                                <span class="p">(</span><span class="s">&#39;ComponentFactory&#39;</span><span class="p">,</span> <span class="p">{</span>
+                                    <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="n">OrderedDict</span><span class="p">({</span>
+                                        <span class="s">&#39;componentPrototype&#39;</span><span class="p">:</span> <span class="p">{</span>
+                                            <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="n">OrderedDict</span><span class="p">({}),</span>
+                                            <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;property&#39;</span><span class="p">,</span>
+                                            <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s">                                                Prototype accessible from outside for inheritance.</span>
+<span class="s">                                            &quot;&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">),</span>
+                                            <span class="s">&#39;startline&#39;</span><span class="p">:</span> <span class="mi">37</span><span class="p">,</span>
+                                            <span class="s">&#39;endline&#39;</span><span class="p">:</span> <span class="mi">41</span><span class="p">,</span>
+                                            <span class="s">&#39;attributes&#39;</span><span class="p">:</span> <span class="p">{</span>
+                                                <span class="s">&#39;valtype&#39;</span><span class="p">:</span> <span class="s">&#39;prototype&#39;</span><span class="p">,</span>
+                                            <span class="p">},</span>
+                                            <span class="s">&#39;filepath&#39;</span><span class="p">:</span> <span class="s">&#39;testdocfile2.js&#39;</span><span class="p">,</span>
+                                            <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;componentPrototype&#39;</span><span class="p">,</span>
+                                        <span class="p">},</span>
+                                    <span class="p">}),</span>
+                                    <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;ComponentFactory&#39;</span><span class="p">,</span>
+                                    <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;factory&#39;</span><span class="p">,</span>
+                                    <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;Creates new component.&#39;</span><span class="p">,</span>
+                                    <span class="s">&#39;filepath&#39;</span><span class="p">:</span> <span class="s">&#39;testdocfile2.js&#39;</span><span class="p">,</span>
+                                    <span class="s">&#39;startline&#39;</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span>
+                                    <span class="s">&#39;endline&#39;</span><span class="p">:</span> <span class="mi">31</span><span class="p">,</span>
+                                    <span class="s">&#39;attributes&#39;</span><span class="p">:</span> <span class="p">{</span>
+                                        <span class="s">&#39;return&#39;</span><span class="p">:</span> <span class="p">{</span>
+                                            <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;core.ComponentFactory.component&#39;</span><span class="p">,</span>
+                                            <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;New component.&#39;</span><span class="p">,</span>
+                                        <span class="p">},</span>
+                                        <span class="s">&#39;examples&#39;</span><span class="p">:</span> <span class="p">[</span>
+                                            <span class="p">{</span>
+                                                <span class="s">&#39;code&#39;</span><span class="p">:</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s">                                            var ComponentFactory = require(&#39;core/ComponentFactory&#39;);</span>
+<span class="s">                                            var component = ComponentFactory();</span>
+<span class="s">                                                &quot;&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">),</span>
+                                                <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;&#39;</span><span class="p">,</span>
+                                                <span class="s">&#39;title&#39;</span><span class="p">:</span> <span class="s">&#39;example1&#39;</span><span class="p">,</span>
+                                                <span class="s">&#39;langid&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+                                            <span class="p">}</span>
+                                        <span class="p">]</span>
+                                    <span class="p">}</span>
+                                <span class="p">}),</span>
+                            <span class="p">]),</span>
                             <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;File defines ComponentFactory module.&#39;</span><span class="p">,</span>
-                            <span class="s">&#39;author&#39;</span><span class="p">:</span> <span class="s">&#39;Rafał Łużyński&#39;</span><span class="p">,</span>
+                            <span class="s">&#39;attributes&#39;</span><span class="p">:</span> <span class="p">{</span>
+                                <span class="s">&#39;author&#39;</span><span class="p">:</span> <span class="s">&#39;Rafał Łużyński&#39;</span><span class="p">,</span>
+                            <span class="p">},</span>
                             <span class="s">&#39;startline&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
                             <span class="s">&#39;endline&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
                             <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;ComponentFactory&#39;</span><span class="p">,</span>
                             <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;file&#39;</span><span class="p">,</span>
                         <span class="p">},</span>
-                    <span class="p">},</span>
+                    <span class="p">}),</span>
                     <span class="s">&#39;filepath&#39;</span><span class="p">:</span> <span class="s">&#39;testdocfilepackage.js&#39;</span><span class="p">,</span>
-                    <span class="s">&#39;author&#39;</span><span class="p">:</span> <span class="s">&#39;Rafał Łużyński&#39;</span><span class="p">,</span>
+                    <span class="s">&#39;attributes&#39;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s">&#39;author&#39;</span><span class="p">:</span> <span class="s">&#39;Rafał Łużyński&#39;</span><span class="p">,</span>
+                    <span class="p">},</span>
                     <span class="s">&#39;startline&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
                     <span class="s">&#39;endline&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
                     <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;core&#39;</span><span class="p">,</span>
                     <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;package&#39;</span><span class="p">,</span>
                     <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;Core files package.&#39;</span><span class="p">,</span>
                 <span class="p">},</span>
-            <span class="p">}</span>
-        <span class="p">}</span>
-        <span class="n">filepaths</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;testdocfilepackage.js&#39;</span><span class="p">,</span> <span class="s">&#39;testdocfile1.js&#39;</span><span class="p">,</span> <span class="s">&#39;testdocfile2.js&#39;</span><span class="p">]</span>
+            <span class="p">})</span>
+        <span class="p">})</span>
+        <span class="n">filepaths</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;testdocfilepackage.js&#39;</span><span class="p">,</span> <span class="s">&#39;testdocfile2.js&#39;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">maxDiff</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="n">dsp</span> <span class="o">=</span> <span class="n">DocStringParser</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tag_settings</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc_string_regex</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tag_regex</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">filepath</span> <span class="ow">in</span> <span class="n">filepaths</span><span class="p">:</span>
             <span class="n">dsp</span><span class="o">.</span><span class="n">parse_file</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">dsp</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">test_doc_string_parser_three_files</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Test if data parsing and collecting works as expected with three files and linking to</span>
-<span class="sd">        objects from different files.&quot;&quot;&quot;</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="k">def</span> <span class="nf">test_doc_string_parser_file_3</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test if data parsing and collecting works as expected.&quot;&quot;&quot;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">({</span>
+            <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="n">OrderedDict</span><span class="p">({</span>
                 <span class="s">&#39;core&#39;</span><span class="p">:</span> <span class="p">{</span>
-                    <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{</span>
-                        <span class="s">&#39;EntityFactory&#39;</span><span class="p">:</span> <span class="p">{</span>
-                            <span class="s">&#39;filepath&#39;</span><span class="p">:</span> <span class="s">&#39;testdocfile1.js&#39;</span><span class="p">,</span>
-                            <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{</span>
-                                <span class="s">&#39;EntityFactory&#39;</span><span class="p">:</span> <span class="p">{</span>
-                                    <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{</span>
-                                        <span class="s">&#39;currentEntityId&#39;</span><span class="p">:</span> <span class="p">{</span>
-                                            <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{},</span>
-                                            <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;currentEntityId&#39;</span><span class="p">,</span>
-                                            <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;number&#39;</span><span class="p">,</span>
-                                            <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;Keeps last created entity id.&#39;</span><span class="p">,</span>
-                                            <span class="s">&#39;access&#39;</span><span class="p">:</span> <span class="s">&#39;private&#39;</span><span class="p">,</span>
-                                            <span class="s">&#39;startline&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
-                                            <span class="s">&#39;endline&#39;</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span>
-                                            <span class="s">&#39;filepath&#39;</span><span class="p">:</span> <span class="s">&#39;testdocfile1.js&#39;</span><span class="p">,</span>
-                                        <span class="p">},</span>
-                                        <span class="s">&#39;entityPrototype&#39;</span><span class="p">:</span> <span class="p">{</span>
-                                            <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;entityPrototype&#39;</span><span class="p">,</span>
-                                            <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{},</span>
-                                            <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;property&#39;</span><span class="p">,</span>
-                                            <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span>
-<span class="s">                                                Prototype accessible from outside for inheritance.</span>
-<span class="s">                                            &quot;&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_line_replace</span><span class="p">),</span>
-                                            <span class="s">&#39;startline&#39;</span><span class="p">:</span> <span class="mi">41</span><span class="p">,</span>
-                                            <span class="s">&#39;endline&#39;</span><span class="p">:</span> <span class="mi">44</span><span class="p">,</span>
-                                            <span class="s">&#39;valtype&#39;</span><span class="p">:</span> <span class="s">&#39;prototype&#39;</span><span class="p">,</span>
-                                            <span class="s">&#39;filepath&#39;</span><span class="p">:</span> <span class="s">&#39;testdocfile1.js&#39;</span><span class="p">,</span>
-                                        <span class="p">},</span>
-                                    <span class="p">},</span>
-                                    <span class="s">&#39;filepath&#39;</span><span class="p">:</span> <span class="s">&#39;testdocfile1.js&#39;</span><span class="p">,</span>
-                                    <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;factory&#39;</span><span class="p">,</span>
-                                    <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;EntityFactory&#39;</span><span class="p">,</span>
-                                    <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;Creates new entity.&#39;</span><span class="p">,</span>
-                                    <span class="s">&#39;startline&#39;</span><span class="p">:</span> <span class="mi">27</span><span class="p">,</span>
-                                    <span class="s">&#39;endline&#39;</span><span class="p">:</span> <span class="mi">33</span><span class="p">,</span>
-                                    <span class="s">&#39;return&#39;</span><span class="p">:</span> <span class="p">{</span>
-                                        <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;core.EntityFactory.entity&#39;</span><span class="p">,</span>
-                                        <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;New entity.&#39;</span><span class="p">,</span>
-                                    <span class="p">},</span>
-                                    <span class="s">&#39;example&#39;</span><span class="p">:</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span><span class="se">\</span>
-<span class="s">                                        var EntityFactory = require(&#39;core/EntityFactory&#39;);</span>
-<span class="s">                                        var entity = EntityFactory();</span>
-<span class="s">                                    &quot;&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_line_replace</span><span class="p">),</span>
-                                <span class="p">},</span>
-                                <span class="s">&#39;entity&#39;</span><span class="p">:</span> <span class="p">{</span>
-                                    <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{</span>
-                                        <span class="s">&#39;_init&#39;</span><span class="p">:</span> <span class="p">{</span>
-                                            <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{},</span>
-                                            <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;method&#39;</span><span class="p">,</span>
-                                            <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;Initialize entity.&#39;</span><span class="p">,</span>
-                                            <span class="s">&#39;startline&#39;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span>
-                                            <span class="s">&#39;endline&#39;</span><span class="p">:</span> <span class="mi">18</span><span class="p">,</span>
-                                            <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;_init&#39;</span><span class="p">,</span>
-                                            <span class="s">&#39;filepath&#39;</span><span class="p">:</span> <span class="s">&#39;testdocfile1.js&#39;</span><span class="p">,</span>
-                                        <span class="p">},</span>
-                                        <span class="s">&#39;id&#39;</span><span class="p">:</span> <span class="p">{</span>
-                                            <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{},</span>
-                                            <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;number&#39;</span><span class="p">,</span>
-                                            <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;Id of entity.&#39;</span><span class="p">,</span>
-                                            <span class="s">&#39;startline&#39;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
-                                            <span class="s">&#39;endline&#39;</span><span class="p">:</span> <span class="mi">22</span><span class="p">,</span>
-                                            <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;id&#39;</span><span class="p">,</span>
-                                            <span class="s">&#39;filepath&#39;</span><span class="p">:</span> <span class="s">&#39;testdocfile1.js&#39;</span><span class="p">,</span>
-                                        <span class="p">}</span>
-                                    <span class="p">},</span>
-                                    <span class="s">&#39;filepath&#39;</span><span class="p">:</span> <span class="s">&#39;testdocfile1.js&#39;</span><span class="p">,</span>
-                                    <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;object&#39;</span><span class="p">,</span>
-                                    <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;Entites are a containers for components.&#39;</span><span class="p">,</span>
-                                    <span class="s">&#39;startline&#39;</span><span class="p">:</span> <span class="mi">11</span><span class="p">,</span>
-                                    <span class="s">&#39;endline&#39;</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span>
-                                    <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;entity&#39;</span><span class="p">,</span>
-                                    <span class="s">&#39;prototype&#39;</span><span class="p">:</span> <span class="s">&#39;Object&#39;</span><span class="p">,</span>
-                                <span class="p">}</span>
-                            <span class="p">},</span>
-                            <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;File defines EntityFactory module.&#39;</span><span class="p">,</span>
-                            <span class="s">&#39;author&#39;</span><span class="p">:</span> <span class="s">&#39;Rafał Łużyński&#39;</span><span class="p">,</span>
-                            <span class="s">&#39;startline&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-                            <span class="s">&#39;endline&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
-                            <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;EntityFactory&#39;</span><span class="p">,</span>
-                            <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;file&#39;</span><span class="p">,</span>
-                        <span class="p">},</span>
-                        <span class="s">&#39;ComponentFactory&#39;</span><span class="p">:</span> <span class="p">{</span>
-                            <span class="s">&#39;filepath&#39;</span><span class="p">:</span> <span class="s">&#39;testdocfile2.js&#39;</span><span class="p">,</span>
-                            <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{</span>
-                                <span class="s">&#39;ComponentFactory&#39;</span><span class="p">:</span> <span class="p">{</span>
-                                    <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{</span>
-                                        <span class="s">&#39;componentPrototype&#39;</span><span class="p">:</span> <span class="p">{</span>
-                                            <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{},</span>
-                                            <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;property&#39;</span><span class="p">,</span>
-                                            <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span><span class="se">\</span>
-<span class="s">                                                Prototype accessible from outside for inheritance.</span>
-<span class="s">                                            &quot;&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_line_replace</span><span class="p">),</span>
-                                            <span class="s">&#39;startline&#39;</span><span class="p">:</span> <span class="mi">38</span><span class="p">,</span>
-                                            <span class="s">&#39;endline&#39;</span><span class="p">:</span> <span class="mi">42</span><span class="p">,</span>
-                                            <span class="s">&#39;valtype&#39;</span><span class="p">:</span> <span class="s">&#39;prototype&#39;</span><span class="p">,</span>
-                                            <span class="s">&#39;filepath&#39;</span><span class="p">:</span> <span class="s">&#39;testdocfile2.js&#39;</span><span class="p">,</span>
-                                            <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;componentPrototype&#39;</span><span class="p">,</span>
-                                        <span class="p">},</span>
-                                    <span class="p">},</span>
-                                    <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;ComponentFactory&#39;</span><span class="p">,</span>
-                                    <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;factory&#39;</span><span class="p">,</span>
-                                    <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;Creates new component.&#39;</span><span class="p">,</span>
-                                    <span class="s">&#39;filepath&#39;</span><span class="p">:</span> <span class="s">&#39;testdocfile2.js&#39;</span><span class="p">,</span>
-                                    <span class="s">&#39;startline&#39;</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span>
-                                    <span class="s">&#39;endline&#39;</span><span class="p">:</span> <span class="mi">32</span><span class="p">,</span>
-                                    <span class="s">&#39;return&#39;</span><span class="p">:</span> <span class="p">{</span>
-                                        <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;core.ComponentFactory.component&#39;</span><span class="p">,</span>
-                                        <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;New component.&#39;</span><span class="p">,</span>
-                                    <span class="p">},</span>
-                                    <span class="s">&#39;example&#39;</span><span class="p">:</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span><span class="se">\</span>
-<span class="s">                                        var ComponentFactory = require(&#39;core/ComponentFactory&#39;);</span>
-<span class="s">                                        var component = ComponentFactory();</span>
-<span class="s">                                    &quot;&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_line_replace</span><span class="p">),</span>
-                                <span class="p">},</span>
-                                <span class="s">&#39;component&#39;</span><span class="p">:</span> <span class="p">{</span>
-                                    <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{</span>
-                                        <span class="s">&#39;_init&#39;</span><span class="p">:</span> <span class="p">{</span>
-                                            <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{},</span>
-                                            <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;method&#39;</span><span class="p">,</span>
-                                            <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;Initialize component.&#39;</span><span class="p">,</span>
-                                            <span class="s">&#39;startline&#39;</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span>
-                                            <span class="s">&#39;endline&#39;</span><span class="p">:</span> <span class="mi">17</span><span class="p">,</span>
-                                            <span class="s">&#39;filepath&#39;</span><span class="p">:</span> <span class="s">&#39;testdocfile2.js&#39;</span><span class="p">,</span>
-                                            <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;_init&#39;</span><span class="p">,</span>
-                                        <span class="p">},</span>
-                                        <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="p">{</span>
-                                            <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{},</span>
-                                            <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;string&#39;</span><span class="p">,</span>
-                                            <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;Name of component.&#39;</span><span class="p">,</span>
-                                            <span class="s">&#39;startline&#39;</span><span class="p">:</span> <span class="mi">19</span><span class="p">,</span>
-                                            <span class="s">&#39;endline&#39;</span><span class="p">:</span> <span class="mi">21</span><span class="p">,</span>
-                                            <span class="s">&#39;filepath&#39;</span><span class="p">:</span> <span class="s">&#39;testdocfile2.js&#39;</span><span class="p">,</span>
-                                            <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;name&#39;</span><span class="p">,</span>
-                                        <span class="p">}</span>
-                                    <span class="p">},</span>
-                                    <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;component&#39;</span><span class="p">,</span>
-                                    <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;object&#39;</span><span class="p">,</span>
-                                    <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span><span class="se">\</span>
-<span class="s">                                        Components are properties of \[[ref=core.EntityFactory.entity]].</span>
-<span class="s">                                        Test url: [url=http://test.com](test url).</span>
-<span class="s">                                    &quot;&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_line_replace</span><span class="p">),</span>
-                                    <span class="s">&#39;startline&#39;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
-                                    <span class="s">&#39;endline&#39;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
-                                    <span class="s">&#39;prototype&#39;</span><span class="p">:</span> <span class="s">&#39;Object&#39;</span><span class="p">,</span>
-                                    <span class="s">&#39;filepath&#39;</span><span class="p">:</span> <span class="s">&#39;testdocfile2.js&#39;</span><span class="p">,</span>
-                                <span class="p">}</span>
-                            <span class="p">},</span>
-                            <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;File defines ComponentFactory module.&#39;</span><span class="p">,</span>
-                            <span class="s">&#39;author&#39;</span><span class="p">:</span> <span class="s">&#39;Rafał Łużyński&#39;</span><span class="p">,</span>
-                            <span class="s">&#39;startline&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-                            <span class="s">&#39;endline&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
-                            <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;ComponentFactory&#39;</span><span class="p">,</span>
-                            <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;file&#39;</span><span class="p">,</span>
-                        <span class="p">},</span>
+                    <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="n">OrderedDict</span><span class="p">({</span>
                         <span class="s">&#39;VelocityComponentFactory&#39;</span><span class="p">:</span> <span class="p">{</span>
                             <span class="s">&#39;filepath&#39;</span><span class="p">:</span> <span class="s">&#39;testdocfile3.js&#39;</span><span class="p">,</span>
-                            <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{</span>
+                            <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="n">OrderedDict</span><span class="p">({</span>
                                 <span class="s">&#39;velocity&#39;</span><span class="p">:</span> <span class="p">{</span>
-                                    <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{},</span>
+                                    <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="n">OrderedDict</span><span class="p">({}),</span>
                                     <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;object&#39;</span><span class="p">,</span>
                                     <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span><span class="se">\</span>
-<span class="s">                                        Velocity is needed for movement of entites.</span>
-<span class="s">                                        Based on [ref=core.ComponentFactory.component](component).</span>
-<span class="s">                                    &quot;&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_line_replace</span><span class="p">),</span>
+<span class="s">                                Velocity is needed for movement of entites.</span>
+<span class="s">                                Based on [Component](#core.ComponentFactory.component &quot;Component&quot;).</span>
+<span class="s">                                    &quot;&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">),</span>
                                     <span class="s">&#39;startline&#39;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
                                     <span class="s">&#39;endline&#39;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
-                                    <span class="s">&#39;prototype&#39;</span><span class="p">:</span> <span class="s">&#39;core.ComponentFactory.component&#39;</span><span class="p">,</span>
+                                    <span class="s">&#39;attributes&#39;</span><span class="p">:</span> <span class="p">{</span>
+                                        <span class="s">&#39;inherits&#39;</span><span class="p">:</span> <span class="s">&#39;core.ComponentFactory.component&#39;</span>
+                                    <span class="p">},</span>
                                     <span class="s">&#39;filepath&#39;</span><span class="p">:</span> <span class="s">&#39;testdocfile3.js&#39;</span><span class="p">,</span>
                                     <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;velocity&#39;</span><span class="p">,</span>
                                 <span class="p">}</span>
-                            <span class="p">},</span>
+                            <span class="p">}),</span>
                             <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;File defines VelocityComponentFactory module.&#39;</span><span class="p">,</span>
-                            <span class="s">&#39;author&#39;</span><span class="p">:</span> <span class="s">&#39;Rafał Łużyński&#39;</span><span class="p">,</span>
+                            <span class="s">&#39;attributes&#39;</span><span class="p">:</span> <span class="p">{</span> <span class="s">&#39;author&#39;</span><span class="p">:</span> <span class="s">&#39;Rafał Łużyński&#39;</span><span class="p">,</span> <span class="p">},</span>
                             <span class="s">&#39;startline&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
                             <span class="s">&#39;endline&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
                             <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;VelocityComponentFactory&#39;</span><span class="p">,</span>
                             <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;file&#39;</span><span class="p">,</span>
                         <span class="p">},</span>
-                    <span class="p">},</span>
+                    <span class="p">}),</span>
                     <span class="s">&#39;filepath&#39;</span><span class="p">:</span> <span class="s">&#39;testdocfilepackage.js&#39;</span><span class="p">,</span>
-                    <span class="s">&#39;author&#39;</span><span class="p">:</span> <span class="s">&#39;Rafał Łużyński&#39;</span><span class="p">,</span>
+                    <span class="s">&#39;attributes&#39;</span><span class="p">:</span> <span class="p">{</span> <span class="s">&#39;author&#39;</span><span class="p">:</span> <span class="s">&#39;Rafał Łużyński&#39;</span><span class="p">,</span> <span class="p">},</span>
                     <span class="s">&#39;startline&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
                     <span class="s">&#39;endline&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
                     <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;core&#39;</span><span class="p">,</span>
                     <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;package&#39;</span><span class="p">,</span>
                     <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;Core files package.&#39;</span><span class="p">,</span>
                 <span class="p">},</span>
-            <span class="p">}</span>
-        <span class="p">}</span>
+            <span class="p">}),</span>
+        <span class="p">})</span>
         <span class="n">filepaths</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="s">&#39;testdocfilepackage.js&#39;</span><span class="p">,</span> <span class="s">&#39;testdocfile1.js&#39;</span><span class="p">,</span> <span class="s">&#39;testdocfile2.js&#39;</span><span class="p">,</span> <span class="s">&#39;testdocfile3.js&#39;</span>
+            <span class="s">&#39;testdocfilepackage.js&#39;</span><span class="p">,</span> <span class="s">&#39;testdocfile3.js&#39;</span>
         <span class="p">]</span>
         <span class="n">dsp</span> <span class="o">=</span> <span class="n">DocStringParser</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">tag_settings</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc_string_regex</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tag_regex</span><span class="p">,</span> <span class="n">line_prefix</span><span class="o">=</span><span class="s">&#39;*&#39;</span>
@@ -1862,20 +1486,20 @@
 
     <span class="k">def</span> <span class="nf">test_doc_string_parser_default_author</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Test if data parsing and collecting works as expected with one file.&quot;&quot;&quot;</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">({</span>
+            <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="n">OrderedDict</span><span class="p">({</span>
                 <span class="s">&#39;author&#39;</span><span class="p">:</span> <span class="p">{</span>
                     <span class="s">&#39;filepath&#39;</span><span class="p">:</span> <span class="s">&#39;testdocfile5.js&#39;</span><span class="p">,</span>
-                    <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{},</span>
+                    <span class="s">&#39;properties&#39;</span><span class="p">:</span> <span class="n">OrderedDict</span><span class="p">({}),</span>
                     <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;Default author test.&#39;</span><span class="p">,</span>
-                    <span class="s">&#39;author&#39;</span><span class="p">:</span> <span class="s">&#39;&#39;</span><span class="p">,</span>
+                    <span class="s">&#39;attributes&#39;</span><span class="p">:</span> <span class="p">{</span> <span class="s">&#39;author&#39;</span><span class="p">:</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="p">},</span>
                     <span class="s">&#39;startline&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
                     <span class="s">&#39;endline&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
                     <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;author&#39;</span><span class="p">,</span>
                     <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;file&#39;</span><span class="p">,</span>
                 <span class="p">},</span>
-            <span class="p">}</span>
-        <span class="p">}</span>
+            <span class="p">}),</span>
+        <span class="p">})</span>
         <span class="n">filepaths</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;testdocfile5.js&#39;</span><span class="p">]</span>
         <span class="n">dsp</span> <span class="o">=</span> <span class="n">DocStringParser</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tag_settings</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc_string_regex</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tag_regex</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">filepath</span> <span class="ow">in</span> <span class="n">filepaths</span><span class="p">:</span>
@@ -1896,9 +1520,9 @@
 <span class="s">            &quot;&quot;&quot;</span><span class="p">)),</span>
             <span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span>
 <span class="s">                Velocity is needed for movement of entites.</span>
-<span class="s">                Based on [ref=core.ComponentFactory.component](component).</span>
+<span class="s">                Based on [Component](#core.ComponentFactory.component &quot;Component&quot;).</span>
 <span class="s">                @object .velocity</span>
-<span class="s">                @prototype {core.ComponentFactory.component}</span>
+<span class="s">                @inherits {core.ComponentFactory.component}</span>
 <span class="s">            &quot;&quot;&quot;</span><span class="p">))</span>
         <span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">doc_strings</span><span class="p">,</span> <span class="n">doc_strings_check</span><span class="p">)</span>
@@ -1907,7 +1531,7 @@
         <span class="sd">&quot;&quot;&quot;Raise error if encoding of file is invalid.&quot;&quot;&quot;</span>
         <span class="n">filepath</span> <span class="o">=</span> <span class="s">&#39;testdocfileinvalidutf8.js&#39;</span>
         <span class="n">dsp</span> <span class="o">=</span> <span class="n">DocStringParser</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tag_settings</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc_string_regex</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tag_regex</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">dsp</span><span class="o">.</span><span class="n">_get_source_file_coding</span><span class="p">(</span><span class="n">filepath</span><span class="p">),</span> <span class="s">&#39;utf-16&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">get_source_file_coding</span><span class="p">(</span><span class="n">filepath</span><span class="p">),</span> <span class="s">&#39;utf-16&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">UnicodeError</span><span class="p">,</span> <span class="n">dsp</span><span class="o">.</span><span class="n">parse_file</span><span class="p">,</span> <span class="n">filepath</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

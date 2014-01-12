@@ -5,7 +5,7 @@ import os
 import unittest
 import shutil
 
-from jscribe.utils.filediscover import discover_files
+from jscribe.utils.file import discover_files
 
 
 class TestFileDiscover(unittest.TestCase):

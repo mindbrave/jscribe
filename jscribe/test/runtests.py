@@ -10,7 +10,7 @@ from os.path import abspath, dirname, join as pjoin
 
 def runtests(verbosity=1, failfast=True):
     here = abspath(dirname(__file__))
-    root = pjoin(here, os.pardir)
+    root = pjoin(here, os.pardir, os.pardir)
     sys.path.insert(0, root)
     test_suite = unittest.defaultTestLoader.discover(here)
     runner = unittest.TextTestRunner(verbosity=verbosity, failfast=failfast)

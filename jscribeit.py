@@ -2,7 +2,7 @@
 #!/usr/bin/env python
 
 """* Library generates documentation from source files.
-@module jscribe
+@module jscribeit
 """
 
 import argparse
@@ -15,7 +15,7 @@ from jscribe.conf import settings
 
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 
-version = Version(0, 0, 1)
+version = Version(0, 0, 2, 'dev')
 
 parser = argparse.ArgumentParser(
     description='Generates documentation.'

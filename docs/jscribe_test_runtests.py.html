@@ -23,7 +23,11 @@
                     <ul>
                         
                         <li>
-                            <a href=".././docs/jscribe.html" title="jscribe">jscribe</a>
+                            <a href=".././docs/jscribeit.html" title="jscribeit">jscribeit</a>
+                        </li>
+                        
+                        <li>
+                            <a href=".././docs/generators_html_htmldefaultgenerator.html" title="htmldefaultgenerator">generators.html.htmldefaultgenerator</a>
                         </li>
                         
                         <li>
@@ -98,7 +102,7 @@
 
 <span class="k">def</span> <span class="nf">runtests</span><span class="p">(</span><span class="n">verbosity</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">failfast</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
     <span class="n">here</span> <span class="o">=</span> <span class="n">abspath</span><span class="p">(</span><span class="n">dirname</span><span class="p">(</span><span class="n">__file__</span><span class="p">))</span>
-    <span class="n">root</span> <span class="o">=</span> <span class="n">pjoin</span><span class="p">(</span><span class="n">here</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">pardir</span><span class="p">)</span>
+    <span class="n">root</span> <span class="o">=</span> <span class="n">pjoin</span><span class="p">(</span><span class="n">here</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">pardir</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">pardir</span><span class="p">)</span>
     <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">root</span><span class="p">)</span>
     <span class="n">test_suite</span> <span class="o">=</span> <span class="n">unittest</span><span class="o">.</span><span class="n">defaultTestLoader</span><span class="o">.</span><span class="n">discover</span><span class="p">(</span><span class="n">here</span><span class="p">)</span>
     <span class="n">runner</span> <span class="o">=</span> <span class="n">unittest</span><span class="o">.</span><span class="n">TextTestRunner</span><span class="p">(</span><span class="n">verbosity</span><span class="o">=</span><span class="n">verbosity</span><span class="p">,</span> <span class="n">failfast</span><span class="o">=</span><span class="n">failfast</span><span class="p">)</span>

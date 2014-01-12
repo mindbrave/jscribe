@@ -6,7 +6,9 @@ import json
 import codecs
 import unittest
 import textwrap
+from collections import OrderedDict
 
+from jscribe.utils.file import get_source_file_coding
 from jscribe.core.docstringparser import DocStringParser
 
 
@@ -124,7 +126,9 @@ class TestDocStringParser(unittest.TestCase):
                 },
             }, f)
             f.close()
-        self.tag_settings = 'testtagsettings.json'
+        with open('testtagsettings.json', 'r') as f:
+            self.tag_settings = json.load(f)
+            f.close()
         self.doc_string_regex = (r'[/][*][*]', r'[*][/]')
         self.tag_regex = r'[@](?P<tag>.*?)\s'
         self.new_line_replace = '<br/>'
@@ -142,7 +146,7 @@ class TestDocStringParser(unittest.TestCase):
                     var currentEntityId = 0;
                     /** Entites are a containers for components.
                      @object .entity
-                     @prototype {Object}
+                     @inherits {Object}
                     */
                     var entityPrototype = {
                         /** Initialize entity.
@@ -159,9 +163,8 @@ class TestDocStringParser(unittest.TestCase):
                     /** Creates new entity.
                      @factory .EntityFactory
                      @return {core.EntityFactory.entity} New entity.
-                     @example
-                     var EntityFactory = require('core/EntityFactory');
-                     var entity = EntityFactory();
+                     @example example1 {var EntityFactory = require('core/EntityFactory');
+                        var entity = EntityFactory();}
                     */
                     var EntityFactory = function() {
                         var newEntity = Object.create(entityPrototype);
@@ -188,10 +191,10 @@ class TestDocStringParser(unittest.TestCase):
                 */
                 define(function() {
                     /**
-                     Components are properties of \[[ref=core.EntityFactory.entity]].
-                     Test url: [url=http://test.com](test url).
+                     Components are properties of entities.
+                     Test url: [Test](http://test.com).
                      @object .component
-                     @prototype {Object}
+                     @inherits {Object}
                     */
                     var componentPrototype = {
                         /**
@@ -209,9 +212,8 @@ class TestDocStringParser(unittest.TestCase):
                      Creates new component.
                      @factory .ComponentFactory
                      @return {core.ComponentFactory.component} New component.
-                     @example
-                     var ComponentFactory = require('core/ComponentFactory');
-                     var component = ComponentFactory();
+                     @example example1 {var ComponentFactory = require('core/ComponentFactory');
+                     var component = ComponentFactory();}
                     */
                     var ComponentFactory = function() {
                         var newComponent = Object.create(componentPrototype);
@@ -238,9 +240,9 @@ class TestDocStringParser(unittest.TestCase):
                 define(function() {
                     /**
                      * Velocity is needed for movement of entites.
-                     * Based on [ref=core.ComponentFactory.component](component).
+                     * Based on [Component](#core.ComponentFactory.component "Component").
                      * @object .velocity
-                     * @prototype {core.ComponentFactory.component}
+                     * @inherits {core.ComponentFactory.component}
                     **/
                     return VelocityComponentFactory;
           //comment /** this is not a doc string because of comment @number */
@@ -341,103 +343,124 @@ class TestDocStringParser(unittest.TestCase):
             """)
             f.close()
 
-    def test_doc_string_parser_one_file(self):
-        """Test if data parsing and collecting works as expected with one file."""
-        data = {
-            'properties': {
+    def test_doc_string_parser_file_1(self):
+        """Test if data parsing and collecting works as expected."""
+        data = OrderedDict({
+            'properties': OrderedDict({
                 'core': {
-                    'properties': {
+                    'properties': OrderedDict({
                         'EntityFactory': {
                             'filepath': 'testdocfile1.js',
-                            'properties': {
+                            'properties': OrderedDict({
                                 'EntityFactory': {
-                                    'properties': {
+                                    'properties': OrderedDict({
                                         'currentEntityId': {
-                                            'properties': {},
+                                            'properties': OrderedDict({}),
                                             'name': 'currentEntityId',
                                             'type': 'number',
                                             'description': 'Keeps last created entity id.',
-                                            'access': 'private',
+                                            'attributes': {
+                                                'access': 'private',
+                                            },
                                             'startline': 6,
                                             'endline': 9,
                                             'filepath': 'testdocfile1.js',
                                         },
                                         'entityPrototype': {
                                             'name': 'entityPrototype',
-                                            'properties': {},
+                                            'properties': OrderedDict({}),
                                             'type': 'property',
                                             'description': textwrap.dedent("""
                                                 Prototype accessible from outside for inheritance.
-                                            """).strip('\n').replace('\n', self.new_line_replace),
-                                            'startline': 41,
-                                            'endline': 44,
-                                            'valtype': 'prototype',
+                                            """).strip('\n'),
+                                            'startline': 40,
+                                            'endline': 43,
+                                            'attributes': {
+                                                'valtype': 'prototype',
+                                            },
                                             'filepath': 'testdocfile1.js',
                                         },
-                                    },
+                                    }),
                                     'filepath': 'testdocfile1.js',
                                     'type': 'factory',
                                     'name': 'EntityFactory',
                                     'description': 'Creates new entity.',
                                     'startline': 27,
-                                    'endline': 33,
-                                    'return': {
-                                        'type': 'core.EntityFactory.entity',
-                                        'description': 'New entity.',
+                                    'endline': 32,
+                                    'attributes': {
+                                        'return': {
+                                            'type': 'core.EntityFactory.entity',
+                                            'description': 'New entity.',
+                                        },
+                                        'examples': [
+                                            {
+                                                'code': textwrap.dedent("""\
+                                                var EntityFactory = require('core/EntityFactory');
+                                                var entity = EntityFactory();
+                                                """).strip('\n'),
+                                                'title': 'example1',
+                                                'langid': None,
+                                                'description': '',
+                                            }
+                                        ]
                                     },
-                                    'example': textwrap.dedent("""\
-                                        var EntityFactory = require('core/EntityFactory');
-                                        var entity = EntityFactory();
-                                    """).strip('\n').replace('\n', self.new_line_replace),
                                 },
                                 'entity': {
-                                    'properties': {
+                                    'properties': OrderedDict({
                                         '_init': {
-                                            'properties': {},
+                                            'properties': OrderedDict({}),
                                             'type': 'method',
                                             'description': 'Initialize entity.',
                                             'startline': 16,
                                             'endline': 18,
                                             'name': '_init',
                                             'filepath': 'testdocfile1.js',
+                                            'attributes': {},
                                         },
                                         'id': {
-                                            'properties': {},
+                                            'properties': OrderedDict({}),
                                             'type': 'number',
                                             'description': 'Id of entity.',
                                             'startline': 20,
                                             'endline': 22,
                                             'name': 'id',
                                             'filepath': 'testdocfile1.js',
+                                            'attributes': {},
                                         }
-                                    },
+                                    }),
                                     'filepath': 'testdocfile1.js',
                                     'type': 'object',
                                     'description': 'Entites are a containers for components.',
                                     'startline': 11,
                                     'endline': 14,
                                     'name': 'entity',
-                                    'prototype': 'Object',
+                                    'attributes': {
+                                        'inherits': 'Object',
+                                    },
                                 }
-                            },
+                            }),
                             'description': 'File defines EntityFactory module.',
-                            'author': 'Rafał Łużyński',
+                            'attributes': {
+                                'author': 'Rafał Łużyński',
+                            },
                             'startline': 1,
                             'endline': 4,
                             'name': 'EntityFactory',
                             'type': 'file',
                         },
-                    },
+                    }),
                     'filepath': 'testdocfilepackage.js',
-                    'author': 'Rafał Łużyński',
+                    'attributes': {
+                        'author': 'Rafał Łużyński',
+                    },
                     'startline': 1,
                     'endline': 4,
                     'name': 'core',
                     'type': 'package',
                     'description': 'Core files package.',
                 },
-            }
-        }
+            }),
+        })
         self.maxDiff = None
         filepaths = ['testdocfilepackage.js', 'testdocfile1.js']
         dsp = DocStringParser(self.tag_settings, self.doc_string_regex, self.tag_regex)
@@ -445,380 +468,167 @@ class TestDocStringParser(unittest.TestCase):
             dsp.parse_file(filepath)
         self.assertEqual(dsp.data, data)
 
-    def test_doc_string_parser_two_files(self):
-        """Test if data parsing and collecting works as expected with two files."""
-        data = {
-            'properties': {
+    def test_doc_string_parser_file_2(self):
+        """Test if data parsing and collecting works as expected."""
+        data = OrderedDict({
+            'properties': OrderedDict({
                 'core': {
-                    'properties': {
-                        'EntityFactory': {
-                            'filepath': 'testdocfile1.js',
-                            'properties': {
-                                'EntityFactory': {
-                                    'properties': {
-                                        'currentEntityId': {
-                                            'properties': {},
-                                            'name': 'currentEntityId',
-                                            'type': 'number',
-                                            'description': 'Keeps last created entity id.',
-                                            'access': 'private',
-                                            'startline': 6,
-                                            'endline': 9,
-                                            'filepath': 'testdocfile1.js',
-                                        },
-                                        'entityPrototype': {
-                                            'name': 'entityPrototype',
-                                            'properties': {},
-                                            'type': 'property',
-                                            'description': textwrap.dedent("""
-                                                Prototype accessible from outside for inheritance.
-                                            """).strip('\n').replace('\n', self.new_line_replace),
-                                            'startline': 41,
-                                            'endline': 44,
-                                            'valtype': 'prototype',
-                                            'filepath': 'testdocfile1.js',
-                                        },
-                                    },
-                                    'filepath': 'testdocfile1.js',
-                                    'type': 'factory',
-                                    'name': 'EntityFactory',
-                                    'description': 'Creates new entity.',
-                                    'startline': 27,
-                                    'endline': 33,
-                                    'return': {
-                                        'type': 'core.EntityFactory.entity',
-                                        'description': 'New entity.',
-                                    },
-                                    'example': textwrap.dedent("""\
-                                        var EntityFactory = require('core/EntityFactory');
-                                        var entity = EntityFactory();
-                                    """).strip('\n').replace('\n', self.new_line_replace),
-                                },
-                                'entity': {
-                                    'properties': {
-                                        '_init': {
-                                            'properties': {},
-                                            'type': 'method',
-                                            'description': 'Initialize entity.',
-                                            'startline': 16,
-                                            'endline': 18,
-                                            'name': '_init',
-                                            'filepath': 'testdocfile1.js',
-                                        },
-                                        'id': {
-                                            'properties': {},
-                                            'type': 'number',
-                                            'description': 'Id of entity.',
-                                            'startline': 20,
-                                            'endline': 22,
-                                            'name': 'id',
-                                            'filepath': 'testdocfile1.js',
-                                        }
-                                    },
-                                    'filepath': 'testdocfile1.js',
-                                    'type': 'object',
-                                    'description': 'Entites are a containers for components.',
-                                    'startline': 11,
-                                    'endline': 14,
-                                    'name': 'entity',
-                                    'prototype': 'Object',
-                                }
-                            },
-                            'description': 'File defines EntityFactory module.',
-                            'author': 'Rafał Łużyński',
-                            'startline': 1,
-                            'endline': 4,
-                            'name': 'EntityFactory',
-                            'type': 'file',
-                        },
+                    'properties': OrderedDict({
                         'ComponentFactory': {
                             'filepath': 'testdocfile2.js',
-                            'properties': {
-                                'ComponentFactory': {
-                                    'properties': {
-                                        'componentPrototype': {
-                                            'properties': {},
-                                            'type': 'property',
-                                            'description': textwrap.dedent("""\
-                                                Prototype accessible from outside for inheritance.
-                                            """).strip('\n').replace('\n', self.new_line_replace),
-                                            'startline': 38,
-                                            'endline': 42,
-                                            'valtype': 'prototype',
-                                            'filepath': 'testdocfile2.js',
-                                            'name': 'componentPrototype',
-                                        },
-                                    },
-                                    'name': 'ComponentFactory',
-                                    'type': 'factory',
-                                    'description': 'Creates new component.',
-                                    'filepath': 'testdocfile2.js',
-                                    'startline': 25,
-                                    'endline': 32,
-                                    'return': {
-                                        'type': 'core.ComponentFactory.component',
-                                        'description': 'New component.',
-                                    },
-                                    'example': textwrap.dedent("""\
-                                        var ComponentFactory = require('core/ComponentFactory');
-                                        var component = ComponentFactory();
-                                    """).strip('\n').replace('\n', self.new_line_replace),
-                                },
-                                'component': {
-                                    'properties': {
+                            'properties': OrderedDict([
+                                ('component', {
+                                    'properties': OrderedDict({
                                         '_init': {
-                                            'properties': {},
+                                            'properties': OrderedDict({}),
                                             'type': 'method',
                                             'description': 'Initialize component.',
                                             'startline': 14,
                                             'endline': 17,
                                             'filepath': 'testdocfile2.js',
                                             'name': '_init',
+                                            'attributes': {},
                                         },
                                         'name': {
-                                            'properties': {},
+                                            'properties': OrderedDict({}),
                                             'type': 'string',
                                             'description': 'Name of component.',
                                             'startline': 19,
                                             'endline': 21,
                                             'filepath': 'testdocfile2.js',
                                             'name': 'name',
+                                            'attributes': {},
                                         }
-                                    },
+                                    }),
                                     'name': 'component',
                                     'type': 'object',
                                     'description': textwrap.dedent("""\
-                                        Components are properties of \[[ref=core.EntityFactory.entity]].
-                                        Test url: [url=http://test.com](test url).
-                                    """).strip('\n').replace('\n', self.new_line_replace),
+                                        Components are properties of entities.
+                                        Test url: [Test](http://test.com).
+                                    """).strip('\n'),
                                     'startline': 7,
                                     'endline': 12,
-                                    'prototype': 'Object',
+                                    'attributes': {
+                                        'inherits': 'Object',
+                                    },
                                     'filepath': 'testdocfile2.js',
-                                }
-                            },
+                                }),
+                                ('ComponentFactory', {
+                                    'properties': OrderedDict({
+                                        'componentPrototype': {
+                                            'properties': OrderedDict({}),
+                                            'type': 'property',
+                                            'description': textwrap.dedent("""\
+                                                Prototype accessible from outside for inheritance.
+                                            """).strip('\n'),
+                                            'startline': 37,
+                                            'endline': 41,
+                                            'attributes': {
+                                                'valtype': 'prototype',
+                                            },
+                                            'filepath': 'testdocfile2.js',
+                                            'name': 'componentPrototype',
+                                        },
+                                    }),
+                                    'name': 'ComponentFactory',
+                                    'type': 'factory',
+                                    'description': 'Creates new component.',
+                                    'filepath': 'testdocfile2.js',
+                                    'startline': 25,
+                                    'endline': 31,
+                                    'attributes': {
+                                        'return': {
+                                            'type': 'core.ComponentFactory.component',
+                                            'description': 'New component.',
+                                        },
+                                        'examples': [
+                                            {
+                                                'code': textwrap.dedent("""\
+                                            var ComponentFactory = require('core/ComponentFactory');
+                                            var component = ComponentFactory();
+                                                """).strip('\n'),
+                                                'description': '',
+                                                'title': 'example1',
+                                                'langid': None,
+                                            }
+                                        ]
+                                    }
+                                }),
+                            ]),
                             'description': 'File defines ComponentFactory module.',
-                            'author': 'Rafał Łużyński',
+                            'attributes': {
+                                'author': 'Rafał Łużyński',
+                            },
                             'startline': 1,
                             'endline': 5,
                             'name': 'ComponentFactory',
                             'type': 'file',
                         },
-                    },
+                    }),
                     'filepath': 'testdocfilepackage.js',
-                    'author': 'Rafał Łużyński',
+                    'attributes': {
+                        'author': 'Rafał Łużyński',
+                    },
                     'startline': 1,
                     'endline': 4,
                     'name': 'core',
                     'type': 'package',
                     'description': 'Core files package.',
                 },
-            }
-        }
-        filepaths = ['testdocfilepackage.js', 'testdocfile1.js', 'testdocfile2.js']
+            })
+        })
+        filepaths = ['testdocfilepackage.js', 'testdocfile2.js']
         self.maxDiff = None
         dsp = DocStringParser(self.tag_settings, self.doc_string_regex, self.tag_regex)
         for filepath in filepaths:
             dsp.parse_file(filepath)
         self.assertEqual(dsp.data, data)
 
-    def test_doc_string_parser_three_files(self):
-        """Test if data parsing and collecting works as expected with three files and linking to
-        objects from different files."""
-        data = {
-            'properties': {
+    def test_doc_string_parser_file_3(self):
+        """Test if data parsing and collecting works as expected."""
+        data = OrderedDict({
+            'properties': OrderedDict({
                 'core': {
-                    'properties': {
-                        'EntityFactory': {
-                            'filepath': 'testdocfile1.js',
-                            'properties': {
-                                'EntityFactory': {
-                                    'properties': {
-                                        'currentEntityId': {
-                                            'properties': {},
-                                            'name': 'currentEntityId',
-                                            'type': 'number',
-                                            'description': 'Keeps last created entity id.',
-                                            'access': 'private',
-                                            'startline': 6,
-                                            'endline': 9,
-                                            'filepath': 'testdocfile1.js',
-                                        },
-                                        'entityPrototype': {
-                                            'name': 'entityPrototype',
-                                            'properties': {},
-                                            'type': 'property',
-                                            'description': textwrap.dedent("""
-                                                Prototype accessible from outside for inheritance.
-                                            """).strip('\n').replace('\n', self.new_line_replace),
-                                            'startline': 41,
-                                            'endline': 44,
-                                            'valtype': 'prototype',
-                                            'filepath': 'testdocfile1.js',
-                                        },
-                                    },
-                                    'filepath': 'testdocfile1.js',
-                                    'type': 'factory',
-                                    'name': 'EntityFactory',
-                                    'description': 'Creates new entity.',
-                                    'startline': 27,
-                                    'endline': 33,
-                                    'return': {
-                                        'type': 'core.EntityFactory.entity',
-                                        'description': 'New entity.',
-                                    },
-                                    'example': textwrap.dedent("""\
-                                        var EntityFactory = require('core/EntityFactory');
-                                        var entity = EntityFactory();
-                                    """).strip('\n').replace('\n', self.new_line_replace),
-                                },
-                                'entity': {
-                                    'properties': {
-                                        '_init': {
-                                            'properties': {},
-                                            'type': 'method',
-                                            'description': 'Initialize entity.',
-                                            'startline': 16,
-                                            'endline': 18,
-                                            'name': '_init',
-                                            'filepath': 'testdocfile1.js',
-                                        },
-                                        'id': {
-                                            'properties': {},
-                                            'type': 'number',
-                                            'description': 'Id of entity.',
-                                            'startline': 20,
-                                            'endline': 22,
-                                            'name': 'id',
-                                            'filepath': 'testdocfile1.js',
-                                        }
-                                    },
-                                    'filepath': 'testdocfile1.js',
-                                    'type': 'object',
-                                    'description': 'Entites are a containers for components.',
-                                    'startline': 11,
-                                    'endline': 14,
-                                    'name': 'entity',
-                                    'prototype': 'Object',
-                                }
-                            },
-                            'description': 'File defines EntityFactory module.',
-                            'author': 'Rafał Łużyński',
-                            'startline': 1,
-                            'endline': 4,
-                            'name': 'EntityFactory',
-                            'type': 'file',
-                        },
-                        'ComponentFactory': {
-                            'filepath': 'testdocfile2.js',
-                            'properties': {
-                                'ComponentFactory': {
-                                    'properties': {
-                                        'componentPrototype': {
-                                            'properties': {},
-                                            'type': 'property',
-                                            'description': textwrap.dedent("""\
-                                                Prototype accessible from outside for inheritance.
-                                            """).strip('\n').replace('\n', self.new_line_replace),
-                                            'startline': 38,
-                                            'endline': 42,
-                                            'valtype': 'prototype',
-                                            'filepath': 'testdocfile2.js',
-                                            'name': 'componentPrototype',
-                                        },
-                                    },
-                                    'name': 'ComponentFactory',
-                                    'type': 'factory',
-                                    'description': 'Creates new component.',
-                                    'filepath': 'testdocfile2.js',
-                                    'startline': 25,
-                                    'endline': 32,
-                                    'return': {
-                                        'type': 'core.ComponentFactory.component',
-                                        'description': 'New component.',
-                                    },
-                                    'example': textwrap.dedent("""\
-                                        var ComponentFactory = require('core/ComponentFactory');
-                                        var component = ComponentFactory();
-                                    """).strip('\n').replace('\n', self.new_line_replace),
-                                },
-                                'component': {
-                                    'properties': {
-                                        '_init': {
-                                            'properties': {},
-                                            'type': 'method',
-                                            'description': 'Initialize component.',
-                                            'startline': 14,
-                                            'endline': 17,
-                                            'filepath': 'testdocfile2.js',
-                                            'name': '_init',
-                                        },
-                                        'name': {
-                                            'properties': {},
-                                            'type': 'string',
-                                            'description': 'Name of component.',
-                                            'startline': 19,
-                                            'endline': 21,
-                                            'filepath': 'testdocfile2.js',
-                                            'name': 'name',
-                                        }
-                                    },
-                                    'name': 'component',
-                                    'type': 'object',
-                                    'description': textwrap.dedent("""\
-                                        Components are properties of \[[ref=core.EntityFactory.entity]].
-                                        Test url: [url=http://test.com](test url).
-                                    """).strip('\n').replace('\n', self.new_line_replace),
-                                    'startline': 7,
-                                    'endline': 12,
-                                    'prototype': 'Object',
-                                    'filepath': 'testdocfile2.js',
-                                }
-                            },
-                            'description': 'File defines ComponentFactory module.',
-                            'author': 'Rafał Łużyński',
-                            'startline': 1,
-                            'endline': 5,
-                            'name': 'ComponentFactory',
-                            'type': 'file',
-                        },
+                    'properties': OrderedDict({
                         'VelocityComponentFactory': {
                             'filepath': 'testdocfile3.js',
-                            'properties': {
+                            'properties': OrderedDict({
                                 'velocity': {
-                                    'properties': {},
+                                    'properties': OrderedDict({}),
                                     'type': 'object',
                                     'description': textwrap.dedent("""\
-                                        Velocity is needed for movement of entites.
-                                        Based on [ref=core.ComponentFactory.component](component).
-                                    """).strip('\n').replace('\n', self.new_line_replace),
+                                Velocity is needed for movement of entites.
+                                Based on [Component](#core.ComponentFactory.component "Component").
+                                    """).strip('\n'),
                                     'startline': 7,
                                     'endline': 12,
-                                    'prototype': 'core.ComponentFactory.component',
+                                    'attributes': {
+                                        'inherits': 'core.ComponentFactory.component'
+                                    },
                                     'filepath': 'testdocfile3.js',
                                     'name': 'velocity',
                                 }
-                            },
+                            }),
                             'description': 'File defines VelocityComponentFactory module.',
-                            'author': 'Rafał Łużyński',
+                            'attributes': { 'author': 'Rafał Łużyński', },
                             'startline': 1,
                             'endline': 5,
                             'name': 'VelocityComponentFactory',
                             'type': 'file',
                         },
-                    },
+                    }),
                     'filepath': 'testdocfilepackage.js',
-                    'author': 'Rafał Łużyński',
+                    'attributes': { 'author': 'Rafał Łużyński', },
                     'startline': 1,
                     'endline': 4,
                     'name': 'core',
                     'type': 'package',
                     'description': 'Core files package.',
                 },
-            }
-        }
+            }),
+        })
         filepaths = [
-            'testdocfilepackage.js', 'testdocfile1.js', 'testdocfile2.js', 'testdocfile3.js'
+            'testdocfilepackage.js', 'testdocfile3.js'
         ]
         dsp = DocStringParser(
             self.tag_settings, self.doc_string_regex, self.tag_regex, line_prefix='*'
@@ -871,20 +681,20 @@ class TestDocStringParser(unittest.TestCase):
 
     def test_doc_string_parser_default_author(self):
         """Test if data parsing and collecting works as expected with one file."""
-        data = {
-            'properties': {
+        data = OrderedDict({
+            'properties': OrderedDict({
                 'author': {
                     'filepath': 'testdocfile5.js',
-                    'properties': {},
+                    'properties': OrderedDict({}),
                     'description': 'Default author test.',
-                    'author': '',
+                    'attributes': { 'author': '', },
                     'startline': 1,
                     'endline': 4,
                     'name': 'author',
                     'type': 'file',
                 },
-            }
-        }
+            }),
+        })
         filepaths = ['testdocfile5.js']
         dsp = DocStringParser(self.tag_settings, self.doc_string_regex, self.tag_regex)
         for filepath in filepaths:
@@ -905,9 +715,9 @@ class TestDocStringParser(unittest.TestCase):
             """)),
             (7, 12, textwrap.dedent("""
                 Velocity is needed for movement of entites.
-                Based on [ref=core.ComponentFactory.component](component).
+                Based on [Component](#core.ComponentFactory.component "Component").
                 @object .velocity
-                @prototype {core.ComponentFactory.component}
+                @inherits {core.ComponentFactory.component}
             """))
         ]
         self.assertEqual(doc_strings, doc_strings_check)
@@ -916,7 +726,7 @@ class TestDocStringParser(unittest.TestCase):
         """Raise error if encoding of file is invalid."""
         filepath = 'testdocfileinvalidutf8.js'
         dsp = DocStringParser(self.tag_settings, self.doc_string_regex, self.tag_regex)
-        self.assertEqual(dsp._get_source_file_coding(filepath), 'utf-16')
+        self.assertEqual(get_source_file_coding(filepath), 'utf-16')
         self.assertRaises(UnicodeError, dsp.parse_file, filepath)
 
     def tearDown(self):

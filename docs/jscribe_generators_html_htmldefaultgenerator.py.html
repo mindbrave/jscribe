@@ -23,7 +23,11 @@
                     <ul>
                         
                         <li>
-                            <a href=".././docs/jscribe.html" title="jscribe">jscribe</a>
+                            <a href=".././docs/jscribeit.html" title="jscribeit">jscribeit</a>
+                        </li>
+                        
+                        <li>
+                            <a href=".././docs/generators_html_htmldefaultgenerator.html" title="htmldefaultgenerator">generators.html.htmldefaultgenerator</a>
                         </li>
                         
                         <li>
@@ -284,47 +288,19 @@
 227
 228
 229
-230
-231
-232
-233
-234
-235
-236
-237
-238
-239
-240
-241
-242
-243
-244
-245
-246
-247
-248
-249
-250
-251
-252
-253
-254
-255
-256
-257
-258
-259
-260
-261
-262</pre></div></td><td class="code"><div class="source"><pre><span class="c"># -*- coding: utf-8 -*-</span>
+230</pre></div></td><td class="code"><div class="source"><pre><span class="c"># -*- coding: utf-8 -*-</span>
 <span class="c">#!/usr/bin/env python</span>
+
+<span class="sd">&quot;&quot;&quot;* HTMLDefaultGenerator module.</span>
+<span class="sd">@module generators.html.htmldefaultgenerator</span>
+<span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">codecs</span>
 <span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">docutils.core</span> <span class="kn">import</span> <span class="n">publish_parts</span>
 
+<span class="kn">from</span> <span class="nn">markdown</span> <span class="kn">import</span> <span class="n">markdown</span>
 <span class="kn">from</span> <span class="nn">pygments</span> <span class="kn">import</span> <span class="n">highlight</span>
 <span class="kn">from</span> <span class="nn">pygments.lexers</span> <span class="kn">import</span> <span class="n">get_lexer_by_name</span>
 <span class="kn">from</span> <span class="nn">pygments.formatters</span> <span class="kn">import</span> <span class="n">HtmlFormatter</span>
@@ -342,6 +318,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">template_settings</span> <span class="o">=</span> <span class="n">template_settings</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">discovered_filepaths</span> <span class="o">=</span> <span class="n">discovered_filepaths</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">renderer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_renderer</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">make_link</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">namepath</span><span class="p">):</span>
+        <span class="n">markdown_link</span> <span class="o">=</span> <span class="s">u&#39;[{0}]({1} {0})&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">namepath</span><span class="p">,</span> <span class="n">namepath</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">,</span> <span class="s">&#39;_&#39;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">markdown</span><span class="p">(</span><span class="n">markdown_link</span><span class="p">,</span> <span class="n">output_format</span><span class="o">=</span><span class="s">&#39;html5&#39;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">get_template_for_element</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag_type_name</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">template_settings</span><span class="p">[</span><span class="s">&#39;ELEMENT_TEMPLATES&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
@@ -377,9 +357,17 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">generate_list_files</span><span class="p">(</span><span class="n">doc_data</span><span class="p">)</span>
         <span class="c"># create files for every element with separate type</span>
         <span class="k">for</span> <span class="n">prop</span><span class="p">,</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">doc_data</span><span class="p">[</span><span class="s">&#39;root_element&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;properties&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
-            <span class="c"># check if element is separate</span>
+            <span class="c"># check if element is defined in documentation</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_element_defined</span><span class="p">(</span><span class="n">element</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="c"># check if element is separate, only then create file</span>
             <span class="k">if</span> <span class="n">element</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;is_separate&#39;</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">generate_element_file</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_is_element_defined</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">element</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;type&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">return</span> <span class="bp">True</span>
 
     <span class="k">def</span> <span class="nf">create_renderer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">template_package</span> <span class="o">=</span> <span class="s">&#39;jscribe.templates.{}.{}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">GENERATOR</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">TEMPLATE</span><span class="p">)</span>
@@ -400,67 +388,12 @@
         <span class="n">namepath</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
         <span class="k">for</span> <span class="n">prop</span><span class="p">,</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">doc_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;properties&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
             <span class="c"># set namepath for element</span>
+            <span class="k">if</span> <span class="n">element</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;name&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="c"># if element is not defined but is used in namepath somewhere</span>
+                <span class="n">element</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">prop</span>
             <span class="n">namepath</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;name&#39;</span><span class="p">)</span>
             <span class="n">element</span><span class="p">[</span><span class="s">&#39;namepath&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">namepath</span>
-            <span class="c"># get element tag type settings</span>
-            <span class="n">tag_type_name</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;type&#39;</span><span class="p">)</span>
-            <span class="c"># add element to its element list</span>
-            <span class="k">if</span> <span class="n">lists</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">tag_type_name</span><span class="p">)</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-                <span class="n">lists</span><span class="p">[</span><span class="n">tag_type_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
-                    <span class="s">&#39;path&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_path_to_list_file</span><span class="p">(</span><span class="n">tag_type_name</span><span class="p">),</span> <span class="s">&#39;elements&#39;</span><span class="p">:</span> <span class="p">[]</span>
-                <span class="p">}</span>
-            <span class="n">lists</span><span class="p">[</span><span class="n">tag_type_name</span><span class="p">][</span><span class="s">&#39;elements&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
-            <span class="n">tag_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tag_settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">tag_type_name</span><span class="p">)</span>
-            <span class="c"># remove beginnig dot from filepath</span>
-            <span class="n">element</span><span class="p">[</span><span class="s">&#39;filepath&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">element</span><span class="p">[</span><span class="s">&#39;filepath&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">:]</span>
-            <span class="c"># set element path to sourcefile</span>
-            <span class="n">element</span><span class="p">[</span><span class="s">&#39;sourcepath&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_path_to_sourcefile</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;filepath&#39;</span><span class="p">))</span>
-            <span class="c"># add element doc file path</span>
-            <span class="n">output_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_path_to_element_file</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
-            <span class="n">element</span><span class="p">[</span><span class="s">&#39;doc_element_path&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">output_path</span>
-            <span class="c"># convert element description form reStrucutredText to html</span>
-            <span class="n">element</span><span class="p">[</span><span class="s">&#39;description_html&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">publish_parts</span><span class="p">(</span>
-                <span class="n">element</span><span class="p">[</span><span class="s">&#39;description&#39;</span><span class="p">],</span>
-                <span class="n">writer_name</span><span class="o">=</span><span class="s">&#39;html&#39;</span><span class="p">,</span>
-                <span class="n">settings_overrides</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;input_encoding&#39;</span><span class="p">:</span> <span class="s">&#39;unicode&#39;</span><span class="p">,</span> <span class="s">&#39;output_encoding&#39;</span><span class="p">:</span> <span class="s">&#39;utf-8&#39;</span><span class="p">}</span>
-            <span class="p">)[</span><span class="s">&#39;html_body&#39;</span><span class="p">]</span>
-            <span class="c"># convert parameter descriptions if are set</span>
-            <span class="k">if</span> <span class="n">element</span><span class="p">[</span><span class="s">&#39;attributes&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;params&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">element</span><span class="p">[</span><span class="s">&#39;attributes&#39;</span><span class="p">][</span><span class="s">&#39;params&#39;</span><span class="p">]:</span>
-                    <span class="n">param</span><span class="p">[</span><span class="s">&#39;description_html&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">publish_parts</span><span class="p">(</span>
-                        <span class="n">param</span><span class="p">[</span><span class="s">&#39;description&#39;</span><span class="p">],</span>
-                        <span class="n">writer_name</span><span class="o">=</span><span class="s">&#39;html&#39;</span><span class="p">,</span>
-                        <span class="n">settings_overrides</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;input_encoding&#39;</span><span class="p">:</span> <span class="s">&#39;unicode&#39;</span><span class="p">,</span> <span class="s">&#39;output_encoding&#39;</span><span class="p">:</span> <span class="s">&#39;utf-8&#39;</span><span class="p">}</span>
-                    <span class="p">)[</span><span class="s">&#39;html_body&#39;</span><span class="p">]</span>
-            <span class="c"># convert return descriptions if are set</span>
-            <span class="k">if</span> <span class="n">element</span><span class="p">[</span><span class="s">&#39;attributes&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;return&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-                <span class="n">element</span><span class="p">[</span><span class="s">&#39;attributes&#39;</span><span class="p">][</span><span class="s">&#39;return&#39;</span><span class="p">][</span><span class="s">&#39;description_html&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">publish_parts</span><span class="p">(</span>
-                    <span class="n">element</span><span class="p">[</span><span class="s">&#39;attributes&#39;</span><span class="p">][</span><span class="s">&#39;return&#39;</span><span class="p">][</span><span class="s">&#39;description&#39;</span><span class="p">],</span>
-                    <span class="n">writer_name</span><span class="o">=</span><span class="s">&#39;html&#39;</span><span class="p">,</span>
-                    <span class="n">settings_overrides</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;input_encoding&#39;</span><span class="p">:</span> <span class="s">&#39;unicode&#39;</span><span class="p">,</span> <span class="s">&#39;output_encoding&#39;</span><span class="p">:</span> <span class="s">&#39;utf-8&#39;</span><span class="p">}</span>
-                <span class="p">)[</span><span class="s">&#39;html_body&#39;</span><span class="p">]</span>
-            <span class="c"># convert example descriptions if are set, and convert code to html with pygments</span>
-            <span class="k">if</span> <span class="n">element</span><span class="p">[</span><span class="s">&#39;attributes&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;examples&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">example</span> <span class="ow">in</span> <span class="n">element</span><span class="p">[</span><span class="s">&#39;attributes&#39;</span><span class="p">][</span><span class="s">&#39;examples&#39;</span><span class="p">]:</span>
-                    <span class="n">example</span><span class="p">[</span><span class="s">&#39;description_html&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">publish_parts</span><span class="p">(</span>
-                        <span class="n">example</span><span class="p">[</span><span class="s">&#39;description&#39;</span><span class="p">],</span>
-                        <span class="n">writer_name</span><span class="o">=</span><span class="s">&#39;html&#39;</span><span class="p">,</span>
-                        <span class="n">settings_overrides</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;input_encoding&#39;</span><span class="p">:</span> <span class="s">&#39;unicode&#39;</span><span class="p">,</span> <span class="s">&#39;output_encoding&#39;</span><span class="p">:</span> <span class="s">&#39;utf-8&#39;</span><span class="p">}</span>
-                    <span class="p">)[</span><span class="s">&#39;html_body&#39;</span><span class="p">]</span>
-                    <span class="n">langid</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">LANGUAGE</span>
-                    <span class="k">if</span> <span class="n">example</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;langid&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-                        <span class="n">langid</span> <span class="o">=</span> <span class="n">example</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;langid&#39;</span><span class="p">)</span>
-                    <span class="n">example</span><span class="p">[</span><span class="s">&#39;langid&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">langid</span>
-                    <span class="n">lexer</span> <span class="o">=</span> <span class="n">get_lexer_by_name</span><span class="p">(</span><span class="n">langid</span><span class="p">,</span> <span class="n">stripall</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-                    <span class="n">formatter</span> <span class="o">=</span> <span class="n">HtmlFormatter</span><span class="p">(</span>
-                        <span class="n">linenos</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">template_settings</span><span class="p">[</span><span class="s">&#39;SHOW_LINE_NUMBER&#39;</span><span class="p">],</span>
-                        <span class="n">cssclass</span><span class="o">=</span><span class="s">&quot;source&quot;</span>
-                    <span class="p">)</span>
-                    <span class="n">result</span> <span class="o">=</span> <span class="n">highlight</span><span class="p">(</span><span class="n">example</span><span class="p">[</span><span class="s">&#39;code&#39;</span><span class="p">],</span> <span class="n">lexer</span><span class="p">,</span> <span class="n">formatter</span><span class="p">)</span>
-                    <span class="n">example</span><span class="p">[</span><span class="s">&#39;code_html&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span>
-            <span class="c"># check if element is separate</span>
-            <span class="n">is_separate</span> <span class="o">=</span> <span class="n">get_tag_type_property</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tag_settings</span><span class="p">,</span> <span class="n">tag_type</span><span class="p">,</span> <span class="s">&#39;separate&#39;</span><span class="p">)</span>
-            <span class="n">element</span><span class="p">[</span><span class="s">&#39;is_separate&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">is_separate</span>
+            <span class="n">element</span><span class="p">,</span> <span class="n">lists</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_element_data</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">lists</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_get_element_template_data</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">namepath</span><span class="p">,</span> <span class="n">lists</span><span class="p">)</span>
         <span class="n">doc_data</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;root_element&#39;</span><span class="p">:</span> <span class="n">doc_data</span><span class="p">,</span> <span class="s">&#39;lists&#39;</span><span class="p">:</span> <span class="n">lists</span><span class="p">}</span>
         <span class="k">return</span> <span class="n">doc_data</span>
@@ -468,10 +401,19 @@
     <span class="k">def</span> <span class="nf">_get_element_template_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">namepath</span><span class="p">,</span> <span class="n">lists</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">prop</span><span class="p">,</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;properties&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
             <span class="c"># set namepath for element</span>
+            <span class="k">if</span> <span class="n">element</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;name&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="c"># if element is not defined but is used in namepath somewhere</span>
+                <span class="n">element</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">prop</span>
             <span class="n">_namepath</span> <span class="o">=</span> <span class="s">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">namepath</span><span class="p">,</span> <span class="n">element</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;name&#39;</span><span class="p">)])</span>
             <span class="n">element</span><span class="p">[</span><span class="s">&#39;namepath&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_namepath</span>
-            <span class="c"># get element tag type settings</span>
-            <span class="n">tag_type_name</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;type&#39;</span><span class="p">)</span>
+            <span class="n">element</span><span class="p">,</span> <span class="n">lists</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_element_data</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">lists</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_get_element_template_data</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">_namepath</span><span class="p">,</span> <span class="n">lists</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_prepare_element_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">,</span> <span class="n">lists</span><span class="p">):</span>
+        <span class="c"># get element tag type settings</span>
+        <span class="n">tag_type_name</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;type&#39;</span><span class="p">)</span>
+        <span class="c"># if element type is None then this element is not defined anywhere</span>
+        <span class="k">if</span> <span class="n">tag_type_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
             <span class="c"># add element to its element list</span>
             <span class="k">if</span> <span class="n">lists</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">tag_type_name</span><span class="p">)</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
                 <span class="n">lists</span><span class="p">[</span><span class="n">tag_type_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
@@ -486,35 +428,31 @@
             <span class="c"># add element doc file path</span>
             <span class="n">output_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_path_to_element_file</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
             <span class="n">element</span><span class="p">[</span><span class="s">&#39;doc_element_path&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">output_path</span>
-            <span class="c"># convert element description form reStrucutredText to html</span>
-            <span class="n">element</span><span class="p">[</span><span class="s">&#39;description_html&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">publish_parts</span><span class="p">(</span>
+            <span class="c"># convert element description from markdown to html</span>
+            <span class="n">element</span><span class="p">[</span><span class="s">&#39;description_html&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">markdown</span><span class="p">(</span>
                 <span class="n">element</span><span class="p">[</span><span class="s">&#39;description&#39;</span><span class="p">],</span>
-                <span class="n">writer_name</span><span class="o">=</span><span class="s">&#39;html&#39;</span><span class="p">,</span>
-                <span class="n">settings_overrides</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;input_encoding&#39;</span><span class="p">:</span> <span class="s">&#39;unicode&#39;</span><span class="p">,</span> <span class="s">&#39;output_encoding&#39;</span><span class="p">:</span> <span class="s">&#39;utf-8&#39;</span><span class="p">}</span>
-            <span class="p">)[</span><span class="s">&#39;html_body&#39;</span><span class="p">]</span>
+                <span class="n">output_format</span><span class="o">=</span><span class="s">&#39;html5&#39;</span><span class="p">,</span>
+            <span class="p">)</span>
             <span class="c"># convert parameter descriptions if are set</span>
             <span class="k">if</span> <span class="n">element</span><span class="p">[</span><span class="s">&#39;attributes&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;params&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">element</span><span class="p">[</span><span class="s">&#39;attributes&#39;</span><span class="p">][</span><span class="s">&#39;params&#39;</span><span class="p">]:</span>
-                    <span class="n">param</span><span class="p">[</span><span class="s">&#39;description_html&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">publish_parts</span><span class="p">(</span>
+                    <span class="n">param</span><span class="p">[</span><span class="s">&#39;description_html&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">markdown</span><span class="p">(</span>
                         <span class="n">param</span><span class="p">[</span><span class="s">&#39;description&#39;</span><span class="p">],</span>
-                        <span class="n">writer_name</span><span class="o">=</span><span class="s">&#39;html&#39;</span><span class="p">,</span>
-                        <span class="n">settings_overrides</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;input_encoding&#39;</span><span class="p">:</span> <span class="s">&#39;unicode&#39;</span><span class="p">,</span> <span class="s">&#39;output_encoding&#39;</span><span class="p">:</span> <span class="s">&#39;utf-8&#39;</span><span class="p">}</span>
-                    <span class="p">)[</span><span class="s">&#39;html_body&#39;</span><span class="p">]</span>
+                        <span class="n">output_format</span><span class="o">=</span><span class="s">&#39;html5&#39;</span><span class="p">,</span>
+                    <span class="p">)</span>
             <span class="c"># convert return descriptions if are set</span>
             <span class="k">if</span> <span class="n">element</span><span class="p">[</span><span class="s">&#39;attributes&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;return&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-                <span class="n">element</span><span class="p">[</span><span class="s">&#39;attributes&#39;</span><span class="p">][</span><span class="s">&#39;return&#39;</span><span class="p">][</span><span class="s">&#39;description_html&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">publish_parts</span><span class="p">(</span>
+                <span class="n">element</span><span class="p">[</span><span class="s">&#39;attributes&#39;</span><span class="p">][</span><span class="s">&#39;return&#39;</span><span class="p">][</span><span class="s">&#39;description_html&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">markdown</span><span class="p">(</span>
                     <span class="n">element</span><span class="p">[</span><span class="s">&#39;attributes&#39;</span><span class="p">][</span><span class="s">&#39;return&#39;</span><span class="p">][</span><span class="s">&#39;description&#39;</span><span class="p">],</span>
-                    <span class="n">writer_name</span><span class="o">=</span><span class="s">&#39;html&#39;</span><span class="p">,</span>
-                    <span class="n">settings_overrides</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;input_encoding&#39;</span><span class="p">:</span> <span class="s">&#39;unicode&#39;</span><span class="p">,</span> <span class="s">&#39;output_encoding&#39;</span><span class="p">:</span> <span class="s">&#39;utf-8&#39;</span><span class="p">}</span>
-                <span class="p">)[</span><span class="s">&#39;html_body&#39;</span><span class="p">]</span>
+                    <span class="n">output_format</span><span class="o">=</span><span class="s">&#39;html5&#39;</span><span class="p">,</span>
+                <span class="p">)</span>
             <span class="c"># convert example descriptions if are set, and convert code to html with pygments</span>
             <span class="k">if</span> <span class="n">element</span><span class="p">[</span><span class="s">&#39;attributes&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;examples&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">example</span> <span class="ow">in</span> <span class="n">element</span><span class="p">[</span><span class="s">&#39;attributes&#39;</span><span class="p">][</span><span class="s">&#39;examples&#39;</span><span class="p">]:</span>
-                    <span class="n">example</span><span class="p">[</span><span class="s">&#39;description_html&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">publish_parts</span><span class="p">(</span>
+                    <span class="n">example</span><span class="p">[</span><span class="s">&#39;description_html&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">markdown</span><span class="p">(</span>
                         <span class="n">example</span><span class="p">[</span><span class="s">&#39;description&#39;</span><span class="p">],</span>
-                        <span class="n">writer_name</span><span class="o">=</span><span class="s">&#39;html&#39;</span><span class="p">,</span>
-                        <span class="n">settings_overrides</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;input_encoding&#39;</span><span class="p">:</span> <span class="s">&#39;unicode&#39;</span><span class="p">,</span> <span class="s">&#39;output_encoding&#39;</span><span class="p">:</span> <span class="s">&#39;utf-8&#39;</span><span class="p">}</span>
-                    <span class="p">)[</span><span class="s">&#39;html_body&#39;</span><span class="p">]</span>
+                        <span class="n">output_format</span><span class="o">=</span><span class="s">&#39;html5&#39;</span><span class="p">,</span>
+                    <span class="p">)</span>
                     <span class="n">langid</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">LANGUAGE</span>
                     <span class="k">if</span> <span class="n">example</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;langid&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
                         <span class="n">langid</span> <span class="o">=</span> <span class="n">example</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;langid&#39;</span><span class="p">)</span>
@@ -526,14 +464,16 @@
                     <span class="p">)</span>
                     <span class="n">result</span> <span class="o">=</span> <span class="n">highlight</span><span class="p">(</span><span class="n">example</span><span class="p">[</span><span class="s">&#39;code&#39;</span><span class="p">],</span> <span class="n">lexer</span><span class="p">,</span> <span class="n">formatter</span><span class="p">)</span>
                     <span class="n">example</span><span class="p">[</span><span class="s">&#39;code_html&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span>
-                    <span class="k">print</span> <span class="n">example</span>
             <span class="c"># check if element is separate</span>
             <span class="n">is_separate</span> <span class="o">=</span> <span class="n">get_tag_type_property</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tag_settings</span><span class="p">,</span> <span class="n">tag_type</span><span class="p">,</span> <span class="s">&#39;separate&#39;</span><span class="p">)</span>
             <span class="n">element</span><span class="p">[</span><span class="s">&#39;is_separate&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">is_separate</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_get_element_template_data</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">_namepath</span><span class="p">,</span> <span class="n">lists</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">element</span><span class="p">,</span> <span class="n">lists</span>
 
     <span class="k">def</span> <span class="nf">generate_element_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element_data</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">prop</span><span class="p">,</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">element_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;properties&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="c"># check if element is defined in documentation</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_element_defined</span><span class="p">(</span><span class="n">element</span><span class="p">):</span>
+                <span class="k">continue</span>
             <span class="k">if</span> <span class="n">element</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;is_separate&#39;</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">generate_element_file</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">render_element</span><span class="p">(</span><span class="n">element_data</span><span class="p">)</span>

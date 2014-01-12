@@ -18,3 +18,4 @@ TAG_SETTINGS_PATH = "jscribe.conf.pythontagsettings"
 OUTPUT_ENCODING = "utf-8"
 LANGUAGE = "javascript"
 GENERATOR = "html"
+ALL_SOURCE_FILES = False
