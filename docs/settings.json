@@ -5,7 +5,6 @@
     "FILE_IGNORE_REGEX": null,
     "DOCUMENTATION_OUTPUT_PATH": "./docs/",
     "DOC_STRING_REGEX": ["[\"][\"][\"][*]", "[\"][\"][\"]"],
-    "DOC_STRING_LINE_PREFIX": "",
     "TAG_REGEX": "[@](?P<tag>.*?)\\s",
     "IGNORE_INVALID_TAGS": false,
     "TEMPLATE": "default",
@@ -19,5 +18,5 @@
     },
     "TAG_SETTINGS": "jscribe.conf.pythontagsettings",
     "LANGUAGE": "python",
-    "ALL_SOURCE_FILES": true
+    "ALL_SOURCE_FILES": false
 }

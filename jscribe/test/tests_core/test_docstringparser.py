@@ -135,47 +135,50 @@ class TestDocStringParser(unittest.TestCase):
         with open('testdocfile1.js', 'w') as f:
             f.write("""\
                 /** File defines EntityFactory module.
-                 @file core.EntityFactory
-                 @author Rafał Łużyński
+                @file core.EntityFactory
+                @author Rafał Łużyński
                 */
                 define(function() {
                     /** Keeps last created entity id.
-                     @number .EntityFactory.currentEntityId
-                     @private
+                    @number .EntityFactory.currentEntityId
+                    @private
                     */
                     var currentEntityId = 0;
                     /** Entites are a containers for components.
-                     @object .entity
-                     @inherits {Object}
+                    @object .entity
+                    @inherits {Object}
                     */
                     var entityPrototype = {
                         /** Initialize entity.
-                         @method .._init
+                        @method .._init
                         */
                         _init: function() {
                             /** Id of entity.
-                             @number ..id
+                            @number ..id
                             */
                             this.id = currentEntityId;
                             currentEntityId += 1;
                         }
                     };
                     /** Creates new entity.
-                     @factory .EntityFactory
-                     @return {core.EntityFactory.entity} New entity.
-                     @example example1 {var EntityFactory = require('core/EntityFactory');
-                        var entity = EntityFactory();}
+                    @factory .EntityFactory
+                    @return {core.EntityFactory.entity} New entity.
+                    @example example1 {var EntityFactory = require('core/EntityFactory');
+                    var entity = EntityFactory();}
                     */
                     var EntityFactory = function() {
                         var newEntity = Object.create(entityPrototype);
                         newEntity._init();
                         return newEntity;
                     };
-// comment          /** this is not a doc string @number */
-                    /** this is not a doc string neither, because of no tag */
+// comment          /** this is not a doc string
+                    @number
+                    */
+                    /** this is not a doc string neither, because of no tag
+                    */
                     /** Prototype accessible from outside for inheritance.
-                     @property ..entityPrototype
-                     @valtype {prototype}
+                    @property ..entityPrototype
+                    @valtype {prototype}
                     */
                     EntityFactory.entityPrototype = entityPrototype;
                     return EntityFactory;
@@ -185,35 +188,35 @@ class TestDocStringParser(unittest.TestCase):
         with open('testdocfile2.js', 'w') as f:
             f.write("""\
                 /**
-                 File defines ComponentFactory module.
-                 @file core.ComponentFactory
-                 @author Rafał Łużyński
+                File defines ComponentFactory module.
+                @file core.ComponentFactory
+                @author Rafał Łużyński
                 */
                 define(function() {
                     /**
-                     Components are properties of entities.
-                     Test url: [Test](http://test.com).
-                     @object .component
-                     @inherits {Object}
+                    Components are properties of entities.
+                    Test url: [Test](http://test.com).
+                    @object .component
+                    @inherits {Object}
                     */
                     var componentPrototype = {
                         /**
-                         Initialize component.
-                         @method .._init
+                        Initialize component.
+                        @method .._init
                         */
                         _init: function() {
                             /** Name of component.
-                             @string ..name
+                            @string ..name
                             */
                             name: undefined
                         }
                     };
                     /**
-                     Creates new component.
-                     @factory .ComponentFactory
-                     @return {core.ComponentFactory.component} New component.
-                     @example example1 {var ComponentFactory = require('core/ComponentFactory');
-                     var component = ComponentFactory();}
+                    Creates new component.
+                    @factory .ComponentFactory
+                    @return {core.ComponentFactory.component} New component.
+                    @example example1 {var ComponentFactory = require('core/ComponentFactory');
+                    var component = ComponentFactory();}
                     */
                     var ComponentFactory = function() {
                         var newComponent = Object.create(componentPrototype);
@@ -221,9 +224,9 @@ class TestDocStringParser(unittest.TestCase):
                         return newComponent;
                     };
                     /**
-                     Prototype accessible from outside for inheritance.
-                     @property ..componentPrototype
-                     @valtype {prototype}
+                    Prototype accessible from outside for inheritance.
+                    @property ..componentPrototype
+                    @valtype {prototype}
                     */
                     ComponentFactory.componentPrototype = componentPrototype;
                     return ComponentFactory;
@@ -233,17 +236,17 @@ class TestDocStringParser(unittest.TestCase):
         with codecs.open('testdocfile3.js', 'w', 'utf-8') as f:
             f.write(u"""\
                 /**
-                 File defines VelocityComponentFactory module.
-                 @file core.VelocityComponentFactory
-                 @author Rafał Łużyński
+                File defines VelocityComponentFactory module.
+                @file core.VelocityComponentFactory
+                @author Rafał Łużyński
                 */
                 define(function() {
                     /**
-                     * Velocity is needed for movement of entites.
-                     * Based on [Component](#core.ComponentFactory.component "Component").
-                     * @object .velocity
-                     * @inherits {core.ComponentFactory.component}
-                    **/
+                    Velocity is needed for movement of entites.
+                    Based on [Component](#core.ComponentFactory.component "Component").
+                    @object .velocity
+                    @inherits {core.ComponentFactory.component}
+                    */
                     return VelocityComponentFactory;
           //comment /** this is not a doc string because of comment @number */
                 });
@@ -252,37 +255,37 @@ class TestDocStringParser(unittest.TestCase):
         with open('testdocfilepackage.js', 'w') as f:
             f.write("""\
                 /** Core files package.
-                    @pack core
-                    @author Rafał Łużyński
+                @pack core
+                @author Rafał Łużyński
                 */
             """)
             f.close()
         with open('testdocfile4.js', 'w') as f:
             f.write("""\
                 /**
-                 File defines Error module.
-                 @file
+                File defines Error module.
+                @file
                 */
             """)
             f.close()
         with open('testdocfile5.js', 'w') as f:
             f.write("""\
                 /** Default author test.
-                    @file author
-                    @author
+                @file author
+                @author
                 */
             """)
             f.close()
         with open('testdocfile6.js', 'w') as f:
             f.write("""\
                 /**
-                 No object name.
-                 @file noobjectname
-                 @author RŁ
+                No object name.
+                @file noobjectname
+                @author RŁ
                 */
                 /**
-                 Object error.
-                 @object
+                Object error.
+                @object
                 */
             """)
             f.close()
@@ -373,10 +376,13 @@ class TestDocStringParser(unittest.TestCase):
                                             'description': textwrap.dedent("""
                                                 Prototype accessible from outside for inheritance.
                                             """).strip('\n'),
-                                            'startline': 40,
-                                            'endline': 43,
+                                            'startline': 43,
+                                            'endline': 46,
                                             'attributes': {
-                                                'valtype': 'prototype',
+                                                'valtype': {
+                                                    'valtype': 'prototype',
+                                                    'ref': None,
+                                                }
                                             },
                                             'filepath': 'testdocfile1.js',
                                         },
@@ -389,7 +395,10 @@ class TestDocStringParser(unittest.TestCase):
                                     'endline': 32,
                                     'attributes': {
                                         'return': {
-                                            'type': 'core.EntityFactory.entity',
+                                            'type': {
+                                                'type': 'core.EntityFactory.entity',
+                                                'ref': None,
+                                            },
                                             'description': 'New entity.',
                                         },
                                         'examples': [
@@ -435,7 +444,10 @@ class TestDocStringParser(unittest.TestCase):
                                     'endline': 14,
                                     'name': 'entity',
                                     'attributes': {
-                                        'inherits': 'Object',
+                                        'inherits': {
+                                            'inherits': 'Object',
+                                            'ref': None,
+                                        }
                                     },
                                 }
                             }),
@@ -509,7 +521,10 @@ class TestDocStringParser(unittest.TestCase):
                                     'startline': 7,
                                     'endline': 12,
                                     'attributes': {
-                                        'inherits': 'Object',
+                                        'inherits': {
+                                            'inherits': 'Object',
+                                            'ref': None,
+                                        }
                                     },
                                     'filepath': 'testdocfile2.js',
                                 }),
@@ -524,7 +539,10 @@ class TestDocStringParser(unittest.TestCase):
                                             'startline': 37,
                                             'endline': 41,
                                             'attributes': {
-                                                'valtype': 'prototype',
+                                                'valtype': {
+                                                    'valtype': 'prototype',
+                                                    'ref': None,
+                                                }
                                             },
                                             'filepath': 'testdocfile2.js',
                                             'name': 'componentPrototype',
@@ -538,7 +556,10 @@ class TestDocStringParser(unittest.TestCase):
                                     'endline': 31,
                                     'attributes': {
                                         'return': {
-                                            'type': 'core.ComponentFactory.component',
+                                            'type': {
+                                                'type': 'core.ComponentFactory.component',
+                                                'ref': None,
+                                            },
                                             'description': 'New component.',
                                         },
                                         'examples': [
@@ -603,7 +624,10 @@ class TestDocStringParser(unittest.TestCase):
                                     'startline': 7,
                                     'endline': 12,
                                     'attributes': {
-                                        'inherits': 'core.ComponentFactory.component'
+                                        'inherits': {
+                                            'inherits': 'core.ComponentFactory.component',
+                                            'ref': None,
+                                        }
                                     },
                                     'filepath': 'testdocfile3.js',
                                     'name': 'velocity',
@@ -630,9 +654,7 @@ class TestDocStringParser(unittest.TestCase):
         filepaths = [
             'testdocfilepackage.js', 'testdocfile3.js'
         ]
-        dsp = DocStringParser(
-            self.tag_settings, self.doc_string_regex, self.tag_regex, line_prefix='*'
-        )
+        dsp = DocStringParser(self.tag_settings, self.doc_string_regex, self.tag_regex)
         self.maxDiff = None
         for filepath in filepaths:
             dsp.parse_file(filepath)
@@ -704,7 +726,7 @@ class TestDocStringParser(unittest.TestCase):
     def test_get_doc_strings(self):
         """Test finding doc strings in a file."""
         dsp = DocStringParser(
-            self.tag_settings, self.doc_string_regex, self.tag_regex, line_prefix='*'
+            self.tag_settings, self.doc_string_regex, self.tag_regex
         )
         doc_strings = dsp._get_doc_strings('testdocfile3.js', 'utf-8')
         doc_strings_check = [

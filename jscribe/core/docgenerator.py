@@ -2,7 +2,7 @@
 #!/usr/bin/env python
 
 """* DocumentationGenerator module file.
-@module core.docgenerator
+@module jscribe.core.docgenerator
 @author Rafał Łużyński
 """
 
@@ -13,14 +13,13 @@ from jscribe.utils.file import discover_files
 from jscribe.conf import settings
 from jscribe.core.docstringparser import DocStringParser
 from jscribe.core.htmldocgenerator import HTMLDocumentationGenerator
+from jscribe.core.generator import Generator
 
 
 class DocumentationGenerator(object):
     """* This class is a *controller* class that creates documentation.
     @class .DocumentationGenerator
     """
-    class InvalidGeneratorException(Exception):
-        pass
     GENERATORS = {
         'html': HTMLDocumentationGenerator,
     }
@@ -28,7 +27,8 @@ class DocumentationGenerator(object):
         """* Initialization.
         @method ..__init__
         @param self
-        @param settings_path {str} Path to settings **json** file.
+        @param settings_path {test} Path to settings
+        **json** file.
         @example Doc generation usage. {
             doc_generator = DocumentationGenerator(path_to_settings)
             doc_generator.generate_documentation()
@@ -76,7 +76,7 @@ class DocumentationGenerator(object):
         )
         dsp = DocStringParser(
             self.tag_settings, settings.DOC_STRING_REGEX, settings.TAG_REGEX,
-            settings.DOC_STRING_LINE_PREFIX, settings.IGNORE_INVALID_TAGS
+            settings.IGNORE_INVALID_TAGS
         )
         for filepath in self.discovered_filepaths:
             dsp.parse_file(filepath)
@@ -87,7 +87,7 @@ class DocumentationGenerator(object):
         # get generator
         generator_class = self.GENERATORS.get(settings.GENERATOR)
         if generator_class is None:
-            raise self.InvalidGeneratorException(
+            raise Generator.InvalidGeneratorException(
                 'Invalid generator "{}". Maybe not supported yet.'.format(settings.GENERATOR)
             )
         generator = generator_class(self.doc_data, self.tag_settings, self.documentation_filepaths)

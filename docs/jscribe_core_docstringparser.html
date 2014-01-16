@@ -1,0 +1,212 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+    </head>
+    <body>
+        <header>
+            <img src=""/>
+            <h1></h1>
+        </header>
+        <div id="main">
+            <div id="lists-container">
+                <h2>Lists</h2>
+                
+                    
+                
+                    
+                    <h3><a href="list_package.html" title="packages">packages</a></h3>
+                    <ul>
+                        
+                        <li>
+                            <a href="jscribe.html" title="jscribe">jscribe</a>
+                        </li>
+                        
+                        <li>
+                            <a href="jscribe_generators.html" title="generators">jscribe.generators</a>
+                        </li>
+                        
+                        <li>
+                            <a href="jscribe_core.html" title="core">jscribe.core</a>
+                        </li>
+                        
+                    </ul>
+                    
+                
+                    
+                
+                    
+                    <h3><a href="list_module.html" title="modules">modules</a></h3>
+                    <ul>
+                        
+                        <li>
+                            <a href="jscribeit.html" title="jscribeit">jscribeit</a>
+                        </li>
+                        
+                        <li>
+                            <a href="jscribe_generators_html_htmldefaultgenerator.html" title="htmldefaultgenerator">jscribe.generators.html.htmldefaultgenerator</a>
+                        </li>
+                        
+                        <li>
+                            <a href="jscribe_core_docgenerator.html" title="docgenerator">jscribe.core.docgenerator</a>
+                        </li>
+                        
+                        <li>
+                            <a href="jscribe_core_generator.html" title="generator">jscribe.core.generator</a>
+                        </li>
+                        
+                        <li>
+                            <a href="jscribe_core_htmldocgenerator.html" title="htmldocgenerator">jscribe.core.htmldocgenerator</a>
+                        </li>
+                        
+                        <li>
+                            <a href="jscribe_core_docstringparser.html" title="docstringparser">jscribe.core.docstringparser</a>
+                        </li>
+                        
+                    </ul>
+                    
+                
+                    
+                
+                    
+                
+            </div>
+            <div id="content">
+            
+    <h1 id="">module docstringparser
+</h1>
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Default</th>
+        <th>Description</th>
+    </tr>
+</table>
+<div>Description: <p>Doc string parser module file.</p></div>
+
+<div>File: <a href="jscribe_core_docstringparser.py.html#line-4">/jscribe/core/docstringparser.py</a> Line: 4</div>
+
+
+
+    
+        
+            <h1 id="DocStringParser">class DocStringParser</h1>
+<div>Description: <p>This class generates doc data from source files.</p></div>
+<div>File: <a href="jscribe_core_docstringparser.py.html#line-19">/jscribe/core/docstringparser.py</a> Line: 19</div>
+
+
+    
+        <h1 id="DocStringParser___init__">method __init__(self, tag_settings, doc_string_regex, tag_regex, ignore_invalid_tags=False)
+</h1>
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Default</th>
+        <th>Description</th>
+    </tr>
+        <tr>
+            <td>self</td>
+            <td>None</td>
+            <td>None</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>tag_settings</td>
+            <td>dict</td>
+            <td>None</td>
+            <td><p>Dictionary with tag settings.</p></td>
+        </tr>
+        <tr>
+            <td>doc_string_regex</td>
+            <td>regex</td>
+            <td>None</td>
+            <td><p>Regex that matches doc strings.</p></td>
+        </tr>
+        <tr>
+            <td>tag_regex</td>
+            <td>regex</td>
+            <td>None</td>
+            <td><p>Regex that matches tags in doc strings.
+Whitespaces at the line begining are always ommited.</p></td>
+        </tr>
+        <tr>
+            <td>ignore_invalid_tags</td>
+            <td>boolean</td>
+            <td>False</td>
+            <td><p>If True then invalid tag name won't raise
+error.</p></td>
+        </tr>
+</table>
+<div>Description: <p>Initialization. Test code block:</p>
+<pre><code>normal code block
+</code></pre>
+<table class="source_pythontable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="source_python"><pre><span id="line-1"><span class="k">class</span> <span class="nc">Test</span><span class="p">:</span>
+</span><span id="line-2">    <span class="k">pass</span>
+</span></pre></div>
+</td></tr></table>
+
+<table class="source_javascripttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="source_javascript"><pre><span id="line-1"><span class="nx">dupa</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">cze</span><span class="p">)</span>
+</span><span id="line-2"><span class="k">return</span> <span class="nx">doesnt</span><span class="p">.</span><span class="nx">work</span><span class="p">()</span>
+</span></pre></div>
+</td></tr></table>
+
+<table class="source_pythontable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="source_python"><pre><span id="line-1"><span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="n">test</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+</span></pre></div>
+</td></tr></table>
+
+<p>Inline code: <code>this.should.work()</code>.</p></div>
+
+<div>File: <a href="jscribe_core_docstringparser.py.html#line-39">/jscribe/core/docstringparser.py</a> Line: 39</div>
+
+
+
+    
+
+        
+    
+
+    
+        
+            <h1 id="get_tag_parent_type">function get_tag_parent_type(tag_settings, tag_type)
+</h1>
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Default</th>
+        <th>Description</th>
+    </tr>
+        <tr>
+            <td>tag_settings</td>
+            <td>str</td>
+            <td>None</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>tag_type</td>
+            <td>dict</td>
+            <td>None</td>
+            <td></td>
+        </tr>
+</table>
+<div>Description: <p>Gets tag settings from parent tag type.</p></div>
+
+<div>File: <a href="jscribe_core_docstringparser.py.html#line-509">/jscribe/core/docstringparser.py</a> Line: 509</div>
+
+
+
+        
+    
+
+
+            </div>
+        </div>
+        <footer>
+            JSCRIBE
+        </footer>
+    </body>
+</html>

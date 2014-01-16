@@ -1,4 +1,4 @@
-<h1>{{ element.type }} {{ element.name }}
+<h1 id="{{ element.doc_element_id }}">{{ element.type }} {{ element.name }}
 {%- if tag_settings[element.type].callable -%}(
     {%- for param in element.attributes.params -%}
         {{ param.name }}{%- if param.default != None %}={{ param.default }}{%- endif %}
@@ -18,7 +18,7 @@
     {%- for param in element.attributes.params %}
         <tr>
             <td>{{ param.name }}</td>
-            <td>{{ param.type }}</td>
+            <td>{% if param.type.ref %}{{ param.type.ref_html }}{% else %}{{ param.type.type }}{% endif %}</td>
             <td>{{ param.default }}</td>
             <td>{{ param.description_html }}</td>
         </tr>
@@ -26,7 +26,16 @@
     {%- endif %}
 </table>
 <div>Description: {{ element.description_html }}</div>
-<div>File: <a href="../{{ element.sourcepath }}#line{{ element.startline }}">{{ element.filepath }}</a> Line: {{ element.startline }}</div>
+{% if element.inherits %}
+<div>Inherits:
+    {% if element.inherits.ref %}
+        {{ element.inherits.ref_html }}
+    {% else %}
+        {{ element.inherits.inherits }}
+    {% endif %}
+</div>
+{% endif %}
+<div>File: <a href="{{ element.sourcepath }}#line-{{ element.startline }}">{{ element.filepath }}</a> Line: {{ element.startline }}</div>
 {% if element.author %}
     <div>
         Author: {{ element.author }}
@@ -43,9 +52,11 @@
 {% endfor %}
 {% endif %}
 {% for _element in element.properties.values() %}
-    {% if _element.is_separate %}
-        <h2><a href="../{{ _element.doc_element_path }}">{{ _element.namepath }}</a></h2>
-    {% else %}
-        {{ render_element(_element) }}
+    {% if _element.type != None %}
+        {% if _element.is_separate %}
+            <h2>{{ _element.type }} <a href="{{ _element.doc_element_path }}">{{ _element.namepath }}</a></h2>
+        {% else %}
+            {{ render_element(_element) }}
+        {% endif %}
     {% endif %}
 {% endfor %}

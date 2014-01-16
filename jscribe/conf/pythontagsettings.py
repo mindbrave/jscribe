@@ -57,6 +57,7 @@ TAG_SETTINGS = {
         "name": "method",
         "plural": "methods",
         "callable": True,
+        "separate": False,
         "attributes": {
             "return": {
                 "type": None,

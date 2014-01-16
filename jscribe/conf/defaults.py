@@ -4,7 +4,6 @@ FILE_REGEX = ".*?[.]js$"
 FILE_IGNORE_REGEX = None
 DOCUMENTATION_OUTPUT_PATH = "./"
 DOC_STRING_REGEX = ["[/][*][*]", "[*][/]"]
-DOC_STRING_LINE_PREFIX = "*"
 TAG_REGEX = "[@](?P<tag>.*?)\\s"
 IGNORE_INVALID_TAGS = False
 TEMPLATE = "default"

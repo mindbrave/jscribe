@@ -2,7 +2,7 @@
 #!/usr/bin/env python
 
 """* Doc string parser module file.
-@module core.docstringparser
+@module jscribe.core.docstringparser
 @author Rafał Łużyński
 """
 
@@ -35,17 +35,28 @@ class DocStringParser(object):
     class TagSettingsException(Exception):
         pass
 
-    def __init__(
-            self, tag_settings, doc_string_regex, tag_regex, line_prefix='',
-            ignore_invalid_tags=False
-        ):
-        """* Initialization.
+    def __init__(self, tag_settings, doc_string_regex, tag_regex, ignore_invalid_tags=False):
+        """* Initialization. Test code block:
+
+            normal code block
+
+        {$
+        class Test:
+            pass
+        }
+        {$javascript
+        dupa.get(cze)
+        return doesnt.work()
+        }
+        {$ lambda a: test(a)}
+
+        Inline code: `this.should.work()`.
+
         @method ..__init__
         @param self
         @param tag_settings {dict} - Dictionary with tag settings.
         @param doc_string_regex {regex} - Regex that matches doc strings.
         @param tag_regex {regex} - Regex that matches tags in doc strings.
-        @param line_prefix='' {str} - Prefix that will be escaped from every line in doc string.
         Whitespaces at the line begining are always ommited.
         @param ignore_invalid_tags=False {boolean} - If True then invalid tag name won't raise
         error.
@@ -71,7 +82,6 @@ class DocStringParser(object):
         self._tag_regex = None
         self._tag_regex_obj = None
         self.tag_regex = tag_regex
-        self.line_prefix = line_prefix
         self.ignore_invalid_tags = ignore_invalid_tags
         self._tag_alias_map = {}
         self._tag_settings = tag_settings
@@ -89,7 +99,10 @@ class DocStringParser(object):
         self._doc_string_regex = doc_string_regex
         # only whitespaces before opening tag
         no_whitespace_regex = r'^\s*?'
-        self._doc_string_open_regex_obj = re.compile(no_whitespace_regex + doc_string_regex[0])
+        self._doc_string_open_regex_obj = re.compile(doc_string_regex[0])
+        self._doc_string_open_whitespaces_regex_obj = re.compile(
+            no_whitespace_regex + doc_string_regex[0]
+        )
         self._doc_string_close_regex_obj = re.compile(doc_string_regex[1])
 
     @property
@@ -102,8 +115,8 @@ class DocStringParser(object):
         self._tag_regex_obj = re.compile(tag_regex)
 
     def _create_tag_alias_map(self, tag_settings):
-        for tag, settings in tag_settings.iteritems():
-            aliases = get_tag_type_property(tag_settings, settings, 'alias')
+        for tag, _settings in tag_settings.iteritems():
+            aliases = get_tag_type_property(tag_settings, _settings, 'alias')
             if aliases is None:
                 continue
             for alias in aliases:
@@ -228,7 +241,7 @@ class DocStringParser(object):
         if len(tag_strings) < 2:
             return None
         # first element of tag_strings is a description of an element
-        doc_string_data['description'] = tag_strings.pop(0).strip('\n').strip(' ')
+        doc_string_data['description'] = tag_strings.pop(0).strip(' ').strip('\n').strip(' ')
         # indicates if doc string has element tag, it must have exactly one to be a valid doc string
         has_element_tag = False
 
@@ -296,34 +309,41 @@ class DocStringParser(object):
 
     def _get_doc_strings(self, path, encoding):
         doc_strings = []
+        # in doc string opening and closing tags
         in_tag = False
         doc_string_text = ''
+        # line with whitespaces before doc string opening tag
+        doc_string_intendation = 0
         with codecs.open(path, 'r', encoding) as f:
             for line_number, line in enumerate(f.readlines(), start=1):
-                position = 0
+                # if not in doc string opening and closing tags
                 if not in_tag:
-                    match_inst = self._doc_string_open_regex_obj.search(line, position)
+                    # find opening doc string tag with only whitespaces preceding
+                    match_inst = self._doc_string_open_whitespaces_regex_obj.search(line)
                     if match_inst is not None:
+                        # if opening tag is found, get position of opening tag without whitespaces
+                        match_inst = self._doc_string_open_regex_obj.search(line)
                         in_tag = True
                         start_line = line_number
-                        position = match_inst.end()
-                    else:
-                        continue
-                if in_tag:
-                    match_inst = self._doc_string_close_regex_obj.search(line, position)
+                        doc_string_intendation = match_inst.start()
+                        doc_string_text += line[match_inst.end():].strip(' \t')
+                    continue
+                else:
+                    # find closing doc string tag
+                    match_inst = self._doc_string_close_regex_obj.search(line)
                     if match_inst is not None:
                         in_tag = False
                         end_line = line_number
-                        text_line = line[position:match_inst.start()].strip(' \t')
-                        text_line = text_line.strip(self.line_prefix)
-                        text_line = text_line.strip(' \t')
+                        text_line = line[:match_inst.start()]
+                        text_line = text_line[doc_string_intendation:]
                         doc_string_text += text_line
                         doc_strings.append((start_line, end_line, doc_string_text))
                         doc_string_text = ''
                     else:
-                        text_line = line[position:].strip(' \t')
-                        text_line = text_line.strip(self.line_prefix)
-                        text_line = text_line.strip(' \t')
+                        text_line = line
+                        text_line = text_line[doc_string_intendation:]
+                        if text_line == '':
+                            text_line = '\n'
                         doc_string_text += text_line
                         continue
             f.close()
@@ -335,6 +355,13 @@ class DocStringParser(object):
 
     def data_json(self):
         return json.dumps(self.data)
+
+    def _get_element_reference_from_value(self, val):
+        ref = None
+        ref_re_inst = re.search(r'^[{]#(?P<ref>.*?)[}]$', val)
+        if ref_re_inst is not None:
+            ref = ref_re_inst.group('ref')
+        return ref
 
     def get_author_from_tag_string(self, tag_string):
         re_inst = re.search(r'\s*?(?P<author>.*?)$', tag_string, flags=re.DOTALL)
@@ -350,8 +377,14 @@ class DocStringParser(object):
             flags=re.DOTALL
         )
         if re_inst is not None:
+            ref = None
+            if re_inst.group('return_type') is not None:
+                ref = self._get_element_reference_from_value(re_inst.group('return_type'))
             return 'return', {
-                'type': re_inst.group('return_type'),
+                'type': {
+                    'type': re_inst.group('return_type'),
+                    'ref': ref,
+                },
                 'description': re_inst.group('description')
             }
         else:
@@ -367,11 +400,17 @@ class DocStringParser(object):
             flags=re.DOTALL
         )
         if re_inst is not None:
+            ref = None
+            if re_inst.group('type') is not None:
+                ref = self._get_element_reference_from_value(re_inst.group('type'))
             return 'param', {
                 'name': re_inst.group('name'),
                 'default': re_inst.group('default'),
                 'is_sequenced': re_inst.group('seq'),
-                'type': re_inst.group('type'),
+                'type': {
+                    'type': re_inst.group('type'),
+                    'ref': ref,
+                },
                 'description': re_inst.group('desc'),
             }
         else:
@@ -379,10 +418,16 @@ class DocStringParser(object):
 
     def get_valtype_from_tag_string(self, tag_string):
         re_inst = re.search(r'\s*?[{](?P<valtype>.*?)[}](\s|$)', tag_string)
+        ref = self._get_element_reference_from_value(re_inst.group('valtype'))
         if re_inst is not None:
-            return 'valtype', re_inst.group('valtype')
+            return 'valtype', {
+                'valtype': re_inst.group('valtype'),
+                'ref': ref,
+            }
         else:
-            return 'valtype', None
+            raise self.TagValueException(
+                'Wrong data passed to valtype tag: "{}"'.format(tag_string)
+            )
 
     def get_default_from_tag_string(self, tag_string):
         re_inst = re.search(r'\s*?(?P<default>.*?)(\s|$)', tag_string)
@@ -394,16 +439,26 @@ class DocStringParser(object):
     def get_inherits_from_tag_string(self, tag_string):
         re_inst = re.search(r'\s*?[{](?P<inherits>.*?)[}](\s|$)', tag_string)
         if re_inst is not None:
-            return 'inherits', re_inst.group('inherits')
+            ref = self._get_element_reference_from_value(re_inst.group('inherits'))
+            return 'inherits', {
+                'inherits': re_inst.group('inherits'),
+                'ref': ref,
+            }
         else:
-            return 'inherits', None
+            raise self.TagValueException(
+                'Wrong data passed to inherits tag: "{}"'.format(tag_string)
+            )
+
 
     def get_access_from_tag_string(self, tag_string):
         re_inst = re.search(r'\s*?(?P<access>.*?)(\s|$)', tag_string)
         if re_inst is not None:
             return 'access', re_inst.group('access')
         else:
-            return 'access', None
+            raise self.TagValueException(
+                'Wrong data passed to access tag: "{}"'.format(tag_string)
+            )
+
 
     def get_version_from_tag_string(self, tag_string):
         re_inst = re.search(r'\s*?(?P<version>.*?)$', tag_string, flags=re.DOTALL)
@@ -451,6 +506,11 @@ def get_tag_type_property(tag_settings, tag_type, property_name):
 
 
 def get_tag_parent_type(tag_settings, tag_type):
+    """* Gets tag settings from parent tag type.
+    @function .get_tag_parent_type
+    @param tag_settings {str}
+    @param tag_type {dict}
+    """
     parent_type_name = tag_type.get('parent_type')
     if parent_type_name is None:
         return None

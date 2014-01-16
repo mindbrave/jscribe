@@ -2,7 +2,7 @@
 #!/usr/bin/env python
 
 """* HTMLDocumentationGenerator module file.
-@module core.htmldocgenerator
+@module jscribe.core.htmldocgenerator
 @author Rafał Łużyński
 """
 

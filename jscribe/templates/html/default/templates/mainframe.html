@@ -13,11 +13,11 @@
                 <h2>Lists</h2>
                 {% for list_type, list in lists.iteritems() %}
                     {% if tag_settings[list_type].separate and tag_settings[list_type].list %}
-                    <h3><a href="../{{ list.path }}" title="{{ tag_settings[list_type].plural }}">{{ tag_settings[list_type].plural }}</a></h3>
+                    <h3><a href="{{ list.path }}" title="{{ tag_settings[list_type].plural }}">{{ tag_settings[list_type].plural }}</a></h3>
                     <ul>
                         {% for _element in list.elements %}
                         <li>
-                            <a href="../{{ _element.doc_element_path }}" title="{{ _element.name }}">{{ _element.namepath }}</a>
+                            <a href="{{ _element.doc_element_path }}" title="{{ _element.name }}">{{ _element.namepath }}</a>
                         </li>
                         {% endfor %}
                     </ul>

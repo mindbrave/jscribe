@@ -2,11 +2,12 @@
 #!/usr/bin/env python
 
 """* HTMLDefaultGenerator module.
-@module generators.html.htmldefaultgenerator
+@module jscribe.generators.html.htmldefaultgenerator
 """
 
 import copy
 import os
+import re
 import codecs
 import logging
 
@@ -16,12 +17,18 @@ from pygments.lexers import get_lexer_by_name
 from pygments.formatters import HtmlFormatter
 
 from jscribe.utils.file import get_source_file_coding
+from jscribe.core.generator import Generator
 from jscribe.conf import settings
 from jscribe.core.jinjatemplaterenderer import JinjaTemplateRenderer
-from jscribe.core.docstringparser import get_tag_type_property
+from jscribe.core.docstringparser import DocStringParser, get_tag_type_property
 
 
-class HTMLDefaultGenerator(object):
+class HTMLDefaultGenerator(Generator):
+    """* Default doc generator for html output{#jscribe.core.docgenerator.DocumentationGenerator}.
+    Inherits {#jscribe.core.generator.Generator}.
+    @class jscribe.generators.html.htmldefaultgenerator.HTMLDefaultGenerator
+    @inherits {#jscribe.core.generator.Generator}
+    """
     def __init__(self, template_settings, doc_data, tag_settings, discovered_filepaths):
         self.doc_data = doc_data
         self.tag_settings = tag_settings
@@ -29,50 +36,85 @@ class HTMLDefaultGenerator(object):
         self.discovered_filepaths = discovered_filepaths
         self.renderer = self.create_renderer()
 
-    def make_link(self, namepath):
-        markdown_link = u'[{0}]({1} {0})'.format(namepath, namepath.replace('.', '_'))
-        return markdown(markdown_link, output_format='html5')
-
     def get_template_for_element(self, tag_type_name):
         return self.template_settings['ELEMENT_TEMPLATES'].get(
             tag_type_name, self.template_settings['ELEMENT_TEMPLATES'].get('default')
         )
 
-    def get_path_to_element_file(self, element):
-        return os.path.join(
-            settings.DOCUMENTATION_OUTPUT_PATH,
-            '.'.join([element.get('namepath').replace('.', '_'), 'html'])
-        )
+    def _make_url_from_namepath(self, namepath):
+        name_parts = namepath.split('.')
+        if name_parts[0] == '':
+            raise DocStringParser.InvalidElementPathException(
+                u'Only absolute namepaths can be passed. Namepath: {}'.format(namepath)
+            )
+        current_element = self.doc_data
+        current_name_url = ''
+        anchor_url = ''
+        separate_url = None
+        for part in name_parts:
+            if part == '':
+                raise DocStringParser.InvalidElementPathException(
+                    u'Invalid element path: {}'.format(namepath)
+                )
+            current_element = current_element['properties'].get(part)
+            if current_element is None:
+                raise DocStringParser.InvalidElementPathException(
+                    u"Element does not exist: {}".format(namepath)
+                )
+            if current_name_url:
+                current_name_url = '_'.join([current_name_url, part])
+            else:
+                current_name_url = part
+            if not self._is_element_defined(current_element):
+                anchor_url = ''
+                separate_url = current_name_url
+            elif not current_element['is_separate']:
+                if anchor_url:
+                    anchor_url = '_'.join([anchor_url, part])
+                else:
+                    anchor_url = part
+            else:
+                anchor_url = ''
+                separate_url = current_name_url
+        if not self._is_element_defined(current_element):
+            raise DocStringParser.InvalidElementPathException(
+                u"Can't reference not defined element: {}".format(namepath)
+            )
+        if separate_url is None:
+            raise Generator.GeneratorException(
+                u'Defined element is not separate nor assigned to any separate element. ' +
+                u'Namepath: {}'.format(namepath)
+            )
+        url = '.'.join([separate_url, 'html'])
+        if anchor_url:
+            url = '#'.join([url, anchor_url])
+        return url, anchor_url
 
     def get_path_to_sourcefile(self, filepath):
-        return os.path.join(
-            settings.DOCUMENTATION_OUTPUT_PATH,
-            '.'.join([filepath.replace(os.path.sep, '_')[1:], 'html'])
-        )
+        return '.'.join([filepath.replace(os.path.sep, '_')[1:], 'html'])
 
     def get_path_to_list_file(self, list_type):
-        return os.path.join(
-            settings.DOCUMENTATION_OUTPUT_PATH,
-            '.'.join(['list_{}'.format(list_type), 'html'])
-        )
+        return '.'.join(['list_{}'.format(list_type), 'html'])
 
     def generate_documentation(self):
         # get documentation data for templates
-        doc_data = self.build_template_data(self.doc_data)
+        self._build_template_data(self.doc_data)
         # add lists to the global context so its always available to mainframe
-        self.renderer.update_globals({'lists': doc_data['lists']})
+        self.renderer.update_globals({'lists': self.doc_data['lists']})
         # create source doc files (source code with line numbers and anchors)
         self.generate_source_files_for_documentation()
         # create list files
-        self.generate_list_files(doc_data)
+        self.generate_list_files(self.doc_data)
         # create files for every element with separate type
-        for prop, element in doc_data['root_element'].get('properties').iteritems():
+        for prop, element in self.doc_data['root_element'].get('properties').iteritems():
             # check if element is defined in documentation
             if not self._is_element_defined(element):
-                continue
+                self._check_if_properties_are_separate(element)
             # check if element is separate, only then create file
             if element.get('is_separate'):
                 self.generate_element_file(element)
+            else:
+                self._check_if_properties_are_separate(element)
 
     def _is_element_defined(self, element):
         if element.get('type') is None:
@@ -92,21 +134,34 @@ class HTMLDefaultGenerator(object):
         )
         return renderer
 
-    def build_template_data(self, doc_data):
-        doc_data = copy.deepcopy(doc_data)
+    def _build_template_data(self, doc_data):
+        self.doc_data = copy.deepcopy(doc_data)
         lists = {}
         namepath = ''
-        for prop, element in doc_data.get('properties').iteritems():
+        # prepare elements data before converting
+        self._prepare_element_data(self.doc_data)
+        # convert elements data
+        for prop, element in self.doc_data.get('properties').iteritems():
             # set namepath for element
-            if element.get('name') is None:
+            if self._is_element_defined(element):
                 # if element is not defined but is used in namepath somewhere
                 element['name'] = prop
             namepath = element.get('name')
             element['namepath'] = namepath
-            element, lists = self._prepare_element_data(element, lists)
+            element, lists = self._convert_element_data(element, lists)
             self._get_element_template_data(element, namepath, lists)
-        doc_data = {'root_element': doc_data, 'lists': lists}
-        return doc_data
+        self.doc_data = {'root_element': self.doc_data, 'lists': lists}
+
+    def _prepare_element_data(self, element):
+        for element in element.get('properties').values():
+            if self._is_element_defined(element):
+                # get element tag type settings
+                tag_type_name = element.get('type')
+                tag_type = self.tag_settings.get(tag_type_name)
+                # check if element is separate
+                is_separate = get_tag_type_property(self.tag_settings, tag_type, 'separate')
+                element['is_separate'] = is_separate
+            self._prepare_element_data(element)
 
     def _get_element_template_data(self, data, namepath, lists):
         for prop, element in data.get('properties').iteritems():
@@ -116,91 +171,182 @@ class HTMLDefaultGenerator(object):
                 element['name'] = prop
             _namepath = '.'.join([namepath, element.get('name')])
             element['namepath'] = _namepath
-            element, lists = self._prepare_element_data(element, lists)
+            element, lists = self._convert_element_data(element, lists)
             self._get_element_template_data(element, _namepath, lists)
 
-    def _prepare_element_data(self, element, lists):
-        # get element tag type settings
-        tag_type_name = element.get('type')
-        # if element type is None then this element is not defined anywhere
-        if tag_type_name is not None:
+    def _convert_element_data(self, element, lists):
+        if self._is_element_defined(element):
+            # convert references to elements, to html links
+            element = self._convert_references(element)
+            # convert inline code blocks into html parsed code
+            element = self._convert_element_code_blocks(element)
+            # convert markup in description into html, THIS MUST BE DONE AFTER CONVERTING REST
+            # "PARTS" OF DESCRIPTION, LIKE REFERENCES OR CODE BLOCKS
+            element = self._convert_element_descriptions_markup(element)
+            # convert code examples
+            element = self._convert_code_examples(element)
+            output_path, url_id = self._make_url_from_namepath(element.get('namepath'))
+            element['doc_element_path'] = output_path
+            element['doc_element_id'] = url_id
+            # get element tag type settings
+            tag_type_name = element.get('type')
             # add element to its element list
             if lists.get(tag_type_name) is None:
                 lists[tag_type_name] = {
                     'path': self.get_path_to_list_file(tag_type_name), 'elements': []
                 }
             lists[tag_type_name]['elements'].append(element)
-            tag_type = self.tag_settings.get(tag_type_name)
-            # remove beginnig dot from filepath
+            # remove beginnig dot from filepath, that os.walk leaves there
             element['filepath'] = element['filepath'][1:]
             # set element path to sourcefile
             element['sourcepath'] = self.get_path_to_sourcefile(element.get('filepath'))
-            # add element doc file path
-            output_path = self.get_path_to_element_file(element)
-            element['doc_element_path'] = output_path
-            # convert element description from markdown to html
-            element['description_html'] = markdown(
-                element['description'],
-                output_format='html5',
-            )
-            # convert parameter descriptions if are set
-            if element['attributes'].get('params') is not None:
-                for param in element['attributes']['params']:
-                    param['description_html'] = markdown(
-                        param['description'],
-                        output_format='html5',
-                    )
-            # convert return descriptions if are set
-            if element['attributes'].get('return') is not None:
-                element['attributes']['return']['description_html'] = markdown(
-                    element['attributes']['return']['description'],
-                    output_format='html5',
-                )
-            # convert example descriptions if are set, and convert code to html with pygments
-            if element['attributes'].get('examples') is not None:
-                for example in element['attributes']['examples']:
-                    example['description_html'] = markdown(
-                        example['description'],
-                        output_format='html5',
-                    )
-                    langid = settings.LANGUAGE
-                    if example.get('langid') is not None:
-                        langid = example.get('langid')
-                    example['langid'] = langid
-                    lexer = get_lexer_by_name(langid, stripall=True)
-                    formatter = HtmlFormatter(
-                        linenos=self.template_settings['SHOW_LINE_NUMBER'],
-                        cssclass="source"
-                    )
-                    result = highlight(example['code'], lexer, formatter)
-                    example['code_html'] = result
-            # check if element is separate
-            is_separate = get_tag_type_property(self.tag_settings, tag_type, 'separate')
-            element['is_separate'] = is_separate
         return element, lists
+
+    def _convert_code_examples(self, element):
+        # convert code examples to parsed code
+        if element['attributes'].get('examples') is not None:
+            for example in element['attributes']['examples']:
+                langid = settings.LANGUAGE
+                if example.get('langid') is not None:
+                    langid = example.get('langid')
+                example['langid'] = langid
+                example['code_html'] = self._convert_code(example['code'], langid)
+        return element
+
+    def _convert_element_descriptions_markup(self, element):
+        # convert element description from markdown to html
+        element['description_html'] = self._convert_markup(element['description'])
+        # convert parameter descriptions if are set
+        if element['attributes'].get('params') is not None:
+            for param in element['attributes']['params']:
+                param['description_html'] = self._convert_markup(param['description'])
+        # convert return descriptions if are set
+        if element['attributes'].get('return') is not None:
+            element['attributes']['return']['description_html'] = self._convert_markup(
+                element['attributes']['return']['description']
+            )
+        # convert example descriptions if are set, and convert code to html with pygments
+        if element['attributes'].get('examples') is not None:
+            for example in element['attributes']['examples']:
+                example['description_html'] = self._convert_markup(example['description'])
+        return element
+
+    def _convert_element_code_blocks(self, element):
+        description = element['description']
+        matches = re.finditer(
+            r'(?P<wrap>[{][$](?P<lang>\w*?)\s(?P<code>.*?)[}])', description, flags=re.DOTALL
+        )
+        len_diff = 0
+        for match in matches:
+            code = match.group('code')
+            lang = match.group('lang')
+            langid = settings.LANGUAGE
+            if lang:
+                langid = lang
+            code_html = self._convert_code(u'\t\r\n' + code, langid)
+            description = (
+                description[0:match.start('wrap') + len_diff] +
+                code_html +
+                description[match.end('wrap') + len_diff:]
+            )
+            len_diff -= match.end('wrap') - match.start('wrap')
+            len_diff += len(code_html)
+        element['description'] = description
+        return element
+
+    def _convert_references(self, element):
+        description = element['description']
+        matches = re.finditer(r'(?P<wrap>[{]#(?P<ref>.*?)[}])', description)
+        len_diff = 0
+        for match in matches:
+            url, url_id = self._make_url_from_namepath(match.group('ref'))
+            link = self._make_link(url, match.group('ref'))
+            description = (
+                description[0:match.start('wrap') + len_diff] +
+                link +
+                description[match.end('wrap') + len_diff:]
+            )
+            len_diff -= match.end('wrap') - match.start('wrap')
+            len_diff += len(link)
+        element['description'] = description
+        params = element['attributes'].get('params')
+        if params is not None:
+            for param in params:
+                if param['type']['ref'] is not None:
+                    url, url_id = self._make_url_from_namepath(param['type']['ref'])
+                    param['type']['ref_html'] = self._make_link(url, param['type']['ref'])
+        inherits = element['attributes'].get('inherits')
+        if inherits is not None:
+            if inherits['ref'] is not None:
+                url, url_id = self._make_url_from_namepath(inherits['ref'])
+                inherits['ref_html'] = self._make_link(url, inherits['ref'])
+        returns = element['attributes'].get('return')
+        if returns is not None:
+            if returns['ref'] is not None:
+                url, url_id = self._make_url_from_namepath(returns['ref'])
+                returns['ref_html'] = self._make_link(url, returns['ref'])
+        valtype = element['attributes'].get('valtype')
+        if valtype is not None:
+            if valtype['ref'] is not None:
+                url, url_id = self._make_url_from_namepath(valtype['ref'])
+                valtype['ref_html'] = self._make_link(url, valtype['ref'])
+        return element
+
+    def _make_link(self, url, title):
+        markdown_link = u'[{0}]({1} "{0}")'.format(title, url)
+        return markdown(markdown_link, output_format='html5')
+
+    def _convert_code(self, code, langid):
+        lexer = get_lexer_by_name(langid, stripall=True)
+        formatter = HtmlFormatter(
+            linenos=self.template_settings['SHOW_LINE_NUMBER'],
+            cssclass="source_{}".format(langid), linespans='line'
+        )
+        return highlight(code, lexer, formatter)
+
+    def  _convert_markup(self, markup_string):
+        return markdown(
+            markup_string,
+            output_format='html5',
+        )
 
     def generate_element_file(self, element_data):
         for prop, element in element_data.get('properties').iteritems():
             # check if element is defined in documentation
             if not self._is_element_defined(element):
-                continue
+                self._check_if_properties_are_separate(element)
             if element.get('is_separate'):
                 self.generate_element_file(element)
+            else:
+                self._check_if_properties_are_separate(element)
         result = self.render_element(element_data)
         self.renderer.render_to_file(
             'element.html',
             {'element_rendered': result, },
-            element_data['doc_element_path'],
+            os.path.join(settings.DOCUMENTATION_OUTPUT_PATH, element_data['doc_element_path']),
             settings.OUTPUT_ENCODING
         )
         logging.info('Created: {}'.format(element_data['doc_element_path']))
+
+    def _check_if_properties_are_separate(self, element_data):
+        for prop, element in element_data.get('properties').iteritems():
+            # check if element is defined in documentation
+            if not self._is_element_defined(element):
+                self._check_if_properties_are_separate(element)
+            if element.get('is_separate'):
+                self.generate_element_file(element)
+            else:
+                self._check_if_properties_are_separate(element)
 
     def generate_list_files(self, doc_data):
         for list_type, _list in doc_data['lists'].iteritems():
             self.renderer.render_to_file(
                 'list.html',
                 {'list': _list, 'list_type': list_type, },
-                self.get_path_to_list_file(list_type),
+                os.path.join(
+                    settings.DOCUMENTATION_OUTPUT_PATH,
+                    self.get_path_to_list_file(list_type)
+                ),
                 settings.OUTPUT_ENCODING
             )
 
@@ -214,13 +360,13 @@ class HTMLDefaultGenerator(object):
             lexer = get_lexer_by_name(settings.LANGUAGE, stripall=True)
             formatter = HtmlFormatter(
                 linenos=self.template_settings['SHOW_LINE_NUMBER'],
-                cssclass="source"
+                cssclass="source_{}".format(settings.LANGUAGE), linespans='line'
             )
             result = highlight(code, lexer, formatter)
             self.renderer.render_to_file(
                 'sourcefile.html',
                 {'source': result, },
-                output_path,
+                os.path.join(settings.DOCUMENTATION_OUTPUT_PATH, output_path),
                 settings.OUTPUT_ENCODING
             )
             logging.info('Created: {}'.format(output_path))

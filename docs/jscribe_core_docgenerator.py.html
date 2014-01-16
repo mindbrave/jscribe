@@ -15,51 +15,65 @@
                     
                 
                     
-                
-                    
-                
-                    
-                    <h3><a href=".././docs/list_module.html" title="modules">modules</a></h3>
+                    <h3><a href="list_package.html" title="packages">packages</a></h3>
                     <ul>
                         
                         <li>
-                            <a href=".././docs/jscribeit.html" title="jscribeit">jscribeit</a>
+                            <a href="jscribe.html" title="jscribe">jscribe</a>
                         </li>
                         
                         <li>
-                            <a href=".././docs/generators_html_htmldefaultgenerator.html" title="htmldefaultgenerator">generators.html.htmldefaultgenerator</a>
+                            <a href="jscribe_generators.html" title="generators">jscribe.generators</a>
                         </li>
                         
                         <li>
-                            <a href=".././docs/core_docgenerator.html" title="docgenerator">core.docgenerator</a>
-                        </li>
-                        
-                        <li>
-                            <a href=".././docs/core_htmldocgenerator.html" title="htmldocgenerator">core.htmldocgenerator</a>
-                        </li>
-                        
-                        <li>
-                            <a href=".././docs/core_docstringparser.html" title="docstringparser">core.docstringparser</a>
+                            <a href="jscribe_core.html" title="core">jscribe.core</a>
                         </li>
                         
                     </ul>
                     
                 
                     
-                    <h3><a href=".././docs/list_package.html" title="packages">packages</a></h3>
+                
+                    
+                    <h3><a href="list_module.html" title="modules">modules</a></h3>
                     <ul>
                         
                         <li>
-                            <a href=".././docs/core.html" title="core">core</a>
+                            <a href="jscribeit.html" title="jscribeit">jscribeit</a>
+                        </li>
+                        
+                        <li>
+                            <a href="jscribe_generators_html_htmldefaultgenerator.html" title="htmldefaultgenerator">jscribe.generators.html.htmldefaultgenerator</a>
+                        </li>
+                        
+                        <li>
+                            <a href="jscribe_core_docgenerator.html" title="docgenerator">jscribe.core.docgenerator</a>
+                        </li>
+                        
+                        <li>
+                            <a href="jscribe_core_generator.html" title="generator">jscribe.core.generator</a>
+                        </li>
+                        
+                        <li>
+                            <a href="jscribe_core_htmldocgenerator.html" title="htmldocgenerator">jscribe.core.htmldocgenerator</a>
+                        </li>
+                        
+                        <li>
+                            <a href="jscribe_core_docstringparser.html" title="docstringparser">jscribe.core.docstringparser</a>
                         </li>
                         
                     </ul>
+                    
+                
+                    
+                
                     
                 
             </div>
             <div id="content">
             
-    <table class="sourcetable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+    <table class="source_pythontable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
  4
@@ -152,101 +166,101 @@
 91
 92
 93
-94</pre></div></td><td class="code"><div class="source"><pre><span class="c"># -*- coding: utf-8 -*-</span>
-<span class="c">#!/usr/bin/env python</span>
-
-<span class="sd">&quot;&quot;&quot;* DocumentationGenerator module file.</span>
-<span class="sd">@module core.docgenerator</span>
-<span class="sd">@author Rafał Łużyński</span>
-<span class="sd">&quot;&quot;&quot;</span>
-
-<span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">importlib</span>
-
-<span class="kn">from</span> <span class="nn">jscribe.utils.file</span> <span class="kn">import</span> <span class="n">discover_files</span>
-<span class="kn">from</span> <span class="nn">jscribe.conf</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">jscribe.core.docstringparser</span> <span class="kn">import</span> <span class="n">DocStringParser</span>
-<span class="kn">from</span> <span class="nn">jscribe.core.htmldocgenerator</span> <span class="kn">import</span> <span class="n">HTMLDocumentationGenerator</span>
-
-
-<span class="k">class</span> <span class="nc">DocumentationGenerator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;* This class is a *controller* class that creates documentation.</span>
-<span class="sd">    @class .DocumentationGenerator</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">class</span> <span class="nc">InvalidGeneratorException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-        <span class="k">pass</span>
-    <span class="n">GENERATORS</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s">&#39;html&#39;</span><span class="p">:</span> <span class="n">HTMLDocumentationGenerator</span><span class="p">,</span>
-    <span class="p">}</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings_path</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;* Initialization.</span>
-<span class="sd">        @method ..__init__</span>
-<span class="sd">        @param self</span>
-<span class="sd">        @param settings_path {str} Path to settings **json** file.</span>
-<span class="sd">        @example Doc generation usage. {</span>
-<span class="sd">            doc_generator = DocumentationGenerator(path_to_settings)</span>
-<span class="sd">            doc_generator.generate_documentation()</span>
-<span class="sd">        } This is how you generate docs.</span>
-<span class="sd">        @example Javascript test example. #javascript {</span>
-<span class="sd">            var docs = docGenerator();</span>
-<span class="sd">            docs.run();</span>
-<span class="sd">        } javascript decsription.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">doc_data</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tag_settings</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="sd">&quot;&quot;&quot;* List that containts paths of source files discovered using data from settings.</span>
-<span class="sd">        Input paths, ignore paths and regexes.</span>
-<span class="sd">        @attr ..discovered_filepaths</span>
-<span class="sd">        @valtype {list}</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">discovered_filepaths</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">settings</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">settings_path</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">load_tag_settings</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">TAG_SETTINGS</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_get_doc_data</span><span class="p">()</span>
-
-    <span class="k">def</span> <span class="nf">load_tag_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag_settings_path</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;* Load tag settings from json file given in settings or python module and save</span>
-<span class="sd">        it on this instance.</span>
-<span class="sd">        @method ..load_tag_settings</span>
-<span class="sd">        @private</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">tag_settings_path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;json&#39;</span><span class="p">:</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">tag_settings_path</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">tag_settings</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-                <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">tag_settings</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span>
-                <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span>
-                    <span class="n">tag_settings_path</span>
-                <span class="p">),</span>
-                <span class="s">&#39;TAG_SETTINGS&#39;</span>
-            <span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">_get_doc_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">discovered_filepaths</span> <span class="o">=</span> <span class="n">discover_files</span><span class="p">(</span>
-            <span class="n">settings</span><span class="o">.</span><span class="n">INPUT_PATHS</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">FILE_REGEX</span><span class="p">,</span>
-            <span class="n">ignore_paths_regex</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">IGNORE_PATHS_REGEX</span><span class="p">,</span>
-            <span class="n">ignore_regex</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">FILE_IGNORE_REGEX</span>
-        <span class="p">)</span>
-        <span class="n">dsp</span> <span class="o">=</span> <span class="n">DocStringParser</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">tag_settings</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">DOC_STRING_REGEX</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">TAG_REGEX</span><span class="p">,</span>
-            <span class="n">settings</span><span class="o">.</span><span class="n">DOC_STRING_LINE_PREFIX</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">IGNORE_INVALID_TAGS</span>
-        <span class="p">)</span>
-        <span class="k">for</span> <span class="n">filepath</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">discovered_filepaths</span><span class="p">:</span>
-            <span class="n">dsp</span><span class="o">.</span><span class="n">parse_file</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">doc_data</span> <span class="o">=</span> <span class="n">dsp</span><span class="o">.</span><span class="n">data</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">documentation_filepaths</span> <span class="o">=</span> <span class="n">dsp</span><span class="o">.</span><span class="n">documentation_filepaths</span>
-
-    <span class="k">def</span> <span class="nf">generate_documentation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c"># get generator</span>
-        <span class="n">generator_class</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">GENERATORS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">GENERATOR</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">generator_class</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="bp">self</span><span class="o">.</span><span class="n">InvalidGeneratorException</span><span class="p">(</span>
-                <span class="s">&#39;Invalid generator &quot;{}&quot;. Maybe not supported yet.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">GENERATOR</span><span class="p">)</span>
-            <span class="p">)</span>
-        <span class="n">generator</span> <span class="o">=</span> <span class="n">generator_class</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">doc_data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tag_settings</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">documentation_filepaths</span><span class="p">)</span>
-        <span class="n">generator</span><span class="o">.</span><span class="n">generate_documentation</span><span class="p">()</span>
-</pre></div>
+94</pre></div></td><td class="code"><div class="source_python"><pre><span id="line-1"><span class="c"># -*- coding: utf-8 -*-</span>
+</span><span id="line-2"><span class="c">#!/usr/bin/env python</span>
+</span><span id="line-3">
+</span><span id="line-4"><span class="sd">&quot;&quot;&quot;* DocumentationGenerator module file.</span>
+</span><span id="line-5"><span class="sd">@module jscribe.core.docgenerator</span>
+</span><span id="line-6"><span class="sd">@author Rafał Łużyński</span>
+</span><span id="line-7"><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="line-8">
+</span><span id="line-9"><span class="kn">import</span> <span class="nn">json</span>
+</span><span id="line-10"><span class="kn">import</span> <span class="nn">importlib</span>
+</span><span id="line-11">
+</span><span id="line-12"><span class="kn">from</span> <span class="nn">jscribe.utils.file</span> <span class="kn">import</span> <span class="n">discover_files</span>
+</span><span id="line-13"><span class="kn">from</span> <span class="nn">jscribe.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+</span><span id="line-14"><span class="kn">from</span> <span class="nn">jscribe.core.docstringparser</span> <span class="kn">import</span> <span class="n">DocStringParser</span>
+</span><span id="line-15"><span class="kn">from</span> <span class="nn">jscribe.core.htmldocgenerator</span> <span class="kn">import</span> <span class="n">HTMLDocumentationGenerator</span>
+</span><span id="line-16"><span class="kn">from</span> <span class="nn">jscribe.core.generator</span> <span class="kn">import</span> <span class="n">Generator</span>
+</span><span id="line-17">
+</span><span id="line-18">
+</span><span id="line-19"><span class="k">class</span> <span class="nc">DocumentationGenerator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+</span><span id="line-20">    <span class="sd">&quot;&quot;&quot;* This class is a *controller* class that creates documentation.</span>
+</span><span id="line-21"><span class="sd">    @class .DocumentationGenerator</span>
+</span><span id="line-22"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="line-23">    <span class="n">GENERATORS</span> <span class="o">=</span> <span class="p">{</span>
+</span><span id="line-24">        <span class="s">&#39;html&#39;</span><span class="p">:</span> <span class="n">HTMLDocumentationGenerator</span><span class="p">,</span>
+</span><span id="line-25">    <span class="p">}</span>
+</span><span id="line-26">    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings_path</span><span class="p">):</span>
+</span><span id="line-27">        <span class="sd">&quot;&quot;&quot;* Initialization.</span>
+</span><span id="line-28"><span class="sd">        @method ..__init__</span>
+</span><span id="line-29"><span class="sd">        @param self</span>
+</span><span id="line-30"><span class="sd">        @param settings_path {test} Path to settings</span>
+</span><span id="line-31"><span class="sd">        **json** file.</span>
+</span><span id="line-32"><span class="sd">        @example Doc generation usage. {</span>
+</span><span id="line-33"><span class="sd">            doc_generator = DocumentationGenerator(path_to_settings)</span>
+</span><span id="line-34"><span class="sd">            doc_generator.generate_documentation()</span>
+</span><span id="line-35"><span class="sd">        } This is how you generate docs.</span>
+</span><span id="line-36"><span class="sd">        @example Javascript test example. #javascript {</span>
+</span><span id="line-37"><span class="sd">            var docs = docGenerator();</span>
+</span><span id="line-38"><span class="sd">            docs.run();</span>
+</span><span id="line-39"><span class="sd">        } javascript decsription.</span>
+</span><span id="line-40"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="line-41">        <span class="bp">self</span><span class="o">.</span><span class="n">doc_data</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span id="line-42">        <span class="bp">self</span><span class="o">.</span><span class="n">tag_settings</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span id="line-43">        <span class="sd">&quot;&quot;&quot;* List that containts paths of source files discovered using data from settings.</span>
+</span><span id="line-44"><span class="sd">        Input paths, ignore paths and regexes.</span>
+</span><span id="line-45"><span class="sd">        @attr ..discovered_filepaths</span>
+</span><span id="line-46"><span class="sd">        @valtype {list}</span>
+</span><span id="line-47"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="line-48">        <span class="bp">self</span><span class="o">.</span><span class="n">discovered_filepaths</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span id="line-49">        <span class="n">settings</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">settings_path</span><span class="p">)</span>
+</span><span id="line-50">        <span class="bp">self</span><span class="o">.</span><span class="n">load_tag_settings</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">TAG_SETTINGS</span><span class="p">)</span>
+</span><span id="line-51">        <span class="bp">self</span><span class="o">.</span><span class="n">_get_doc_data</span><span class="p">()</span>
+</span><span id="line-52">
+</span><span id="line-53">    <span class="k">def</span> <span class="nf">load_tag_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag_settings_path</span><span class="p">):</span>
+</span><span id="line-54">        <span class="sd">&quot;&quot;&quot;* Load tag settings from json file given in settings or python module and save</span>
+</span><span id="line-55"><span class="sd">        it on this instance.</span>
+</span><span id="line-56"><span class="sd">        @method ..load_tag_settings</span>
+</span><span id="line-57"><span class="sd">        @private</span>
+</span><span id="line-58"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="line-59">        <span class="k">if</span> <span class="n">tag_settings_path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;json&#39;</span><span class="p">:</span>
+</span><span id="line-60">            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">tag_settings_path</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+</span><span id="line-61">                <span class="bp">self</span><span class="o">.</span><span class="n">tag_settings</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+</span><span id="line-62">                <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span><span id="line-63">        <span class="k">else</span><span class="p">:</span>
+</span><span id="line-64">            <span class="bp">self</span><span class="o">.</span><span class="n">tag_settings</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span>
+</span><span id="line-65">                <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span>
+</span><span id="line-66">                    <span class="n">tag_settings_path</span>
+</span><span id="line-67">                <span class="p">),</span>
+</span><span id="line-68">                <span class="s">&#39;TAG_SETTINGS&#39;</span>
+</span><span id="line-69">            <span class="p">)</span>
+</span><span id="line-70">
+</span><span id="line-71">    <span class="k">def</span> <span class="nf">_get_doc_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="line-72">        <span class="bp">self</span><span class="o">.</span><span class="n">discovered_filepaths</span> <span class="o">=</span> <span class="n">discover_files</span><span class="p">(</span>
+</span><span id="line-73">            <span class="n">settings</span><span class="o">.</span><span class="n">INPUT_PATHS</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">FILE_REGEX</span><span class="p">,</span>
+</span><span id="line-74">            <span class="n">ignore_paths_regex</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">IGNORE_PATHS_REGEX</span><span class="p">,</span>
+</span><span id="line-75">            <span class="n">ignore_regex</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">FILE_IGNORE_REGEX</span>
+</span><span id="line-76">        <span class="p">)</span>
+</span><span id="line-77">        <span class="n">dsp</span> <span class="o">=</span> <span class="n">DocStringParser</span><span class="p">(</span>
+</span><span id="line-78">            <span class="bp">self</span><span class="o">.</span><span class="n">tag_settings</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">DOC_STRING_REGEX</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">TAG_REGEX</span><span class="p">,</span>
+</span><span id="line-79">            <span class="n">settings</span><span class="o">.</span><span class="n">IGNORE_INVALID_TAGS</span>
+</span><span id="line-80">        <span class="p">)</span>
+</span><span id="line-81">        <span class="k">for</span> <span class="n">filepath</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">discovered_filepaths</span><span class="p">:</span>
+</span><span id="line-82">            <span class="n">dsp</span><span class="o">.</span><span class="n">parse_file</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+</span><span id="line-83">        <span class="bp">self</span><span class="o">.</span><span class="n">doc_data</span> <span class="o">=</span> <span class="n">dsp</span><span class="o">.</span><span class="n">data</span>
+</span><span id="line-84">        <span class="bp">self</span><span class="o">.</span><span class="n">documentation_filepaths</span> <span class="o">=</span> <span class="n">dsp</span><span class="o">.</span><span class="n">documentation_filepaths</span>
+</span><span id="line-85">
+</span><span id="line-86">    <span class="k">def</span> <span class="nf">generate_documentation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="line-87">        <span class="c"># get generator</span>
+</span><span id="line-88">        <span class="n">generator_class</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">GENERATORS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">GENERATOR</span><span class="p">)</span>
+</span><span id="line-89">        <span class="k">if</span> <span class="n">generator_class</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+</span><span id="line-90">            <span class="k">raise</span> <span class="n">Generator</span><span class="o">.</span><span class="n">InvalidGeneratorException</span><span class="p">(</span>
+</span><span id="line-91">                <span class="s">&#39;Invalid generator &quot;{}&quot;. Maybe not supported yet.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">GENERATOR</span><span class="p">)</span>
+</span><span id="line-92">            <span class="p">)</span>
+</span><span id="line-93">        <span class="n">generator</span> <span class="o">=</span> <span class="n">generator_class</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">doc_data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tag_settings</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">documentation_filepaths</span><span class="p">)</span>
+</span><span id="line-94">        <span class="n">generator</span><span class="o">.</span><span class="n">generate_documentation</span><span class="p">()</span>
+</span></pre></div>
 </td></tr></table>
 
             </div>

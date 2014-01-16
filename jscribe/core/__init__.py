@@ -2,5 +2,5 @@
 #!/usr/bin/env python
 
 """* Core package.
-@package core
+@package jscribe.core
 """
