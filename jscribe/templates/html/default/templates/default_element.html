@@ -1,62 +1,79 @@
-<h1 id="{{ element.doc_element_id }}">{{ element.type }} {{ element.name }}
-{%- if tag_settings[element.type].callable -%}(
-    {%- for param in element.attributes.params -%}
-        {{ param.name }}{%- if param.default != None %}={{ param.default }}{%- endif %}
-        {%- if param.is_sequenced %}...{%- endif %}
-        {%- if not loop.last %}, {% endif %}
-    {%- endfor -%}
-){%- endif %}
+<h1 id="{{ element.doc_element_id }}">
+    {% if element.attributes.access %}
+        <span class="default_access">{{ element.attributes.access }}</span>
+    {% endif %}
+    {% if element.type_name %}
+        <span class="default_type">{{ element.type_name }}</span>
+    {% endif %}
+    <span class="default_name">{{ element.name }}</span>
+    {%- if element.is_callable -%}(
+        {%- for param in element.attributes.params -%}
+            <span class="default_call_par">{{ param.name }}
+                {%- if param.default != None -%}=</span><span class="default_call_par_val">{{ param.default }}{%- endif -%}
+            </span>
+
+            {%- if param.is_sequenced -%}...{%- endif -%}
+            {%- if not loop.last -%}, {% endif -%}
+        {%- endfor -%}
+    ){%- endif %}
 </h1>
-<table>
-    <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Default</th>
-        <th>Description</th>
-    </tr>
-    {%- if element.attributes.params %}
+{%- if element.attributes.params %}
+<ul class="default_param_list">
     {%- for param in element.attributes.params %}
-        <tr>
-            <td>{{ param.name }}</td>
-            <td>{% if param.type.ref %}{{ param.type.ref_html }}{% else %}{{ param.type.type }}{% endif %}</td>
-            <td>{{ param.default }}</td>
-            <td>{{ param.description_html }}</td>
-        </tr>
+        <li class="default_param">
+            <p>
+            <span class="default_param_name">{{ param.name }}</span>
+            {% if param.type.type %}
+                <span class="default_param_type">Type: </span><span class="default_param_type_val">{% if param.type.ref %}{{ param.type.ref_html }}{% else %}{{ param.type.type }}{% endif %}</span>
+            {% endif %}
+            {% if param.default %}<span class="default_param_val">Default: <span class="default_param_val_col">{{ param.default }}</span></span>{% endif %}
+            </p>
+            {% if param.description_html %}<div class="default_param_desc">{{ param.description_html }}</div>{% endif %}
+        </li>
     {%- endfor %}
-    {%- endif %}
-</table>
-<div>Description: {{ element.description_html }}</div>
-{% if element.inherits %}
-<div>Inherits:
-    {% if element.inherits.ref %}
-        {{ element.inherits.ref_html }}
+</ul>
+{%- endif %}
+{% if element.attributes.inherits %}
+<div class="default_inherits"><span>Inherits: </span>
+    {% if element.attributes.inherits.ref %}
+        {{ element.attributes.inherits.ref_html }}
     {% else %}
-        {{ element.inherits.inherits }}
+        {{ element.attributes.inherits.inherits }}
     {% endif %}
 </div>
 {% endif %}
-<div>File: <a href="{{ element.sourcepath }}#line-{{ element.startline }}">{{ element.filepath }}</a> Line: {{ element.startline }}</div>
-{% if element.author %}
-    <div>
-        Author: {{ element.author }}
-    </div>
+{% if element.description_html %}
+    <div class="default_description">{{ element.description_html }}</div>
 {% endif %}
 {% if element.attributes.examples %}
-<h2>Examples:</h2>
-{% for example in element.attributes.examples %}
-<div>
-    <div>Title: {{ example.title }}</div>
-    <div>Description: {{ example.description_html }}</div>
-    <div>{{ example.code_html }}</div>
-</div>
-{% endfor %}
+    <h2 class="default_examples_title">Examples:</h2>
+    {% for example in element.attributes.examples %}
+        <div class="default_example">
+            <h3 class="default_example_title">{{ example.title }}</h3>
+            <div class="default_example_desc">{{ example.description_html }}</div>
+            <div class="default_example_code">{{ example.code_html }}</div>
+        </div>
+    {% endfor %}
+{% endif %}
+{%- if element.source_visible -%}
+    <div class="file_path">File: <a href="{{ element.sourcepath }}#line-{{ element.startline }}">{{ element.filepath }}</a> Line: {{ element.startline }}</div>
+{% endif %}
+{% if element.attributes.author %}
+    <div class="default_author">
+        Author: {{ element.attributes.author }}
+    </div>
 {% endif %}
 {% for _element in element.properties.values() %}
     {% if _element.type != None %}
         {% if _element.is_separate %}
-            <h2>{{ _element.type }} <a href="{{ _element.doc_element_path }}">{{ _element.namepath }}</a></h2>
+        <div class="default_ref_element">
+            <span class="default_type">{{ _element.type }}</span> <a href="{{ _element.doc_element_path }}" title="{{ _element.namepath }}">{{ _element.name }}</a>
+        </div>
         {% else %}
-            {{ render_element(_element) }}
+            <div class="element">
+                {{ render_element(_element) }}
+            </div>
         {% endif %}
     {% endif %}
 {% endfor %}
+

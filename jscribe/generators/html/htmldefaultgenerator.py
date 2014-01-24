@@ -10,6 +10,8 @@ import os
 import re
 import codecs
 import logging
+import importlib
+import shutil
 
 from markdown import markdown
 from pygments import highlight
@@ -24,8 +26,10 @@ from jscribe.core.docstringparser import DocStringParser, get_tag_type_property
 
 
 class HTMLDefaultGenerator(Generator):
-    """* Default doc generator for html output{#jscribe.core.docgenerator.DocumentationGenerator}.
-    Inherits {#jscribe.core.generator.Generator}.
+    """* Default doc generator for html output {#jscribe.core.docgenerator.DocumentationGenerator}.
+
+    Make new generators basing on this one.
+
     @class jscribe.generators.html.htmldefaultgenerator.HTMLDefaultGenerator
     @inherits {#jscribe.core.generator.Generator}
     """
@@ -115,6 +119,8 @@ class HTMLDefaultGenerator(Generator):
                 self.generate_element_file(element)
             else:
                 self._check_if_properties_are_separate(element)
+        # copy style file
+        self._copy_template_style_file()
 
     def _is_element_defined(self, element):
         if element.get('type') is None:
@@ -128,11 +134,26 @@ class HTMLDefaultGenerator(Generator):
             {
                 'tag_settings': self.tag_settings,
                 'render_element': self.render_element,
+                'render_element_contents': self.render_element_contents,
                 'FOOTER_TEXT': self.template_settings['FOOTER_TEXT'],
-                'LOGO_PATH': self.template_settings['LOGO_PATH'],
+                'TITLE': self.template_settings['TITLE'],
             }
         )
         return renderer
+
+    def _copy_template_style_file(self):
+        css_style_name = 'style.css'
+        template_package = importlib.import_module(
+            'jscribe.templates.{}.{}'.format(settings.GENERATOR, settings.TEMPLATE)
+        )
+        style_path = os.path.join(
+            os.path.dirname(os.path.abspath(template_package.__file__)),
+            css_style_name
+        )
+        style_dst_path = os.path.join(
+            settings.DOCUMENTATION_OUTPUT_PATH, css_style_name
+        )
+        shutil.copy(style_path, style_dst_path)
 
     def _build_template_data(self, doc_data):
         self.doc_data = copy.deepcopy(doc_data)
@@ -158,6 +179,21 @@ class HTMLDefaultGenerator(Generator):
                 # get element tag type settings
                 tag_type_name = element.get('type')
                 tag_type = self.tag_settings.get(tag_type_name)
+                # set tag type_name
+                type_name = get_tag_type_property(self.tag_settings, tag_type, 'name')
+                element['type_name'] = type_name
+                # set tag type title
+                type_title = get_tag_type_property(self.tag_settings, tag_type, 'title')
+                element['type_title'] = type_title
+                # set source_visible property
+                source_visible = get_tag_type_property(self.tag_settings, tag_type, 'source_visible')
+                element['source_visible'] = source_visible
+                # set is callable property
+                is_callable = get_tag_type_property(self.tag_settings, tag_type, 'callable')
+                element['is_callable'] = is_callable
+                # set source_visible property
+                source_visible = get_tag_type_property(self.tag_settings, tag_type, 'source_visible')
+                element['source_visible'] = source_visible
                 # check if element is separate
                 is_separate = get_tag_type_property(self.tag_settings, tag_type, 'separate')
                 element['is_separate'] = is_separate
@@ -293,8 +329,10 @@ class HTMLDefaultGenerator(Generator):
         return element
 
     def _make_link(self, url, title):
-        markdown_link = u'[{0}]({1} "{0}")'.format(title, url)
-        return markdown(markdown_link, output_format='html5')
+        #markdown_link = u'[{0}]({1} "{0}")'.format(title, url)
+        #return markdown(markdown_link, output_format='html5')
+        link = u'<a href="{1}" title="{0}">{0}</a>'.format(title, url)
+        return link
 
     def _convert_code(self, code, langid):
         lexer = get_lexer_by_name(langid, stripall=True)
@@ -315,6 +353,7 @@ class HTMLDefaultGenerator(Generator):
             # check if element is defined in documentation
             if not self._is_element_defined(element):
                 self._check_if_properties_are_separate(element)
+                continue
             if element.get('is_separate'):
                 self.generate_element_file(element)
             else:
@@ -322,7 +361,7 @@ class HTMLDefaultGenerator(Generator):
         result = self.render_element(element_data)
         self.renderer.render_to_file(
             'element.html',
-            {'element_rendered': result, },
+            {'element_rendered': result, 'element': element_data, },
             os.path.join(settings.DOCUMENTATION_OUTPUT_PATH, element_data['doc_element_path']),
             settings.OUTPUT_ENCODING
         )
@@ -373,4 +412,8 @@ class HTMLDefaultGenerator(Generator):
 
     def render_element(self, element):
         template = self.get_template_for_element(element.get('type'))
+        return self.renderer.render(template, {'element': element, })
+
+    def render_element_contents(self, element):
+        template = 'element_contents.html'
         return self.renderer.render(template, {'element': element, })

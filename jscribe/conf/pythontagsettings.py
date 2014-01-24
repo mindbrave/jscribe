@@ -5,7 +5,8 @@ TAG_SETTINGS = {
        "separate": False,
        "list": False,
        "name": ["default name"],
-       "plural_name": ["default plural name"],
+       "title": ["default plural name"],
+       "source_visible": True,
        "callable": False,
        "attributes": {
            "access": "public",
@@ -20,11 +21,33 @@ TAG_SETTINGS = {
            "version": None
        }
     },
+    "article": {
+        "parent_type": "default",
+        "alias": ["a"],
+        "name": "",
+        "title": "manual",
+        "separate": True,
+        "source_visible": False,
+        "list": True,
+        "attributes": {
+        }
+    },
+    "paragraph": {
+        "parent_type": "default",
+        "alias": ["p"],
+        "name": "",
+        "title": "paragraphs",
+        "separate": False,
+        "source_visible": False,
+        "list": False,
+        "attributes": {
+        }
+    },
     "package": {
         "parent_type": "default",
         "alias": ["pack"],
         "name": "package",
-        "plural": "packages",
+        "title": "packages",
         "separate": True,
         "list": True,
         "attributes": {
@@ -36,14 +59,14 @@ TAG_SETTINGS = {
         "name": "module",
         "separate": True,
         "list": True,
-        "plural": "modules",
+        "title": "modules",
         "attributes": {
         }
     },
     "class": {
         "parent_type": "default",
         "name": "class",
-        "plural": "classes",
+        "title": "classes",
         "list": True,
         "attributes": {
             "return": {
@@ -55,7 +78,7 @@ TAG_SETTINGS = {
     "method": {
         "parent_type": "default",
         "name": "method",
-        "plural": "methods",
+        "title": "methods",
         "callable": True,
         "separate": False,
         "attributes": {
@@ -68,7 +91,7 @@ TAG_SETTINGS = {
     "function": {
         "parent_type": "default",
         "name": "function",
-        "plural": "functions",
+        "title": "functions",
         "callable": True,
         "attributes": {
             "return": {
@@ -81,7 +104,7 @@ TAG_SETTINGS = {
         "parent_type": "default",
         "alias": ["attr"],
         "name": "attribute",
-        "plural": "attributes",
+        "ptitle": "attributes",
         "callable": False,
         "attributes": {
         }

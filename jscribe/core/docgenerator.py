@@ -25,6 +25,7 @@ class DocumentationGenerator(object):
     }
     def __init__(self, settings_path):
         """* Initialization.
+        @private
         @method ..__init__
         @param self
         @param settings_path {test} Path to settings

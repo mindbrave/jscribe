@@ -58,7 +58,7 @@ class DocStringParser(object):
         @param doc_string_regex {regex} - Regex that matches doc strings.
         @param tag_regex {regex} - Regex that matches tags in doc strings.
         Whitespaces at the line begining are always ommited.
-        @param ignore_invalid_tags=False {boolean} - If True then invalid tag name won't raise
+        @param ignore_invalid_tags=False {boolean} - If `True` then invalid tag name won't raise
         error.
         """
 
@@ -379,7 +379,8 @@ class DocStringParser(object):
         if re_inst is not None:
             ref = None
             if re_inst.group('return_type') is not None:
-                ref = self._get_element_reference_from_value(re_inst.group('return_type'))
+                val_brackets = '{' + re_inst.group('return_type') + '}'
+                ref = self._get_element_reference_from_value(val_brackets)
             return 'return', {
                 'type': {
                     'type': re_inst.group('return_type'),
@@ -402,7 +403,8 @@ class DocStringParser(object):
         if re_inst is not None:
             ref = None
             if re_inst.group('type') is not None:
-                ref = self._get_element_reference_from_value(re_inst.group('type'))
+                val_brackets = '{' + re_inst.group('type') + '}'
+                ref = self._get_element_reference_from_value(val_brackets)
             return 'param', {
                 'name': re_inst.group('name'),
                 'default': re_inst.group('default'),
@@ -418,7 +420,8 @@ class DocStringParser(object):
 
     def get_valtype_from_tag_string(self, tag_string):
         re_inst = re.search(r'\s*?[{](?P<valtype>.*?)[}](\s|$)', tag_string)
-        ref = self._get_element_reference_from_value(re_inst.group('valtype'))
+        val_brackets = '{' + re_inst.group('valtype') + '}'
+        ref = self._get_element_reference_from_value(val_brackets)
         if re_inst is not None:
             return 'valtype', {
                 'valtype': re_inst.group('valtype'),
@@ -439,7 +442,8 @@ class DocStringParser(object):
     def get_inherits_from_tag_string(self, tag_string):
         re_inst = re.search(r'\s*?[{](?P<inherits>.*?)[}](\s|$)', tag_string)
         if re_inst is not None:
-            ref = self._get_element_reference_from_value(re_inst.group('inherits'))
+            val_brackets = '{' + re_inst.group('inherits') + '}'
+            ref = self._get_element_reference_from_value(val_brackets)
             return 'inherits', {
                 'inherits': re_inst.group('inherits'),
                 'ref': ref,

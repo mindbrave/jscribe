@@ -1,0 +1,10 @@
+{% for _element in element.properties.values() %}
+    <li>
+        <h4><a href="{{ _element.doc_element_path }}" title="{{ _element.namepath }}">{{ _element.name }}</a></h4>
+        <ul>
+            {% if not _element.is_separate %}
+                {{ render_element_contents(_element) }}
+            {% endif %}
+        </ul>
+    </li>
+{% endfor %}

@@ -1,7 +1,7 @@
 {% extends 'mainframe.html' %}
 
 {% block content %}
-    <h1>{{ tag_settings[list_type].plural }}</h1>
+    <h1>{{ tag_settings[list_type].title }}</h1>
     <ul>
     {% for element in list.elements %}
         <li>

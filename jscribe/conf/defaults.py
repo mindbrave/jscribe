@@ -9,8 +9,8 @@ IGNORE_INVALID_TAGS = False
 TEMPLATE = "default"
 TEMPLATE_SETTINGS = {
         "SHOW_LINE_NUMBER": True,
-        "FOOTER_TEXT": "JSCRIBE",
-        "LOGO_PATH": "",
+        "FOOTER_TEXT": "Footer text",
+        "TITLE": "My Docs Title",
         "ELEMENT_TEMPLATES": {},
 }
 TAG_SETTINGS_PATH = "jscribe.conf.pythontagsettings"

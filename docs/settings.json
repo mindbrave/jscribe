@@ -10,11 +10,9 @@
     "TEMPLATE": "default",
     "TEMPLATE_SETTINGS": {
         "SHOW_LINE_NUMBER": true,
-        "FOOTER_TEXT": "JSCRIBE",
-        "LOGO_PATH": "",
-        "ELEMENT_TEMPLATES": {
-            "class": "class_element.html"
-        }
+        "FOOTER_TEXT": "JSCRIBE v0.2dev",
+        "TITLE": "JScribe documentation",
+        "ELEMENT_TEMPLATES": {}
     },
     "TAG_SETTINGS": "jscribe.conf.pythontagsettings",
     "LANGUAGE": "python",
