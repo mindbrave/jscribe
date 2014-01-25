@@ -10,7 +10,6 @@
         </header>
         <div id="left">
             <div id="lists-container">
-                <h2>Lists</h2>
                 {% for list_type, list in lists.iteritems() %}
                     {% if tag_settings[list_type].separate and tag_settings[list_type].list %}
                     <h3><a href="{{ list.path }}" title="{{ tag_settings[list_type].title }}">{{ tag_settings[list_type].title }}</a></h3>

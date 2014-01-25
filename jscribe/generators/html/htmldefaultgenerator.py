@@ -5,13 +5,13 @@
 @module jscribe.generators.html.htmldefaultgenerator
 """
 
-import copy
 import os
 import re
 import codecs
 import logging
 import importlib
 import shutil
+from collections import OrderedDict
 
 from markdown import markdown
 from pygments import highlight
@@ -102,7 +102,11 @@ class HTMLDefaultGenerator(Generator):
 
     def generate_documentation(self):
         # get documentation data for templates
-        self._build_template_data(self.doc_data)
+        self._build_template_data()
+        # sort lists by order
+        self.doc_data['lists'] = OrderedDict(
+            sorted(self.doc_data['lists'].items(), key=lambda v: v[1]['order'])
+        )
         # add lists to the global context so its always available to mainframe
         self.renderer.update_globals({'lists': self.doc_data['lists']})
         # create source doc files (source code with line numbers and anchors)
@@ -155,8 +159,7 @@ class HTMLDefaultGenerator(Generator):
         )
         shutil.copy(style_path, style_dst_path)
 
-    def _build_template_data(self, doc_data):
-        self.doc_data = copy.deepcopy(doc_data)
+    def _build_template_data(self):
         lists = {}
         namepath = ''
         # prepare elements data before converting
@@ -226,10 +229,13 @@ class HTMLDefaultGenerator(Generator):
             element['doc_element_id'] = url_id
             # get element tag type settings
             tag_type_name = element.get('type')
+            tag_type = self.tag_settings.get(tag_type_name)
             # add element to its element list
             if lists.get(tag_type_name) is None:
+                order = get_tag_type_property(self.tag_settings, tag_type, 'list_order')
                 lists[tag_type_name] = {
-                    'path': self.get_path_to_list_file(tag_type_name), 'elements': []
+                    'path': self.get_path_to_list_file(tag_type_name), 'elements': [],
+                    'order': order,
                 }
             lists[tag_type_name]['elements'].append(element)
             # remove beginnig dot from filepath, that os.walk leaves there

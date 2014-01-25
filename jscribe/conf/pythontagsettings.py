@@ -4,6 +4,7 @@ TAG_SETTINGS = {
        "alias": [],
        "separate": False,
        "list": False,
+       "list_order": 0,
        "name": ["default name"],
        "title": ["default plural name"],
        "source_visible": True,
@@ -29,6 +30,7 @@ TAG_SETTINGS = {
         "separate": True,
         "source_visible": False,
         "list": True,
+        "list_order": -1,
         "attributes": {
         }
     },
