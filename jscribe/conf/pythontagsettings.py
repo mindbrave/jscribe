@@ -5,8 +5,8 @@ TAG_SETTINGS = {
        "separate": False,
        "list": False,
        "list_order": 0,
-       "name": ["default name"],
-       "title": ["default plural name"],
+       "name": "default name",
+       "title": "default plural name",
        "source_visible": True,
        "callable": False,
        "attributes": {
@@ -90,6 +90,15 @@ TAG_SETTINGS = {
             }
         }
     },
+    "instance": {
+        "parent_type": "default",
+        "name": "instance",
+        "title": "instances",
+        "separate": False,
+        "attributes": {
+            "valtype": "instance"
+        }
+    },
     "function": {
         "parent_type": "default",
         "name": "function",
@@ -106,23 +115,57 @@ TAG_SETTINGS = {
         "parent_type": "default",
         "alias": ["attr"],
         "name": "attribute",
-        "ptitle": "attributes",
+        "title": "attributes",
         "callable": False,
         "attributes": {
         }
     },
     "number": {
         "parent_type": "attribute",
+        "name": "number",
         "alias": ["num"],
         "attributes": {
             "valtype": "number"
         }
     },
-    "string": {
+    "bytestring": {
         "parent_type": "attribute",
+        "name": "bytestring",
         "alias": ["str"],
         "attributes": {
-            "valtype": "string"
+            "valtype": "bytestring"
         }
-    }
+    },
+    "unicode": {
+        "parent_type": "attribute",
+        "name": "unicode",
+        "alias": ["u"],
+        "attributes": {
+            "valtype": "unicode"
+        }
+    },
+    "list": {
+        "parent_type": "attribute",
+        "name": "list",
+        "alias": [],
+        "attributes": {
+            "valtype": "list"
+        }
+    },
+    "tuple": {
+        "parent_type": "attribute",
+        "name": "tuple",
+        "alias": [],
+        "attributes": {
+            "valtype": "tuple"
+        }
+    },
+    "dict": {
+        "parent_type": "attribute",
+        "name": "dict",
+        "alias": [],
+        "attributes": {
+            "valtype": "dict"
+        }
+    },
 }

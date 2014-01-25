@@ -74,6 +74,7 @@ class DocStringParser(object):
             'license': self.get_license_from_tag_string,
             'example': self.get_example_from_tag_string,
             'private': lambda ts: ('access', 'private'),
+            'static': lambda ts: ('access', 'static'),
         }
 
         self._doc_string_regex = None
@@ -499,13 +500,13 @@ class DocStringParser(object):
 
 def get_tag_type_property(tag_settings, tag_type, property_name):
     prop = tag_type.get(property_name)
-    while prop is None:
+    if prop is None:
         parent_type = get_tag_parent_type(tag_settings, tag_type)
         if parent_type is None:
             raise DocStringParser.TagSettingsException(
-                'No {} property on tag.'.format(property_name)
+                'No {} property on tag {}.'.format(property_name, tag_type.get('name'))
             )
-        prop = parent_type.get(property_name)
+        prop = get_tag_type_property(tag_settings, parent_type, property_name)
     return prop
 
 

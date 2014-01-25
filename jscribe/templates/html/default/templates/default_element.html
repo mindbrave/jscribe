@@ -5,6 +5,14 @@
     {% if element.type_name %}
         <span class="default_type">{{ element.type_name }}</span>
     {% endif %}
+    {% if element.attributes.valtype and element.attributes.valtype.valtype != element.type_name -%}(
+        {%- if element.attributes.valtype.ref != None -%}
+            <span class="default_type_valtype">{{ element.attributes.valtype.ref_html }}</span>
+        {%- else -%}
+            <span class="default_type_valtype">{{ element.attributes.valtype.valtype }}</span>
+        {%- endif -%}
+    )
+    {%- endif %}
     <span class="default_name">{{ element.name }}</span>
     {%- if element.is_callable -%}(
         {%- for param in element.attributes.params -%}

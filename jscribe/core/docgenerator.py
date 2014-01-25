@@ -43,8 +43,9 @@ class DocumentationGenerator(object):
         self.tag_settings = {}
         """* List that containts paths of source files discovered using data from settings.
         Input paths, ignore paths and regexes.
-        @attr ..discovered_filepaths
-        @valtype {list}
+        @static
+        @list ..discovered_filepaths
+        @valtype {#jscribe.core.docgenerator.DocumentationGenerator}
         """
         self.discovered_filepaths = []
         settings.load(settings_path)

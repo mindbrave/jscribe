@@ -42,6 +42,11 @@ code {
 .file_path a:visited { color: #c48b18; }
 .file_path a:hover { color: #f8bd4a; }
 .default_type { font-size: 20px; font-weight: bold; color: #d4651b; }
+.default_type_valtype { font-size: 20px; font-weight: normal; color: #9e1107; }
+.default_type_valtype a { text-decoration: none; color: #9e1107; }
+.default_type_valtype a:visited { color: #9e1107; }
+.default_type_valtype a:active { color: #9e1107; }
+.default_type_valtype a:hover { color: #dc6056; }
 .default_access { font-size: 20px; font-weight: bold; color: #887f79; }
 .default_author { margin-top: 10px; }
 .default_inherits { margin-top: 10px; }
