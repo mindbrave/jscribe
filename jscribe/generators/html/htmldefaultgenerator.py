@@ -174,7 +174,18 @@ class HTMLDefaultGenerator(Generator):
             element['namepath'] = namepath
             element, lists = self._convert_element_data(element, lists)
             self._get_element_template_data(element, namepath, lists)
+        lists = self._sort_list_elements(lists)
         self.doc_data = {'root_element': self.doc_data, 'lists': lists}
+
+    def _sort_list_elements(self, lists):
+        for _list in lists.values():
+            _list['elements'] = sorted(_list['elements'], key=self._sort_compare_elements)
+        return lists
+
+    def _sort_compare_elements(self, element):
+        if element.get('alias_name', None) is not None:
+            return element.get('alias_name', None)
+        return element.get('name', None)
 
     def _prepare_element_data(self, element):
         for element in element.get('properties').values():
