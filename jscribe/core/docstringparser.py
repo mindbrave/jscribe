@@ -265,8 +265,9 @@ class DocStringParser(object):
                 elif self._tag_alias_map.get(tag_name) is not None:
                     doc_string_data['type'] = self._tag_alias_map.get(tag_name)
                 # first word after tag name is an element name
-                element_name = self._get_element_name(tag_string)
+                element_name, alias_name = self._get_element_name(tag_string)
                 doc_string_data['name'] = element_name
+                doc_string_data['alias_name'] = alias_name
             ## check if tag is a property tag
             elif self.PROPERTY_TAGS.get(tag_name) is not None:
                 # get value of property from tag string
@@ -299,14 +300,19 @@ class DocStringParser(object):
         return doc_string_data
 
     def _get_element_name(self, tag_string):
-        tag_string = tag_string.strip('\n').strip(' ').replace('\n', ' ').split(' ')
+        tag_string_parts = tag_string.strip('\n').strip(' ').replace('\n', ' ').split(' ')
         try:
-            element_name = tag_string[1]
+            element_name = tag_string_parts[1]
         except IndexError:
             raise self.TagValueException('No element name.')
+        alias_name = None
+        name_regex = r'"(?P<alias>.+?)"'
+        match_inst = re.search(name_regex, tag_string, flags=re.DOTALL)
+        if match_inst is not None:
+            alias_name = match_inst.group('alias')
         if element_name == '':
             raise self.TagValueException('No element name.')
-        return element_name
+        return element_name, alias_name
 
     def _get_doc_strings(self, path, encoding):
         doc_strings = []

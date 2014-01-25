@@ -1,4 +1,4 @@
-<h1 id="{{ element.doc_element_id }}">
+<h1>
     {% if element.attributes.access %}
         <span class="default_access">{{ element.attributes.access }}</span>
     {% endif %}
@@ -13,7 +13,11 @@
         {%- endif -%}
     )
     {%- endif %}
-    <span class="default_name">{{ element.name }}</span>
+    {%- if element.alias_name -%}
+        <span class="default_name">{{ element.alias_name }}</span>
+    {%- else -%}
+        <span class="default_name">{{ element.name }}</span>
+    {%- endif -%}
     {%- if element.is_callable -%}(
         {%- for param in element.attributes.params -%}
             <span class="default_call_par">{{ param.name }}
@@ -78,7 +82,7 @@
             <span class="default_type">{{ _element.type }}</span> <a href="{{ _element.doc_element_path }}" title="{{ _element.namepath }}">{{ _element.name }}</a>
         </div>
         {% else %}
-            <div class="element">
+            <div class="element" id="{{ _element.doc_element_id }}">
                 {{ render_element(_element) }}
             </div>
         {% endif %}

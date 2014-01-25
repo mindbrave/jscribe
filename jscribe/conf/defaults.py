@@ -1,3 +1,12 @@
+"""* Default settings for jscribe.
+@module jscribe.conf.defaults
+"""
+
+# MANUAL - SETTINGS FILE
+"""* # Settings file #
+@a settings
+"""
+
 INPUT_PATHS = ["./"]
 IGNORE_PATHS_REGEX = []
 FILE_REGEX = ".*?[.]js$"

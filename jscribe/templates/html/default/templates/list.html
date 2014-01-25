@@ -5,7 +5,11 @@
     <ul>
     {% for element in list.elements %}
         <li>
-            <a href="{{ element.doc_element_path }}">{{ element.namepath }}</a>
+            {% if element.alias_name %}
+                <a href="{{ element.doc_element_path }}">{{ element.alias_name }}</a>
+            {% else %}
+                <a href="{{ element.doc_element_path }}">{{ element.namepath }}</a>
+            {% endif %}
         </li>
     {% endfor %}
     </ul>

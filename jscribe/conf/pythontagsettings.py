@@ -49,7 +49,7 @@ TAG_SETTINGS = {
         "parent_type": "default",
         "alias": ["pack"],
         "name": "package",
-        "title": "packages",
+        "title": "API packages",
         "separate": True,
         "list": True,
         "attributes": {
@@ -61,7 +61,7 @@ TAG_SETTINGS = {
         "name": "module",
         "separate": True,
         "list": True,
-        "title": "modules",
+        "title": "API modules",
         "attributes": {
         }
     },

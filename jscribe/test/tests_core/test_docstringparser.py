@@ -22,8 +22,8 @@ class TestDocStringParser(unittest.TestCase):
                    'parent_type': None,
                    'alias': [],
                    'separate': False,
-                   'name': ['default name'],
-                   'plural_name': ['default plural name'],
+                   'name': 'default name',
+                   'title': 'default plural name',
                    'callable': False,
                    'attributes': {
                        'access': 'public',
@@ -42,7 +42,7 @@ class TestDocStringParser(unittest.TestCase):
                     'parent_type': 'default',
                     'alias': ['pack'],
                     'name': 'package',
-                    'plural': 'packages',
+                    'title': 'packages',
                     'separate': True,
                     'callable': True,
                     'attributes': {
@@ -53,7 +53,7 @@ class TestDocStringParser(unittest.TestCase):
                     'alias': [],
                     'name': 'file',
                     'separate': True,
-                    'plural': 'files',
+                    'title': 'files',
                     'callable': True,
                     'attributes': {
                     }
@@ -61,7 +61,7 @@ class TestDocStringParser(unittest.TestCase):
                 'factory': {
                     'parent_type': 'default',
                     'name': 'factory',
-                    'plural': 'factories',
+                    'title': 'factories',
                     'callable': True,
                     'attributes': {
                         'return': {
@@ -73,7 +73,7 @@ class TestDocStringParser(unittest.TestCase):
                 'method': {
                     'parent_type': 'default',
                     'name': 'method',
-                    'plural': 'methods',
+                    'title': 'methods',
                     'callable': True,
                     'attributes': {
                         'return': {
@@ -85,7 +85,7 @@ class TestDocStringParser(unittest.TestCase):
                 'function': {
                     'parent_type': 'default',
                     'name': 'function',
-                    'plural': 'functions',
+                    'title': 'functions',
                     'callable': True,
                     'attributes': {
                         'return': {
@@ -97,7 +97,7 @@ class TestDocStringParser(unittest.TestCase):
                 'object': {
                     'parent_type': 'default',
                     'name': 'object',
-                    'plural': 'objects',
+                    'title': 'objects',
                     'callable': False,
                     'attributes': {
                     }
@@ -105,7 +105,7 @@ class TestDocStringParser(unittest.TestCase):
                 'property': {
                     'parent_type': 'default',
                     'name': 'property',
-                    'plural': 'properties',
+                    'title': 'properties',
                     'callable': False,
                     'attributes': {
                     }
@@ -360,6 +360,7 @@ class TestDocStringParser(unittest.TestCase):
                                         'currentEntityId': {
                                             'properties': OrderedDict({}),
                                             'name': 'currentEntityId',
+                                            'alias_name': None,
                                             'type': 'number',
                                             'description': 'Keeps last created entity id.',
                                             'attributes': {
@@ -371,6 +372,7 @@ class TestDocStringParser(unittest.TestCase):
                                         },
                                         'entityPrototype': {
                                             'name': 'entityPrototype',
+                                            'alias_name': None,
                                             'properties': OrderedDict({}),
                                             'type': 'property',
                                             'description': textwrap.dedent("""
@@ -390,6 +392,7 @@ class TestDocStringParser(unittest.TestCase):
                                     'filepath': 'testdocfile1.js',
                                     'type': 'factory',
                                     'name': 'EntityFactory',
+                                    'alias_name': None,
                                     'description': 'Creates new entity.',
                                     'startline': 27,
                                     'endline': 32,
@@ -423,6 +426,7 @@ class TestDocStringParser(unittest.TestCase):
                                             'startline': 16,
                                             'endline': 18,
                                             'name': '_init',
+                                            'alias_name': None,
                                             'filepath': 'testdocfile1.js',
                                             'attributes': {},
                                         },
@@ -433,6 +437,7 @@ class TestDocStringParser(unittest.TestCase):
                                             'startline': 20,
                                             'endline': 22,
                                             'name': 'id',
+                                            'alias_name': None,
                                             'filepath': 'testdocfile1.js',
                                             'attributes': {},
                                         }
@@ -443,6 +448,7 @@ class TestDocStringParser(unittest.TestCase):
                                     'startline': 11,
                                     'endline': 14,
                                     'name': 'entity',
+                                    'alias_name': None,
                                     'attributes': {
                                         'inherits': {
                                             'inherits': 'Object',
@@ -458,6 +464,7 @@ class TestDocStringParser(unittest.TestCase):
                             'startline': 1,
                             'endline': 4,
                             'name': 'EntityFactory',
+                            'alias_name': None,
                             'type': 'file',
                         },
                     }),
@@ -468,6 +475,7 @@ class TestDocStringParser(unittest.TestCase):
                     'startline': 1,
                     'endline': 4,
                     'name': 'core',
+                    'alias_name': None,
                     'type': 'package',
                     'description': 'Core files package.',
                 },
@@ -499,6 +507,7 @@ class TestDocStringParser(unittest.TestCase):
                                             'endline': 17,
                                             'filepath': 'testdocfile2.js',
                                             'name': '_init',
+                                            'alias_name': None,
                                             'attributes': {},
                                         },
                                         'name': {
@@ -509,10 +518,12 @@ class TestDocStringParser(unittest.TestCase):
                                             'endline': 21,
                                             'filepath': 'testdocfile2.js',
                                             'name': 'name',
+                                            'alias_name': None,
                                             'attributes': {},
                                         }
                                     }),
                                     'name': 'component',
+                                    'alias_name': None,
                                     'type': 'object',
                                     'description': textwrap.dedent("""\
                                         Components are properties of entities.
@@ -546,9 +557,11 @@ class TestDocStringParser(unittest.TestCase):
                                             },
                                             'filepath': 'testdocfile2.js',
                                             'name': 'componentPrototype',
+                                            'alias_name': None,
                                         },
                                     }),
                                     'name': 'ComponentFactory',
+                                    'alias_name': None,
                                     'type': 'factory',
                                     'description': 'Creates new component.',
                                     'filepath': 'testdocfile2.js',
@@ -583,6 +596,7 @@ class TestDocStringParser(unittest.TestCase):
                             'startline': 1,
                             'endline': 5,
                             'name': 'ComponentFactory',
+                            'alias_name': None,
                             'type': 'file',
                         },
                     }),
@@ -593,6 +607,7 @@ class TestDocStringParser(unittest.TestCase):
                     'startline': 1,
                     'endline': 4,
                     'name': 'core',
+                    'alias_name': None,
                     'type': 'package',
                     'description': 'Core files package.',
                 },
@@ -631,6 +646,7 @@ class TestDocStringParser(unittest.TestCase):
                                     },
                                     'filepath': 'testdocfile3.js',
                                     'name': 'velocity',
+                                    'alias_name': None,
                                 }
                             }),
                             'description': 'File defines VelocityComponentFactory module.',
@@ -638,6 +654,7 @@ class TestDocStringParser(unittest.TestCase):
                             'startline': 1,
                             'endline': 5,
                             'name': 'VelocityComponentFactory',
+                            'alias_name': None,
                             'type': 'file',
                         },
                     }),
@@ -646,6 +663,7 @@ class TestDocStringParser(unittest.TestCase):
                     'startline': 1,
                     'endline': 4,
                     'name': 'core',
+                    'alias_name': None,
                     'type': 'package',
                     'description': 'Core files package.',
                 },
@@ -713,6 +731,7 @@ class TestDocStringParser(unittest.TestCase):
                     'startline': 1,
                     'endline': 4,
                     'name': 'author',
+                    'alias_name': None,
                     'type': 'file',
                 },
             }),

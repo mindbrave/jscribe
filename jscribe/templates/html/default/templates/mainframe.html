@@ -16,7 +16,11 @@
                     <ul>
                         {% for _element in list.elements %}
                         <li>
-                            <a href="{{ _element.doc_element_path }}" title="{{ _element.namepath }}">{{ _element.name }}</a>
+                            {% if _element.alias_name %}
+                                <a href="{{ _element.doc_element_path }}" title="{{ _element.namepath }}">{{ _element.alias_name }}</a>
+                            {% else %}
+                                <a href="{{ _element.doc_element_path }}" title="{{ _element.namepath }}">{{ _element.name }}</a>
+                            {% endif %}
                         </li>
                         {% endfor %}
                     </ul>
