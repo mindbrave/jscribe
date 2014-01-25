@@ -113,7 +113,7 @@ class DocStringParser(object):
     @tag_regex.setter
     def tag_regex(self, tag_regex):
         self._tag_regex = tag_regex
-        self._tag_regex_obj = re.compile(tag_regex)
+        self._tag_regex_obj = re.compile(tag_regex, flags=re.MULTILINE)
 
     def _create_tag_alias_map(self, tag_settings):
         for tag, _settings in tag_settings.iteritems():
@@ -223,6 +223,7 @@ class DocStringParser(object):
         tag_strings = []
         position_end = 0
         position_start = 0
+        # while search position is less than doc string length
         while position_end < len(doc_string[2]):
             match_inst = self._tag_regex_obj.search(doc_string[2], position_end)
             if match_inst is None:

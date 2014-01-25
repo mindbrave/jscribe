@@ -22,13 +22,25 @@ TAG_SETTINGS = {
            "version": None
        }
     },
-    "article": {
+    "index": {
         "parent_type": "default",
         "alias": ["a"],
         "name": "",
-        "title": "manual",
+        "title": "Index",
         "separate": True,
-        "source_visible": False,
+        "source_visible": True,
+        "list": True,
+        "list_order": -2,
+        "attributes": {
+        }
+    },
+    "manual": {
+        "parent_type": "default",
+        "alias": ["m"],
+        "name": "",
+        "title": "Manual",
+        "separate": True,
+        "source_visible": True,
         "list": True,
         "list_order": -1,
         "attributes": {
@@ -40,7 +52,7 @@ TAG_SETTINGS = {
         "name": "",
         "title": "paragraphs",
         "separate": False,
-        "source_visible": False,
+        "source_visible": True,
         "list": False,
         "attributes": {
         }
@@ -49,7 +61,7 @@ TAG_SETTINGS = {
         "parent_type": "default",
         "alias": ["pack"],
         "name": "package",
-        "title": "API packages",
+        "title": "API Packages",
         "separate": True,
         "list": True,
         "attributes": {
@@ -61,14 +73,15 @@ TAG_SETTINGS = {
         "name": "module",
         "separate": True,
         "list": True,
-        "title": "API modules",
+        "title": "API Modules",
         "attributes": {
         }
     },
     "class": {
         "parent_type": "default",
         "name": "class",
-        "title": "classes",
+        "title": "API Classes",
+        "separate": True,
         "list": True,
         "attributes": {
             "return": {

@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 #!/usr/bin/env python
 
-"""* #JScribe package#
-
-Thanks to this lib you generate documentation from "doc strings" in your code.
+"""* Thanks to this lib you can generate documentation from "doc strings" in your code.
 
 @author Rafał Łużyński
 @package jscribe
@@ -11,12 +9,12 @@ Thanks to this lib you generate documentation from "doc strings" in your code.
 
 # INDEX DOC
 
-"""* ##generates documentation for you from your "doc strings" placed in code.##
+"""* ##JScribe generates documentation for you from your "doc strings" placed in code.##
 
-@a index "JScribe"
+@a index "1. Home"
 """
 
-"""* #### when there is a lot of other doc generators? ####
+"""* #### There is a lot of other doc generators. ####
 
 From the beggining.
 
@@ -35,7 +33,7 @@ So I decided that it should present some new values in doc generators area.
 In the end it became something similiar to
 [SphinxDocumentation](http://sphinx-doc.org/ "SphinxDocumentation") for Python.
 
-@p .WhyIMadeIt "Why I made it"
+@p .WhyIMadeIt "Why I made it?"
 """
 
 """* ##  Features: ##
@@ -56,5 +54,19 @@ In the end it became something similiar to
     generator)
 - of course support for standard tags, like: param, author, access, return etc. and few new
 
-@p .WhatItBecame "What it became"
+@p .WhatItBecame "What it became?"
 """
+
+# GITHUB LINK
+"""*
+@a githublink "2. <a href='https://github.com/mindbrave/jscribe'>github project</a>""
+"""
+
+# CONTACT
+"""* You can contact me via email if you have any question or problem, feel free to do so.
+
+email: <a href="mailto:rafalluzynski@prosaur.com">rafalluzynski@prosaur.com</a>
+
+@a contact "3. Contact"
+"""
+

@@ -4,16 +4,16 @@
 
 # MANUAL - SETTINGS FILE
 """* # Settings file #
-@a settings
+@m settings
 """
 
 INPUT_PATHS = ["./"]
 IGNORE_PATHS_REGEX = []
-FILE_REGEX = ".*?[.]js$"
+FILE_REGEX = r".*?[.]js$"
 FILE_IGNORE_REGEX = None
 DOCUMENTATION_OUTPUT_PATH = "./"
-DOC_STRING_REGEX = ["[/][*][*]", "[*][/]"]
-TAG_REGEX = "[@](?P<tag>.*?)\\s"
+DOC_STRING_REGEX = [r"[/][*][*]", r"[*][/]"]
+TAG_REGEX = r"^\\s*?[@](?P<tag>.*?)\\s"
 IGNORE_INVALID_TAGS = False
 TEMPLATE = "default"
 TEMPLATE_SETTINGS = {
