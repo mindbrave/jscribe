@@ -57,9 +57,17 @@ In the end it became something similiar to
 @p .WhatItBecame "What it became?"
 """
 
+# LIVE DEMO
+"""* Well, you are already experiencing live demo, as this whole documentation is
+made using JScribe only. :)
+
+You can check how it looks from source point of view by clicking on source file path below.
+@a livedemo "2. Live demo""
+"""
+
 # GITHUB LINK
 """*
-@a githublink "2. <a href='https://github.com/mindbrave/jscribe'>github project</a>""
+@a githublink "3. <a href='https://github.com/mindbrave/jscribe'>Github repository</a>""
 """
 
 # CONTACT
@@ -67,6 +75,6 @@ In the end it became something similiar to
 
 email: <a href="mailto:rafalluzynski@prosaur.com">rafalluzynski@prosaur.com</a>
 
-@a contact "3. Contact"
+@a contact "4. Contact"
 """
 

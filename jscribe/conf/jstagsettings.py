@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 #!/usr/bin/env python
 
-"""* Builtin tag settings for python projects.
+"""* Builtin tag settings for javascript projects.
 
-You can use them in project by setting TAG_SETTINGS to `jscribe.conf.pythontagsettings`, but
+You can use them in project by setting TAG_SETTINGS to `jscribe.conf.jstagsettings`, but
 I admit you to create your own tag settings.
 @module jscribe.conf.jstagsettings
 """
@@ -19,7 +19,8 @@ TAG_SETTINGS = {
        "title": "default plural name",
        "source_visible": True,
        "callable": False,
-       "attributes": {}
+       "attributes": {
+       }
     },
     "index": {
         "parent_type": "base",
@@ -63,7 +64,6 @@ TAG_SETTINGS = {
         "title": "API Packages",
         "separate": True,
         "list": True,
-        "list_order": 1,
         "attributes": {
         }
     },
@@ -72,7 +72,6 @@ TAG_SETTINGS = {
         "alias": [],
         "name": "module",
         "separate": True,
-        "list_order": 2,
         "list": True,
         "title": "API Modules",
         "attributes": {
@@ -83,7 +82,6 @@ TAG_SETTINGS = {
         "name": "class",
         "title": "API Classes",
         "separate": False,
-        "list_order": 0,
         "list": True,
         "attributes": {
         }
@@ -94,15 +92,8 @@ TAG_SETTINGS = {
         "title": "methods",
         "callable": True,
         "separate": False,
-        "attributes": {}
-    },
-    "property": {
-        "parent_type": "base",
-        "name": "property",
-        "title": "properties",
-        "callable": False,
-        "separate": False,
-        "attributes": {}
+        "attributes": {
+        }
     },
     "instance": {
         "parent_type": "base",
@@ -161,12 +152,14 @@ TAG_SETTINGS = {
         "parent_type": "attribute",
         "name": "tuple",
         "alias": [],
-        "attributes": {}
+        "attributes": {
+        }
     },
     "dict": {
         "parent_type": "attribute",
         "name": "dict",
         "alias": [],
-        "attributes": {}
+        "attributes": {
+        }
     },
 }

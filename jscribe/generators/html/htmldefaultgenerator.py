@@ -31,7 +31,7 @@ class HTMLDefaultGenerator(Generator):
     Make new generators basing on this one.
 
     @class jscribe.generators.html.htmldefaultgenerator.HTMLDefaultGenerator
-    @inherits {#jscribe.core.generator.Generator}
+    @inherits {{#jscribe.core.generator.Generator}}
     """
     def __init__(self, template_settings, doc_data, tag_settings, discovered_filepaths):
         self.doc_data = doc_data
@@ -273,10 +273,15 @@ class HTMLDefaultGenerator(Generator):
         if element['attributes'].get('params') is not None:
             for param in element['attributes']['params']:
                 param['description_html'] = self._convert_markup(param['description'])
-        # convert return descriptions if are set
+        # convert return description if is set
         if element['attributes'].get('return') is not None:
             element['attributes']['return']['description_html'] = self._convert_markup(
                 element['attributes']['return']['description']
+            )
+        # convert valtype description if is set
+        if element['attributes'].get('valtype') is not None:
+            element['attributes']['valtype']['description_html'] = self._convert_markup(
+                element['attributes']['valtype']['description']
             )
         # convert example descriptions if are set, and convert code to html with pygments
         if element['attributes'].get('examples') is not None:
@@ -287,7 +292,7 @@ class HTMLDefaultGenerator(Generator):
     def _convert_element_code_blocks(self, element):
         description = element['description']
         matches = re.finditer(
-            r'(?P<wrap>[{][$](?P<lang>\w*?)\s(?P<code>.*?)[}])', description, flags=re.DOTALL
+            r'(?P<wrap>[{][$](?P<lang>\w*?)\s(?P<code>.*?)[$][}])', description, flags=re.DOTALL
         )
         len_diff = 0
         for match in matches:
@@ -335,9 +340,9 @@ class HTMLDefaultGenerator(Generator):
                 inherits['ref_html'] = self._make_link(url, inherits['ref'])
         returns = element['attributes'].get('return')
         if returns is not None:
-            if returns['ref'] is not None:
-                url, url_id = self._make_url_from_namepath(returns['ref'])
-                returns['ref_html'] = self._make_link(url, returns['ref'])
+            if returns['type']['ref'] is not None:
+                url, url_id = self._make_url_from_namepath(returns['type']['ref'])
+                returns['type']['ref_html'] = self._make_link(url, returns['type']['ref'])
         valtype = element['attributes'].get('valtype')
         if valtype is not None:
             if valtype['ref'] is not None:

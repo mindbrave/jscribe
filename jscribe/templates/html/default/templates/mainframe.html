@@ -11,7 +11,7 @@
         <div id="left">
             <div id="lists-container">
                 {% for list_type, list in lists.iteritems() %}
-                    {% if tag_settings[list_type].separate and tag_settings[list_type].list %}
+                    {% if tag_settings[list_type].list %}
                     <h3><a href="{{ list.path }}" title="{{ tag_settings[list_type].title }}">{{ tag_settings[list_type].title }}</a></h3>
                     <ul>
                         {% for _element in list.elements %}

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #!/usr/bin/env python
 
-"""* Doc string parser module file.
+"""*
 @module jscribe.core.docstringparser
 @author Rafał Łużyński
 """
@@ -17,7 +17,7 @@ from jscribe.conf import settings
 
 class DocStringParser(object):
     """* This class generates doc data from source files.
-    @class .DocStringParser
+    @class jscribe.core.docstringparser.DocStringParser
     """
 
     class TagValueException(Exception):
@@ -43,22 +43,23 @@ class DocStringParser(object):
         {$
         class Test:
             pass
-        }
+        $}
         {$javascript
         dupa.get(cze)
         return doesnt.work()
-        }
-        {$ lambda a: test(a)}
+        $}
+        {$ lambda a: test(a) $}
 
         Inline code: `this.should.work()`.
 
-        @method ..__init__
+        @method .__init__
+        @constructor
         @param self
-        @param tag_settings {dict} - Dictionary with tag settings.
-        @param doc_string_regex {regex} - Regex that matches doc strings.
-        @param tag_regex {regex} - Regex that matches tags in doc strings.
+        @param tag_settings {{dict}} - Dictionary with tag settings.
+        @param doc_string_regex {{regex}} - Regex that matches doc strings.
+        @param tag_regex {{regex}} - Regex that matches tags in doc strings.
         Whitespaces at the line begining are always ommited.
-        @param ignore_invalid_tags=False {boolean} - If `True` then invalid tag name won't raise
+        @param ignore_invalid_tags=False {{boolean}} - If `True` then invalid tag name won't raise
         error.
         """
 
@@ -67,7 +68,6 @@ class DocStringParser(object):
             'param': self.get_param_from_tag_string,
             'author': self.get_author_from_tag_string,
             'valtype': self.get_valtype_from_tag_string,
-            'default': self.get_default_from_tag_string,
             'inherits': self.get_inherits_from_tag_string,
             'access': self.get_access_from_tag_string,
             'version': self.get_version_from_tag_string,
@@ -75,6 +75,7 @@ class DocStringParser(object):
             'example': self.get_example_from_tag_string,
             'private': lambda ts: ('access', 'private'),
             'static': lambda ts: ('access', 'static'),
+            'constructor': lambda ts: ('access', 'constructor'),
         }
 
         self._doc_string_regex = None
@@ -97,6 +98,12 @@ class DocStringParser(object):
 
     @doc_string_regex.setter
     def doc_string_regex(self, doc_string_regex):
+        """* Property method setter for doc_string_regex. By assigning new regex to it, it
+        automaticaly compiles new regex instance.
+        @property .doc_string_regex
+        @valtype {{list|tuple}} - Two element long list or tuple, first must be a regex
+            for doc string opening tag, second for closing.
+        """
         self._doc_string_regex = doc_string_regex
         # only whitespaces before opening tag
         no_whitespace_regex = r'^\s*?'
@@ -112,6 +119,11 @@ class DocStringParser(object):
 
     @tag_regex.setter
     def tag_regex(self, tag_regex):
+        """* Property for tag_regex. By assigning new regex to it, it
+        automaticaly compiles new regex instance.
+        @property .tag_regex
+        @valtype {{str}} - Regex string for tag.
+        """
         self._tag_regex = tag_regex
         self._tag_regex_obj = re.compile(tag_regex, flags=re.MULTILINE)
 
@@ -301,6 +313,13 @@ class DocStringParser(object):
         return doc_string_data
 
     def _get_element_name(self, tag_string):
+        """* Returns element name (and alias_name if given) found in`tag_string`.
+        @method ._get_element_name
+        @private
+        @param self
+        @param tag_string {{unicode}} - Tag string where tag is an element.
+        @return {{unicode, unicode}} - *element_name*, *alias_name*
+        """
         tag_string_parts = tag_string.strip('\n').strip(' ').replace('\n', ' ').split(' ')
         try:
             element_name = tag_string_parts[1]
@@ -380,7 +399,7 @@ class DocStringParser(object):
 
     def get_return_from_tag_string(self, tag_string):
         re_inst = re.search(
-            r'\s*?[{](?P<return_type>.*?)[}]\s-?[ ]?(?P<description>.*?)$',
+            r'\s*?[{][{](?P<return_type>.*?)[}][}]\s-?[ ]?(?P<description>.*?)$',
             tag_string,
             flags=re.DOTALL
         )
@@ -403,7 +422,7 @@ class DocStringParser(object):
         re_inst = re.search(
             r'\s*?(?P<name>\w+)' +
             r'(?:(?:=(?P<default>[^.]+?))|(?:(?P<seq>[.]{3}))|(?:))' +
-            r'(?:\s[{](?P<type>.+?)[}])?' +
+            r'(?:\s[{][{](?P<type>.+?)[}][}])?' +
             r'(?:\s-?\s?(?P<desc>.*?))$',
             tag_string,
             flags=re.DOTALL
@@ -427,28 +446,27 @@ class DocStringParser(object):
             raise self.TagValueException('Wrong data passed to param tag: "{}"'.format(tag_string))
 
     def get_valtype_from_tag_string(self, tag_string):
-        re_inst = re.search(r'\s*?[{](?P<valtype>.*?)[}](\s|$)', tag_string)
+        re_inst = re.search(
+            r'\s*?[{][{](?P<valtype>.*?)(?:=(?P<default>.+?))?[}][}](?:\s-?\s?(?P<desc>.*?))$',
+            tag_string,
+            flags=re.DOTALL
+        )
         val_brackets = '{' + re_inst.group('valtype') + '}'
         ref = self._get_element_reference_from_value(val_brackets)
         if re_inst is not None:
             return 'valtype', {
                 'valtype': re_inst.group('valtype'),
                 'ref': ref,
+                'default': re_inst.group('default'),
+                'description': re_inst.group('desc'),
             }
         else:
             raise self.TagValueException(
                 'Wrong data passed to valtype tag: "{}"'.format(tag_string)
             )
 
-    def get_default_from_tag_string(self, tag_string):
-        re_inst = re.search(r'\s*?(?P<default>.*?)(\s|$)', tag_string)
-        if re_inst is not None:
-            return 'default', re_inst.group('default')
-        else:
-            return 'default', None
-
     def get_inherits_from_tag_string(self, tag_string):
-        re_inst = re.search(r'\s*?[{](?P<inherits>.*?)[}](\s|$)', tag_string)
+        re_inst = re.search(r'\s*?[{][{](?P<inherits>.*?)[}][}](\s|$)', tag_string)
         if re_inst is not None:
             val_brackets = '{' + re_inst.group('inherits') + '}'
             ref = self._get_element_reference_from_value(val_brackets)
@@ -461,7 +479,6 @@ class DocStringParser(object):
                 'Wrong data passed to inherits tag: "{}"'.format(tag_string)
             )
 
-
     def get_access_from_tag_string(self, tag_string):
         re_inst = re.search(r'\s*?(?P<access>.*?)(\s|$)', tag_string)
         if re_inst is not None:
@@ -470,7 +487,6 @@ class DocStringParser(object):
             raise self.TagValueException(
                 'Wrong data passed to access tag: "{}"'.format(tag_string)
             )
-
 
     def get_version_from_tag_string(self, tag_string):
         re_inst = re.search(r'\s*?(?P<version>.*?)$', tag_string, flags=re.DOTALL)
@@ -488,7 +504,8 @@ class DocStringParser(object):
 
     def get_example_from_tag_string(self, tag_string):
         re_inst = re.search(
-            r'\s*?(?P<title>.+?)(?:\s[#](?P<langid>\w+?))?\s[{](?P<code>.*?)[}](?:\s(?P<desc>.*?))$',
+            r'\s*?(?P<title>.+?)' +
+            r'(?:\s[#](?P<langid>\w+?))?\s[{][$](?P<code>.*?)[$][}](?:\s(?P<desc>.*?))$',
             tag_string,
             flags=re.DOTALL
         )
@@ -520,8 +537,8 @@ def get_tag_type_property(tag_settings, tag_type, property_name):
 def get_tag_parent_type(tag_settings, tag_type):
     """* Gets tag settings from parent tag type.
     @function .get_tag_parent_type
-    @param tag_settings {str}
-    @param tag_type {dict}
+    @param tag_settings {{str}}
+    @param tag_type {{dict}}
     """
     parent_type_name = tag_type.get('parent_type')
     if parent_type_name is None:
