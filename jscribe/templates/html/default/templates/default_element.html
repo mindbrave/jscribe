@@ -20,6 +20,14 @@
             {%- if not loop.last -%}, {% endif -%}
         {%- endfor -%}
     ){%- endif %}
+    {% if element.attributes.inherits %}
+        <span class="default_inherits">inherits </span>
+        {% if element.attributes.inherits.ref %}
+            <span class="default_inherits_val">{{ element.attributes.inherits.ref_html }}</span>
+        {%- else %}
+            <span class="default_inherits_val">{{ element.attributes.inherits.inherits }}</span>
+        {%- endif %}
+    {%- endif %}
     {% if element.attributes.valtype and element.attributes.valtype.valtype != element.type_name -%}
         {
         {%- if element.attributes.valtype.ref != None -%}
@@ -31,7 +39,7 @@
             <span class="default_type_valtype_def">={{ element.attributes.valtype.default }}</span>
         {%- endif -%}
         }
-        {% if element.attributes.valtype.description_html != None %}
+        {% if element.attributes.valtype.description_html %}
             <span class="default_type_valtype_desc">- {{ element.attributes.valtype.description_html }}</span>
         {%- endif -%}
     {% endif %}
@@ -65,15 +73,6 @@
     <span class="default_return_desc">{{ element.attributes.return.description_html }}</span>
 </div>
 {%- endif %}
-{% if element.attributes.inherits %}
-<div class="default_inherits"><span>Inherits: </span>
-    {% if element.attributes.inherits.ref %}
-        {{ element.attributes.inherits.ref_html }}
-    {% else %}
-        {{ element.attributes.inherits.inherits }}
-    {% endif %}
-</div>
-{% endif %}
 {% if element.description_html %}
     <div class="default_description">{{ element.description_html }}</div>
 {% endif %}

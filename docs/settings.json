@@ -4,13 +4,13 @@
     "FILE_REGEX": ".*?[.]py$",
     "FILE_IGNORE_REGEX": null,
     "DOCUMENTATION_OUTPUT_PATH": "./docs/",
-    "DOC_STRING_REGEX": ["[\"][\"][\"][*]", "[\"][\"][\"]"],
-    "TAG_REGEX": "[@](?P<tag>.*?)\\s",
+    "DOC_STRING_REGEX": ["[\"][\"][\"][*]", "(?<!\\\\)[\"][\"][\"]"],
+    "TAG_REGEX": "^\\s*?[@](?P<tag>.*?)\\s",
     "IGNORE_INVALID_TAGS": false,
     "TEMPLATE": "default",
     "TEMPLATE_SETTINGS": {
         "SHOW_LINE_NUMBER": true,
-        "FOOTER_TEXT": "JSCRIBE v0.2dev",
+        "FOOTER_TEXT": "JSCRIBE v0.2BETA",
         "TITLE": "JScribe documentation",
         "ELEMENT_TEMPLATES": {}
     },

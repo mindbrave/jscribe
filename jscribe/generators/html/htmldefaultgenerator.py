@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #!/usr/bin/env python
 
-"""* HTMLDefaultGenerator module.
+"""*
 @module jscribe.generators.html.htmldefaultgenerator
 """
 
@@ -18,7 +18,7 @@ from pygments import highlight
 from pygments.lexers import get_lexer_by_name
 from pygments.formatters import HtmlFormatter
 
-from jscribe.utils.file import get_source_file_coding
+from jscribe.utils.file import get_py_file_encoding
 from jscribe.core.generator import Generator
 from jscribe.conf import settings
 from jscribe.core.jinjatemplaterenderer import JinjaTemplateRenderer
@@ -26,14 +26,20 @@ from jscribe.core.docstringparser import DocStringParser, get_tag_type_property
 
 
 class HTMLDefaultGenerator(Generator):
-    """* Default doc generator for html output {#jscribe.core.docgenerator.DocumentationGenerator}.
-
-    Make new generators basing on this one.
+    """* Default doc generator for HTML output.
 
     @class jscribe.generators.html.htmldefaultgenerator.HTMLDefaultGenerator
     @inherits {{#jscribe.core.generator.Generator}}
     """
     def __init__(self, template_settings, doc_data, tag_settings, discovered_filepaths):
+        """* Initialization.
+        @method .__init__
+        @param self
+        @param template_settings {{dict}}
+        @param doc_data {{dict}}
+        @param tag_settings {{dict}}
+        @param discovered_filepaths {{list}}
+        """
         self.doc_data = doc_data
         self.tag_settings = tag_settings
         self.template_settings = template_settings
@@ -179,10 +185,12 @@ class HTMLDefaultGenerator(Generator):
 
     def _sort_list_elements(self, lists):
         for _list in lists.values():
-            _list['elements'] = sorted(_list['elements'], key=self._sort_compare_elements)
+            _list['elements'] = sorted(
+                _list['elements'], key=self._compare_elements_for_list_sorting
+            )
         return lists
 
-    def _sort_compare_elements(self, element):
+    def _compare_elements_for_list_sorting(self, element):
         if element.get('alias_name', None) is not None:
             return element.get('alias_name', None)
         return element.get('name', None)
@@ -413,7 +421,7 @@ class HTMLDefaultGenerator(Generator):
 
     def generate_source_files_for_documentation(self):
         for filepath in self.discovered_filepaths:
-            encoding = get_source_file_coding(filepath)
+            encoding = get_py_file_encoding(filepath)
             with codecs.open(filepath, 'r', encoding) as f:
                 code = f.read()
                 f.close()

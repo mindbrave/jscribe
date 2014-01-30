@@ -1,0 +1,61 @@
+{
+    "default": {
+        "parent_type": null,
+        "alias": [],
+        "separate": false,
+        "list": false,
+        "list_order": 0,
+        "name": "default name",
+        "title": "default plural name",
+        "source_visible": true,
+        "callable": false,
+        "attributes": {
+            "access": "public",
+            "example": null,
+            "params": [],
+            "return": null,
+            "inherits": null,
+            "default": null,
+            "valtype": null,
+            "author": null
+        }
+    },
+    "class": {
+        "parent_type": "default",
+        "alias": ["cl"],
+        "separate": true,
+        "list": true,
+        "list_order": 0,
+        "name": "class",
+        "title": "Classes",
+        "source_visible": true,
+        "callable": false,
+        "attributes": {}
+    },
+    "function": {
+        "parent_type": "default",
+        "alias": ["func"],
+        "separate": false,
+        "list": false,
+        "list_order": 0,
+        "name": "function",
+        "title": "Functions",
+        "source_visible": true,
+        "callable": true,
+        "attributes": {}
+    },
+    "entity": {
+        "parent_type": "default",
+        "alias": ["ent"],
+        "separate": true,
+        "list": true,
+        "list_order": 0,
+        "name": "entity",
+        "title": "Entities",
+        "source_visible": true,
+        "callable": false,
+        "attributes": {
+            "valtype": "class"
+        }
+    }
+}

@@ -1,0 +1,7 @@
+README.txt
+jscribeit.py
+jscribe/__init__.py
+pip-egg-info/JScribe.egg-info/PKG-INFO
+pip-egg-info/JScribe.egg-info/SOURCES.txt
+pip-egg-info/JScribe.egg-info/dependency_links.txt
+pip-egg-info/JScribe.egg-info/top_level.txt
