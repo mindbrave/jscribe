@@ -20,7 +20,7 @@ from jscribe.conf import settings
 
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 
-version = Version(0, 0, 2, 'a4')
+version = Version(0, 0, 2, 'a5')
 
 parser = argparse.ArgumentParser(
     description='Generates documentation.'

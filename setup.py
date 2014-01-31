@@ -13,7 +13,7 @@ setup(
     author='Rafał Łużyński',
     description='Documentation generator from source files, for any language.',
     author_email='rafalluzynski@prosaur.com',
-    version='0.2a4',
+    version='0.2a5',
     packages=[
         'jscribe', 'jscribe.core', 'jscribe.conf', 'jscribe.generators',
         'jscribe.generators.html',
