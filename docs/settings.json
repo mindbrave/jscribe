@@ -1,6 +1,6 @@
 {
     "INPUT_PATHS": ["./"],
-    "IGNORE_PATHS_REGEX": ["./tests.*?$", "./templates.*?$"],
+    "IGNORE_PATHS_REGEX": ["./tests.*?$", "./templates.*?$", "./build.*?$", "./dist.*?$"],
     "FILE_REGEX": ".*?[.]py$",
     "FILE_IGNORE_REGEX": null,
     "DOCUMENTATION_OUTPUT_PATH": "./docs/",

@@ -17,6 +17,8 @@ jscribe/core/generator.py
 jscribe/core/htmldocgenerator.py
 jscribe/core/jinjatemplaterenderer.py
 jscribe/generators/__init__.py
+jscribe/generators/html/__init__.py
+jscribe/generators/html/htmldefaultgenerator.py
 jscribe/templates/__init__.py
 jscribe/templates/html/__init__.py
 jscribe/templates/html/default/__init__.py

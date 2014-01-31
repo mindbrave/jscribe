@@ -1,5 +1,5 @@
-# -*- coding: utf-8 -*-
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 """* Generates documentation from source code, that your settings points to.
 
@@ -20,7 +20,7 @@ from jscribe.conf import settings
 
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 
-version = Version(0, 0, 2, 'a3')
+version = Version(0, 0, 2, 'a4')
 
 parser = argparse.ArgumentParser(
     description='Generates documentation.'

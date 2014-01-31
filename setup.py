@@ -11,10 +11,12 @@ from distutils.core import setup
 setup(
     name='JScribe',
     author='Rafał Łużyński',
+    description='Documentation generator from source files, for any language.',
     author_email='rafalluzynski@prosaur.com',
-    version='0.2a3',
+    version='0.2a4',
     packages=[
         'jscribe', 'jscribe.core', 'jscribe.conf', 'jscribe.generators',
+        'jscribe.generators.html',
         'jscribe.templates', 'jscribe.templates.html', 'jscribe.templates.html.default',
         'jscribe.utils',
         'jscribe.test', 'jscribe.test.tests_core', 'jscribe.test.tests_utils'
@@ -46,7 +48,8 @@ setup(
 # INSTALL MANUAL
 """* Install.
 
-pip install jscribe
+Download tar.gz file from [JScribe PyPI](https://pypi.python.org/pypi/JScribe/), unpack it and run
+jscribeit.py there or `pip install jscribe`.
 
 @manual install "1. Installing"
 """
